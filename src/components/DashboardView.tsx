@@ -11,11 +11,12 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Sun, CloudRain, Droplets, Thermometer, Wind, Leaf, MapPin, TrendingUp, Info, Landmark, Wheat } from "lucide-react";
+import { Sun, CloudRain, Droplets, Thermometer, Wind, Leaf, MapPin, TrendingUp, Info, Landmark, Wheat, CalendarDays } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { cropPriceInfo, type CropPriceInfoOutput } from "@/ai/flows/crop-price-info";
 import { Separator } from "@/components/ui/separator";
+import WeatherIcon from "./WeatherIcon";
 
 
 const generateMspData = (basePrice: number, volatility: number, trend: number) => {
@@ -94,6 +95,15 @@ interface WeatherData {
   is_day: number;
 }
 
+interface ForecastDay {
+  date: string;
+  day: string;
+  weathercode: number;
+  temp_max: number;
+  temp_min: number;
+  precipitation_probability_max: number;
+}
+
 interface IrrigationTime {
   time: string;
   relative: string;
@@ -101,6 +111,7 @@ interface IrrigationTime {
 
 export default function DashboardView() {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [forecastData, setForecastData] = useState<ForecastDay[]>([]);
   const [loadingWeather, setLoadingWeather] = useState(true);
   const [locationName, setLocationName] = useState<string | null>("Loading location...");
   const [irrigationTime, setIrrigationTime] = useState<IrrigationTime | null>(null);
@@ -234,7 +245,7 @@ export default function DashboardView() {
       setLoadingWeather(true);
       try {
         const weatherResponse = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation_probability,is_day,wind_speed_10m`
+          `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation_probability,is_day,wind_speed_10m&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=5`
         );
         const weatherData = await weatherResponse.json();
         if (weatherData && weatherData.current) {
@@ -245,6 +256,17 @@ export default function DashboardView() {
             wind_speed: Math.round(weatherData.current.wind_speed_10m),
             is_day: weatherData.current.is_day,
           });
+        }
+        if (weatherData && weatherData.daily) {
+          const forecast: ForecastDay[] = weatherData.daily.time.map((date: string, index: number) => ({
+            date: date,
+            day: new Date(date).toLocaleDateString(undefined, { weekday: 'short' }),
+            weathercode: weatherData.daily.weathercode[index],
+            temp_max: Math.round(weatherData.daily.temperature_2m_max[index]),
+            temp_min: Math.round(weatherData.daily.temperature_2m_min[index]),
+            precipitation_probability_max: weatherData.daily.precipitation_probability_max[index],
+          }));
+          setForecastData(forecast);
         }
 
         try {
@@ -284,11 +306,13 @@ export default function DashboardView() {
             fetchWeatherAndLocation(position.coords.latitude, position.coords.longitude);
         },
         () => {
+          // Fallback to Delhi
           fetchWeatherAndLocation(28.61, 77.23);
         }
       );
     } else {
-      fetchWeatherAndLocation(28.61, 77.23);
+        // Fallback to Delhi for browsers that don't support geolocation
+        fetchWeatherAndLocation(28.61, 77.23);
     }
   }, []);
 
@@ -334,7 +358,7 @@ export default function DashboardView() {
         </Card>
         <Card className="lg:col-span-2">
           <CardHeader className="flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">Weather Overview</CardTitle>
+            <CardTitle className="text-sm font-medium">Current Weather</CardTitle>
              <div className="flex items-center gap-1 text-xs text-muted-foreground">
               {loadingWeather ? (
                 <Skeleton className="h-4 w-24" />
@@ -386,8 +410,73 @@ export default function DashboardView() {
         </Card>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-5">
+       <div className="grid gap-6 md:grid-cols-5">
+        <Card className="md:col-span-3">
+            <CardHeader>
+              <CardTitle className="font-headline flex items-center gap-2">
+                <CalendarDays className="h-5 w-5"/>
+                5-Day Forecast
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loadingWeather ? (
+                <div className="flex justify-around">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="flex flex-col items-center gap-2">
+                      <Skeleton className="h-5 w-8" />
+                      <Skeleton className="h-8 w-8 rounded-full" />
+                      <Skeleton className="h-5 w-12" />
+                    </div>
+                  ))}
+                </div>
+              ) : forecastData.length > 0 ? (
+                <div className="grid grid-cols-5 gap-4 text-center">
+                  {forecastData.map((day) => (
+                    <div key={day.date} className="flex flex-col items-center gap-1">
+                      <p className="font-semibold text-sm">{day.day}</p>
+                      <WeatherIcon code={day.weathercode} className="h-7 w-7 text-accent" />
+                      <p className="text-sm font-bold">{day.temp_max}°</p>
+                      <p className="text-xs text-muted-foreground">{day.temp_min}°</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center">Forecast not available.</p>
+              )}
+            </CardContent>
+        </Card>
         <Card className="md:col-span-2">
+            <CardHeader>
+                <CardTitle className="font-headline flex items-center gap-2">
+                    <Wheat className="h-5 w-5" />
+                    Latest Prices
+                </CardTitle>
+                <CardDescription>Quick view of current MSP.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ul className="space-y-3">
+                    {latestPrices.map((crop, index) => (
+                        <li key={crop.name}>
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="font-medium">{crop.name}</span>
+                                <div className="flex items-center gap-2">
+                                    <span className="font-semibold">₹{crop.price}</span>
+                                    <span className={`text-xs flex items-center gap-1 ${crop.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                        <TrendingUp className="h-3 w-3" />
+                                        {crop.change}
+                                    </span>
+                                </div>
+                            </div>
+                            {index < latestPrices.length - 1 && <Separator className="mt-3" />}
+                        </li>
+                    ))}
+                </ul>
+            </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-5">
+        <Card className="md:col-span-3">
           <CardHeader className="flex flex-row items-start justify-between gap-4">
             <div className="space-y-1">
               <CardTitle className="font-headline">Govt. Crop Price Trend (MSP)</CardTitle>
@@ -473,35 +562,6 @@ export default function DashboardView() {
                         <p>Select a crop to see price analysis.</p>
                     </div>
                 )}
-            </CardContent>
-        </Card>
-
-        <Card>
-            <CardHeader>
-                <CardTitle className="font-headline flex items-center gap-2">
-                    <Wheat className="h-5 w-5" />
-                    Latest Prices
-                </CardTitle>
-                <CardDescription>Quick view of current MSP.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <ul className="space-y-3">
-                    {latestPrices.map((crop, index) => (
-                        <li key={crop.name}>
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="font-medium">{crop.name}</span>
-                                <div className="flex items-center gap-2">
-                                    <span className="font-semibold">₹{crop.price}</span>
-                                    <span className={`text-xs flex items-center gap-1 ${crop.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                        <TrendingUp className="h-3 w-3" />
-                                        {crop.change}
-                                    </span>
-                                </div>
-                            </div>
-                            {index < latestPrices.length - 1 && <Separator className="mt-3" />}
-                        </li>
-                    ))}
-                </ul>
             </CardContent>
         </Card>
       </div>
