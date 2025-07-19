@@ -11,12 +11,13 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Sun, CloudRain, Droplets, Thermometer, Wind, Leaf, MapPin } from "lucide-react";
+import { Sun, CloudRain, Droplets, Thermometer, Wind, Leaf, MapPin, TrendingUp, Info } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
+import { cropPriceInfo, type CropPriceInfoOutput } from "@/ai/flows/crop-price-info";
 
 
-const generateYieldData = (baseYield: number, volatility: number, trend: number) => {
+const generateMspData = (basePrice: number, volatility: number, trend: number) => {
   const data = [];
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const today = new Date();
@@ -26,54 +27,55 @@ const generateYieldData = (baseYield: number, volatility: number, trend: number)
     const year = date.getFullYear().toString().slice(-2);
     const name = `${monthName} '${year}`;
     
-    let yieldValue = baseYield + (23 - i) * trend + (Math.random() - 0.5) * volatility;
-    data.push({ name, yield: Math.round(yieldValue) });
+    // Simplified trend application for mock data
+    let priceValue = basePrice + (23 - i) * trend * (basePrice / 1000) + (Math.random() - 0.5) * volatility;
+    data.push({ name, msp: Math.round(priceValue) });
   }
   return data;
 };
 
 
-const allYieldData = {
-    'Overall': generateYieldData(300, 60, 2.5),
-    'Wheat': generateYieldData(450, 20, 1.5),
-    'Rice': generateYieldData(350, 35, 2),
-    'Maize': generateYieldData(280, 45, 2.2),
-    'Sugarcane': generateYieldData(700, 80, 4),
-    'Cotton': generateYieldData(220, 30, 1.3),
-    'Soybean': generateYieldData(200, 25, 1.8),
-    'Groundnut': generateYieldData(150, 20, 1.1),
-    'Mustard': generateYieldData(130, 15, 0.9),
-    'Potato': generateYieldData(500, 50, 3),
-    'Onion': generateYieldData(400, 40, 2.5),
-    'Tomato': generateYieldData(450, 55, 2.8),
-    'Mango': generateYieldData(100, 10, 0.5),
-    'Banana': generateYieldData(600, 70, 3.5),
-    'Pulses': generateYieldData(120, 18, 1),
-    'Jute': generateYieldData(180, 22, 1.2),
-    'Tea': generateYieldData(90, 12, 0.7),
-    'Coffee': generateYieldData(80, 10, 0.6),
-    'Millet': generateYieldData(100, 15, 0.8),
-    'Barley': generateYieldData(160, 20, 1),
-    'Lentil': generateYieldData(110, 14, 0.9),
-    'Gram': generateYieldData(105, 13, 0.85),
-    'Sorghum': generateYieldData(140, 18, 1.1),
-    'Bajra': generateYieldData(130, 17, 1),
-    'Turmeric': generateYieldData(250, 30, 1.7),
-    'Ginger': generateYieldData(230, 28, 1.6),
-    'Chilli': generateYieldData(200, 25, 1.4),
-    'Capsicum': generateYieldData(300, 35, 2),
-    'Brinjal': generateYieldData(280, 33, 1.9),
-    'Okra': generateYieldData(260, 31, 1.8),
-    'Cabbage': generateYieldData(350, 40, 2.3),
-    'Cauliflower': generateYieldData(330, 38, 2.2),
-    'Grapes': generateYieldData(400, 45, 2.6),
-    'Apple': generateYieldData(120, 15, 0.9),
-    'Pomegranate': generateYieldData(150, 20, 1.2),
-    'Guava': generateYieldData(180, 22, 1.3),
-    'Papaya': generateYieldData(500, 60, 3.2),
+const allMspData = {
+    'Overall': generateMspData(2500, 200, 5),
+    'Wheat': generateMspData(2275, 50, 7),
+    'Rice': generateMspData(2183, 60, 6),
+    'Maize': generateMspData(2090, 70, 5),
+    'Sugarcane': generateMspData(315, 15, 1), // Per quintal, so lower base
+    'Cotton': generateMspData(6620, 300, 10),
+    'Soybean': generateMspData(4600, 250, 8),
+    'Groundnut': generateMspData(6377, 200, 9),
+    'Mustard': generateMspData(5650, 220, 8),
+    'Potato': generateMspData(1200, 150, 4),
+    'Onion': generateMspData(1500, 200, 3),
+    'Tomato': generateMspData(1300, 180, 2),
+    'Mango': generateMspData(4000, 500, 6), // Market price, no MSP
+    'Banana': generateMspData(1500, 200, 4), // Market price
+    'Pulses': generateMspData(6000, 300, 7), // Arhar (Tur)
+    'Jute': generateMspData(5050, 250, 8),
+    'Tea': generateMspData(200, 20, 1), // Per kg, not quintal
+    'Coffee': generateMspData(7500, 400, 10), // Market price
+    'Millet': generateMspData(2500, 150, 6), // Jowar
+    'Barley': generateMspData(1735, 80, 5),
+    'Lentil': generateMspData(6000, 250, 7), // Masur
+    'Gram': generateMspData(5440, 200, 6), // Chana
+    'Sorghum': generateMspData(3180, 180, 7), // Jowar
+    'Bajra': generateMspData(2500, 170, 6),
+    'Turmeric': generateMspData(8000, 500, 12), // Market price
+    'Ginger': generateMspData(9000, 600, 15), // Market price
+    'Chilli': generateMspData(15000, 1000, 18), // Market price
+    'Capsicum': generateMspData(3500, 300, 5), // Market price
+    'Brinjal': generateMspData(1800, 200, 4), // Market price
+    'Okra': generateMspData(2500, 250, 5), // Market price
+    'Cabbage': generateMspData(1000, 150, 3), // Market price
+    'Cauliflower': generateMspData(1200, 180, 3), // Market price
+    'Grapes': generateMspData(5000, 400, 8), // Market price
+    'Apple': generateMspData(8000, 600, 10), // Market price
+    'Pomegranate': generateMspData(12000, 800, 15), // Market price
+    'Guava': generateMspData(2000, 200, 5), // Market price
+    'Papaya': generateMspData(1500, 150, 4), // Market price
 };
 
-type YieldDataKey = keyof typeof allYieldData;
+type MspDataKey = keyof typeof allMspData;
 
 interface WeatherData {
   temperature: number;
@@ -93,72 +95,93 @@ export default function DashboardView() {
   const [loadingWeather, setLoadingWeather] = useState(true);
   const [locationName, setLocationName] = useState<string | null>("Loading location...");
   const [irrigationTime, setIrrigationTime] = useState<IrrigationTime | null>(null);
-  const [selectedYieldCrop, setSelectedYieldCrop] = useState<YieldDataKey>('Overall');
+  const [selectedCrop, setSelectedCrop] = useState<MspDataKey>('Overall');
 
-  const [yieldCropInput, setYieldCropInput] = useState<string>('Overall');
-  const [yieldSuggestions, setYieldSuggestions] = useState<string[]>([]);
-  const [showYieldSuggestions, setShowYieldSuggestions] = useState(false);
-  const yieldInputRef = useRef<HTMLDivElement>(null);
+  const [cropInput, setCropInput] = useState<string>('Overall');
+  const [cropSuggestions, setCropSuggestions] = useState<string[]>([]);
+  const [showCropSuggestions, setShowCropSuggestions] = useState(false);
+  const cropInputRef = useRef<HTMLDivElement>(null);
+  
+  const [priceInfo, setPriceInfo] = useState<CropPriceInfoOutput | null>(null);
+  const [loadingPriceInfo, setLoadingPriceInfo] = useState(false);
 
 
-  const handleYieldInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCropInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setYieldCropInput(value);
+    setCropInput(value);
     if (value) {
-      const filtered = Object.keys(allYieldData).filter(crop =>
+      const filtered = Object.keys(allMspData).filter(crop =>
         crop.toLowerCase().startsWith(value.toLowerCase())
       );
-      setYieldSuggestions(filtered);
-      setShowYieldSuggestions(true);
+      setCropSuggestions(filtered);
+      setShowCropSuggestions(true);
     } else {
-      setShowYieldSuggestions(false);
-      setYieldSuggestions(Object.keys(allYieldData)); // Show all if input is empty
+      setShowCropSuggestions(false);
+      setCropSuggestions(Object.keys(allMspData));
     }
   };
 
-  const handleYieldSuggestionClick = (suggestion: YieldDataKey) => {
-    setSelectedYieldCrop(suggestion);
-    setYieldCropInput(suggestion); // Set input to the selected crop
-    setShowYieldSuggestions(false);
+  const handleCropSuggestionClick = (suggestion: MspDataKey) => {
+    setSelectedCrop(suggestion);
+    setCropInput(suggestion);
+    setShowCropSuggestions(false);
   };
 
-  const handleYieldInputFocus = () => {
-    if (yieldCropInput === 'Overall') {
-      setYieldCropInput(''); // Clear "Overall" when user focuses to search
+  const handleCropInputFocus = () => {
+    if (cropInput === 'Overall') {
+      setCropInput('');
     }
-    setYieldSuggestions(Object.keys(allYieldData)); // Show all suggestions on focus
-    setShowYieldSuggestions(true);
+    setCropSuggestions(Object.keys(allMspData));
+    setShowCropSuggestions(true);
   };
 
-  const handleYieldInputBlur = () => {
-     // If the input is empty on blur, revert to the last selected crop
-    if (!yieldCropInput) {
-      setYieldCropInput(selectedYieldCrop);
+  const handleCropInputBlur = () => {
+    if (!cropInput) {
+      setCropInput(selectedCrop);
     }
   }
 
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (yieldInputRef.current && !yieldInputRef.current.contains(event.target as Node)) {
-        setShowYieldSuggestions(false);
-        // If suggestions are hidden and input is empty, revert to selected crop
-        if (!yieldCropInput) {
-            setYieldCropInput(selectedYieldCrop);
+      if (cropInputRef.current && !cropInputRef.current.contains(event.target as Node)) {
+        setShowCropSuggestions(false);
+        if (!cropInput) {
+            setCropInput(selectedCrop);
         }
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [yieldCropInput, selectedYieldCrop]);
+  }, [cropInput, selectedCrop]);
+  
+  useEffect(() => {
+    const fetchPriceInfo = async () => {
+        if (selectedCrop && selectedCrop !== 'Overall') {
+            setLoadingPriceInfo(true);
+            setPriceInfo(null);
+            try {
+                const info = await cropPriceInfo({ cropName: selectedCrop });
+                setPriceInfo(info);
+            } catch (error) {
+                console.error("Error fetching price info:", error);
+                setPriceInfo(null);
+            } finally {
+                setLoadingPriceInfo(false);
+            }
+        } else {
+            setPriceInfo(null);
+        }
+    };
+    fetchPriceInfo();
+  }, [selectedCrop]);
+
 
   useEffect(() => {
-    // Calculate irrigation time on client-side to avoid hydration mismatch
     const calculateIrrigationTime = () => {
       const now = new Date();
       const tomorrow = new Date(now);
       tomorrow.setDate(now.getDate() + 1);
-      tomorrow.setHours(6, 0, 0, 0); // Set to 6 AM tomorrow
+      tomorrow.setHours(6, 0, 0, 0);
 
       const diffMs = tomorrow.getTime() - now.getTime();
       const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
@@ -192,7 +215,6 @@ export default function DashboardView() {
     };
 
     calculateIrrigationTime();
-    // Update every minute
     const interval = setInterval(calculateIrrigationTime, 60000); 
 
     return () => clearInterval(interval);
@@ -202,7 +224,6 @@ export default function DashboardView() {
     const fetchWeatherAndLocation = async (latitude: number, longitude: number) => {
       setLoadingWeather(true);
       try {
-        // Fetch weather
         const weatherResponse = await fetch(
           `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation_probability,is_day,wind_speed_10m`
         );
@@ -217,7 +238,6 @@ export default function DashboardView() {
           });
         }
 
-        // Fetch location name
         try {
             const locationResponse = await fetch(
                 `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
@@ -255,13 +275,11 @@ export default function DashboardView() {
             fetchWeatherAndLocation(position.coords.latitude, position.coords.longitude);
         },
         () => {
-          // Fallback to a default location if geolocation fails/is denied
-          fetchWeatherAndLocation(28.61, 77.23); // Delhi
+          fetchWeatherAndLocation(28.61, 77.23);
         }
       );
     } else {
-      // Fallback for browsers that don't support geolocation
-      fetchWeatherAndLocation(28.61, 77.23); // Delhi
+      fetchWeatherAndLocation(28.61, 77.23);
     }
   }, []);
 
@@ -351,30 +369,30 @@ export default function DashboardView() {
         </Card>
       </div>
 
-      <div className="grid gap-6">
-        <Card>
+      <div className="grid gap-6 md:grid-cols-3">
+        <Card className="md:col-span-2">
           <CardHeader className="flex flex-row items-start justify-between gap-4">
             <div className="space-y-1">
-              <CardTitle className="font-headline">Crop Yield Trend</CardTitle>
-              <CardDescription>Projected yield consistency improvement.</CardDescription>
+              <CardTitle className="font-headline">Govt. Crop Price Trend (MSP)</CardTitle>
+              <CardDescription>Minimum Support Price (MSP) in ₹ per Quintal for the last 24 months.</CardDescription>
             </div>
-             <div className="relative w-40" ref={yieldInputRef}>
+             <div className="relative w-40" ref={cropInputRef}>
                 <Input
                   placeholder="Search Crop"
-                  value={yieldCropInput}
-                  onChange={handleYieldInputChange}
-                  onFocus={handleYieldInputFocus}
-                  onBlur={handleYieldInputBlur}
+                  value={cropInput}
+                  onChange={handleCropInputChange}
+                  onFocus={handleCropInputFocus}
+                  onBlur={handleCropInputBlur}
                   autoComplete="off"
                 />
-                {showYieldSuggestions && yieldSuggestions.length > 0 && (
+                {showCropSuggestions && cropSuggestions.length > 0 && (
                   <div className="absolute z-10 w-full bg-background border border-input rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
                     <ul className="py-1">
-                      {yieldSuggestions.map((suggestion) => (
+                      {cropSuggestions.map((suggestion) => (
                         <li
                           key={suggestion}
                           className="px-3 py-2 cursor-pointer hover:bg-accent text-sm"
-                          onMouseDown={() => handleYieldSuggestionClick(suggestion as YieldDataKey)}
+                          onMouseDown={() => handleCropSuggestionClick(suggestion as MspDataKey)}
                         >
                           {suggestion}
                         </li>
@@ -386,19 +404,61 @@ export default function DashboardView() {
           </CardHeader>
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={allYieldData[selectedYieldCrop]}>
+              <LineChart data={allMspData[selectedCrop]}>
                 <XAxis dataKey="name" stroke="#888888" fontSize={10} tickLine={false} axisLine={false} interval={2} />
-                <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                <Tooltip wrapperClassName="!bg-card !border-border" labelClassName="font-bold" />
-                <Line type="monotone" dataKey="yield" stroke="hsl(var(--accent))" strokeWidth={2} dot={{ r: 2, fill: "hsl(var(--accent))" }} />
+                <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} />
+                <Tooltip
+                    wrapperClassName="!bg-card !border-border"
+                    labelClassName="font-bold"
+                    formatter={(value: number) => [`₹${value.toLocaleString()}`, "MSP"]}
+                />
+                <Line type="monotone" dataKey="msp" stroke="hsl(var(--accent))" strokeWidth={2} dot={{ r: 2, fill: "hsl(var(--accent))" }} />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
+        </Card>
+        
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline flex items-center gap-2">
+                    <Info className="h-5 w-5" />
+                    Price Analysis
+                </CardTitle>
+                <CardDescription>AI-powered insights on the selected crop&apos;s price trends.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                {loadingPriceInfo ? (
+                    <div className="space-y-4">
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                        <div className="flex justify-between items-center pt-2">
+                           <Skeleton className="h-8 w-20" />
+                           <Skeleton className="h-8 w-20" />
+                        </div>
+                    </div>
+                ) : priceInfo ? (
+                    <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground">{priceInfo.analysis}</p>
+                        <div className="flex justify-between items-center pt-2">
+                            <div className="text-center">
+                                <div className="text-xs text-muted-foreground">Last Year</div>
+                                <div className="font-bold text-lg">₹{priceInfo.lastYearMsp}</div>
+                            </div>
+                            <TrendingUp className="h-6 w-6 text-green-500" />
+                             <div className="text-center">
+                                <div className="text-xs text-muted-foreground">Current</div>
+                                <div className="font-bold text-lg">₹{priceInfo.currentMsp}</div>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="text-center text-sm text-muted-foreground h-full flex items-center justify-center">
+                        <p>Select a crop to see price analysis.</p>
+                    </div>
+                )}
+            </CardContent>
         </Card>
       </div>
     </div>
   );
 }
-
-
-
