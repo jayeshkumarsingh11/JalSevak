@@ -11,7 +11,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Sun, CloudRain, Droplets, Thermometer, Wind, Leaf, MapPin, TrendingUp, Info } from "lucide-react";
+import { Sun, CloudRain, Droplets, Thermometer, Wind, Leaf, MapPin, TrendingUp, Info, Landmark } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { cropPriceInfo, type CropPriceInfoOutput } from "@/ai/flows/crop-price-info";
@@ -307,12 +307,20 @@ export default function DashboardView() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Water Saved</CardTitle>
-            <Leaf className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Latest Schemes</CardTitle>
+            <Landmark className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold font-headline">+35%</div>
-            <p className="text-xs text-muted-foreground">~2,800L this week</p>
+          <CardContent className="pt-4">
+            <div className="space-y-3">
+              <div className="text-sm">
+                  <p className="font-semibold truncate">PM-KISAN</p>
+                  <p className="text-xs text-muted-foreground">Income support for small farmers.</p>
+              </div>
+              <div className="text-sm">
+                  <p className="font-semibold truncate">Fasal Bima Yojana</p>
+                  <p className="text-xs text-muted-foreground">Crop insurance against yield loss.</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
         <Card className="lg:col-span-2">
@@ -462,3 +470,5 @@ export default function DashboardView() {
     </div>
   );
 }
+
+    
