@@ -25,39 +25,28 @@ const impactData = [
   { name: 'Manual Work', 'Without Planner': 100, 'With Smart Planner': 40 },
 ];
 
+const generateYieldData = (baseYield: number, volatility: number, trend: number) => {
+  const data = [];
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const today = new Date();
+  for (let i = 23; i >= 0; i--) {
+    const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    const monthName = months[date.getMonth()];
+    const year = date.getFullYear().toString().slice(-2);
+    const name = `${monthName} '${year}`;
+    
+    let yieldValue = baseYield + (23 - i) * trend + (Math.random() - 0.5) * volatility;
+    data.push({ name, yield: Math.round(yieldValue) });
+  }
+  return data;
+};
+
+
 const allYieldData = {
-  'Overall': [
-    { name: 'Jan', yield: 280 },
-    { name: 'Feb', yield: 310 },
-    { name: 'Mar', yield: 290 },
-    { name: 'Apr', yield: 350 },
-    { name: 'May', yield: 380 },
-    { name: 'Jun', yield: 410 },
-  ],
-  'Wheat': [
-    { name: 'Jan', yield: 450 },
-    { name: 'Feb', yield: 460 },
-    { name: 'Mar', yield: 475 },
-    { name: 'Apr', yield: 480 },
-    { name: 'May', yield: 490 },
-    { name: 'Jun', yield: 500 },
-  ],
-  'Rice': [
-    { name: 'Jan', yield: 300 },
-    { name: 'Feb', yield: 320 },
-    { name: 'Mar', yield: 310 },
-    { name: 'Apr', yield: 340 },
-    { name: 'May', yield: 360 },
-    { name: 'Jun', yield: 380 },
-  ],
-   'Maize': [
-    { name: 'Jan', yield: 250 },
-    { name: 'Feb', yield: 260 },
-    { name: 'Mar', yield: 270 },
-    { name: 'Apr', yield: 280 },
-    { name: 'May', yield: 300 },
-    { name: 'Jun', yield: 320 },
-  ]
+  'Overall': generateYieldData(280, 50, 2.5),
+  'Wheat': generateYieldData(450, 20, 1),
+  'Rice': generateYieldData(300, 30, 1.8),
+  'Maize': generateYieldData(250, 40, 2),
 };
 
 type YieldDataKey = keyof typeof allYieldData;
@@ -231,16 +220,16 @@ export default function DashboardView() {
         <Card className="lg:col-span-2">
           <CardHeader className="flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Weather Overview</CardTitle>
-             {loadingWeather ? (
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Skeleton className="h-4 w-24" />
-                </div>
-              ) : (
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                   <MapPin className="h-3 w-3" />
-                  <span>{locationName}</span>
-                </div>
-              )}
+            {loadingWeather ? (
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <Skeleton className="h-4 w-24" />
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <MapPin className="h-3 w-3" />
+                <span>{locationName}</span>
+              </div>
+            )}
           </CardHeader>
           <CardContent className="flex items-center justify-around pt-2">
             {loadingWeather ? (
@@ -323,10 +312,10 @@ export default function DashboardView() {
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={allYieldData[selectedYieldCrop]}>
-                <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                <XAxis dataKey="name" stroke="#888888" fontSize={10} tickLine={false} axisLine={false} interval={2} />
                 <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                <Tooltip wrapperClassName="!bg-card !border-border" />
-                <Line type="monotone" dataKey="yield" stroke="hsl(var(--accent))" strokeWidth={2} dot={{ r: 4, fill: "hsl(var(--accent))" }} />
+                <Tooltip wrapperClassName="!bg-card !border-border" labelClassName="font-bold" />
+                <Line type="monotone" dataKey="yield" stroke="hsl(var(--accent))" strokeWidth={2} dot={{ r: 2, fill: "hsl(var(--accent))" }} />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
@@ -335,3 +324,4 @@ export default function DashboardView() {
     </div>
   );
 }
+
