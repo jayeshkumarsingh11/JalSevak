@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -14,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { soilQualityAdvisor, type SoilQualityAdvisorOutput } from "@/ai/flows/soil-quality-advisor";
+import { getSoilType } from "@/ai/flows/get-soil-type";
 import { Loader2, Bot, LocateFixed, TestTube2, ChevronsRight, Sparkles } from "lucide-react";
 
 const formSchema = z.object({
@@ -30,6 +30,7 @@ export default function SoilQualityAdvisor() {
   const [result, setResult] = useState<SoilQualityAdvisorOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fetchingLocation, setFetchingLocation] = useState(false);
+  const [fetchingSoil, setFetchingSoil] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -40,6 +41,21 @@ export default function SoilQualityAdvisor() {
       mainConcern: "Increase Yield",
     },
   });
+
+  const fetchSoilType = async (location: string) => {
+    if (!location) return;
+    setFetchingSoil(true);
+    try {
+      const { soilType } = await getSoilType({ location });
+      if (soilType) {
+        form.setValue("soilType", soilType, { shouldValidate: true });
+      }
+    } catch (error) {
+      console.error("Error fetching soil type:", error);
+    } finally {
+      setFetchingSoil(false);
+    }
+  };
 
   const getLocation = () => {
     if (navigator.geolocation) {
@@ -59,7 +75,9 @@ export default function SoilQualityAdvisor() {
             ]
               .filter(Boolean)
               .join(", ");
-            form.setValue("location", locationString || data.display_name);
+            const finalLocation = locationString || data.display_name;
+            form.setValue("location", finalLocation);
+            await fetchSoilType(finalLocation);
           } catch (error) {
             console.error("Error fetching location name:", error);
           } finally {
@@ -117,6 +135,7 @@ export default function SoilQualityAdvisor() {
                           placeholder="e.g., Village, State"
                           {...field}
                           className="pr-10"
+                          onBlur={(e) => fetchSoilType(e.target.value)}
                         />
                       </FormControl>
                        <Button
@@ -145,9 +164,18 @@ export default function SoilQualityAdvisor() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Soil Type</FormLabel>
-                     <Select onValueChange={field.onChange} defaultValue={field.value}>
+                     <Select onValueChange={field.onChange} value={field.value} disabled={fetchingSoil}>
                         <FormControl>
-                          <SelectTrigger><SelectValue placeholder="Select soil type" /></SelectTrigger>
+                          <SelectTrigger>
+                            {fetchingSoil ? (
+                              <div className="flex items-center gap-2 text-muted-foreground">
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <span>Determining soil type...</span>
+                              </div>
+                            ) : (
+                              <SelectValue placeholder="Select soil type" />
+                            )}
+                          </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="Loamy">Loamy</SelectItem>
