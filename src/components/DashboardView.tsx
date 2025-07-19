@@ -271,27 +271,9 @@ export default function DashboardView() {
         </Card>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="lg:col-span-4">
-          <CardHeader>
-            <CardTitle className="font-headline">Predicted Impact</CardTitle>
-            <CardDescription>Comparison with and without JalSevak.</CardDescription>
-          </CardHeader>
-          <CardContent className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={impactData}>
-                <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                <Tooltip wrapperClassName="!bg-card !border-border" />
-                <Legend iconSize={10} />
-                <Bar dataKey="Without Planner" fill="hsl(var(--muted-foreground))" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="With Smart Planner" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-        <Card className="lg:col-span-3">
-          <CardHeader className="flex items-start justify-between gap-4">
+      <div className="grid gap-6">
+        <Card>
+          <CardHeader className="flex flex-row items-start justify-between gap-4">
             <div className="space-y-1">
               <CardTitle className="font-headline">Crop Yield Trend</CardTitle>
               <CardDescription>Projected yield consistency improvement.</CardDescription>
@@ -324,4 +306,3 @@ export default function DashboardView() {
     </div>
   );
 }
-
