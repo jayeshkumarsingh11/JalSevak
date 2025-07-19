@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { smartIrrigationSchedule, type SmartIrrigationScheduleOutput } from "@/ai/flows/smart-irrigation-scheduling";
-import { Loader2, Droplets, Bot } from "lucide-react";
+import { Loader2, Droplets, Bot, LocateFixed } from "lucide-react";
 
 const formSchema = z.object({
   cropType: z.string().min(1, "Crop type is required."),
@@ -27,6 +27,7 @@ export default function IrrigationPlanner() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SmartIrrigationScheduleOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [fetchingLocation, setFetchingLocation] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -39,6 +40,44 @@ export default function IrrigationPlanner() {
       soilData: "Soil Moisture: 45%, Soil Temperature: 22°C, Type: Loamy",
     },
   });
+
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      setFetchingLocation(true);
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          try {
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            );
+            const data = await response.json();
+            const { address } = data;
+            const locationString = [
+              address.village || address.town || address.city_district,
+              address.city,
+              address.state,
+            ]
+              .filter(Boolean)
+              .join(", ");
+            form.setValue("location", locationString || data.display_name);
+          } catch (error) {
+            console.error("Error fetching location name:", error);
+          } finally {
+            setFetchingLocation(false);
+          }
+        },
+        (error) => {
+          console.error("Geolocation error:", error);
+          setFetchingLocation(false);
+        }
+      );
+    }
+  };
+
+  useEffect(() => {
+    getLocation();
+  }, []);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
@@ -129,7 +168,30 @@ export default function IrrigationPlanner() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Location</FormLabel>
-                    <FormControl><Input placeholder="e.g., Village, District, State" {...field} /></FormControl>
+                    <div className="relative">
+                      <FormControl>
+                        <Input
+                          placeholder="e.g., Village, District, State"
+                          {...field}
+                          className="pr-10"
+                        />
+                      </FormControl>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-1/2 right-1 -translate-y-1/2 h-7 w-7 text-muted-foreground"
+                        onClick={getLocation}
+                        disabled={fetchingLocation}
+                        aria-label="Get current location"
+                      >
+                        {fetchingLocation ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <LocateFixed className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}

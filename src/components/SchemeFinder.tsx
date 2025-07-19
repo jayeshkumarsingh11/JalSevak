@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { governmentSchemeSuggestions, type GovernmentSchemeSuggestionsOutput } from "@/ai/flows/government-scheme-suggestions";
-import { Loader2, Bot } from "lucide-react";
+import { Loader2, Bot, LocateFixed } from "lucide-react";
 
 const formSchema = z.object({
   location: z.string().min(1, "Location is required."),
@@ -24,6 +24,7 @@ export default function SchemeFinder() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<GovernmentSchemeSuggestionsOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [fetchingLocation, setFetchingLocation] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -33,6 +34,44 @@ export default function SchemeFinder() {
       landArea: 1,
     },
   });
+
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      setFetchingLocation(true);
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          try {
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            );
+            const data = await response.json();
+            const { address } = data;
+            const locationString = [
+              address.village || address.town || address.city_district,
+              address.city,
+              address.state,
+            ]
+              .filter(Boolean)
+              .join(", ");
+            form.setValue("location", locationString || data.display_name);
+          } catch (error) {
+            console.error("Error fetching location name:", error);
+          } finally {
+            setFetchingLocation(false);
+          }
+        },
+        (error) => {
+          console.error("Geolocation error:", error);
+          setFetchingLocation(false);
+        }
+      );
+    }
+  };
+
+  useEffect(() => {
+    getLocation();
+  }, []);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
@@ -66,7 +105,30 @@ export default function SchemeFinder() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Your Location</FormLabel>
-                    <FormControl><Input placeholder="e.g., Village, State" {...field} /></FormControl>
+                    <div className="relative">
+                      <FormControl>
+                        <Input
+                          placeholder="e.g., Village, State"
+                          {...field}
+                          className="pr-10"
+                        />
+                      </FormControl>
+                       <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-1/2 right-1 -translate-y-1/2 h-7 w-7 text-muted-foreground"
+                        onClick={getLocation}
+                        disabled={fetchingLocation}
+                        aria-label="Get current location"
+                      >
+                        {fetchingLocation ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <LocateFixed className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
