@@ -1,3 +1,5 @@
+import JalSevakApp from "@/components/JalSevakApp";
+
 export default function Home() {
-  return <></>;
+  return <JalSevakApp />;
 }
