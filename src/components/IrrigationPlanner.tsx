@@ -157,6 +157,23 @@ export default function IrrigationPlanner() {
                           <SelectItem value="Sugarcane">Sugarcane</SelectItem>
                           <SelectItem value="Cotton">Cotton</SelectItem>
                           <SelectItem value="Maize">Maize</SelectItem>
+                          <SelectItem value="Soybean">Soybean</SelectItem>
+                          <SelectItem value="Pulses">Pulses</SelectItem>
+                          <SelectItem value="Barley">Barley</SelectItem>
+                          <SelectItem value="Jute">Jute</SelectItem>
+                          <SelectItem value="Millets">Millets</SelectItem>
+                          <SelectItem value="Groundnut">Groundnut</SelectItem>
+                          <SelectItem value="Mustard">Mustard</SelectItem>
+                          <SelectItem value="Sunflower">Sunflower</SelectItem>
+                          <SelectItem value="Potato">Potato</SelectItem>
+                          <SelectItem value="Onion">Onion</SelectItem>
+                          <SelectItem value="Tomato">Tomato</SelectItem>
+                          <SelectItem value="Mango">Mango</SelectItem>
+                          <SelectItem value="Banana">Banana</SelectItem>
+                          <SelectItem value="Grapes">Grapes</SelectItem>
+                          <SelectItem value="Spices">Spices</SelectItem>
+                          <SelectItem value="Tea">Tea</SelectItem>
+                          <SelectItem value="Coffee">Coffee</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
