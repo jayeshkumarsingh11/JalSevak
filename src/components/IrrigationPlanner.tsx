@@ -12,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { smartIrrigationSchedule, type SmartIrrigationScheduleInput, type SmartIrrigationScheduleOutput } from "@/ai/flows/smart-irrigation-scheduling";
-import { Loader2, Droplets, Bot, LocateFixed } from "lucide-react";
+import { Loader2, Droplets, Bot, LocateFixed, Clock, Shield, Leaf } from "lucide-react";
 
 const formSchema = z.object({
   cropType: z.string().min(1, "Crop type is required."),
@@ -313,12 +313,20 @@ export default function IrrigationPlanner() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <h3 className="font-semibold text-lg">Schedule</h3>
-                <p className="text-muted-foreground whitespace-pre-wrap">{result.irrigationSchedule}</p>
+                <h3 className="font-semibold text-lg flex items-center gap-2"><Droplets className="h-4 w-4 text-primary" />Schedule</h3>
+                <p className="text-muted-foreground whitespace-pre-wrap pl-6">{result.irrigationSchedule}</p>
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Water Amount</h3>
-                <p className="text-muted-foreground">{result.waterAmount} Liters</p>
+                <h3 className="font-semibold text-lg flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />Best Time to Irrigate</h3>
+                <p className="text-muted-foreground pl-6">{result.bestTimeToIrrigate}</p>
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg flex items-center gap-2"><Shield className="h-4 w-4 text-primary" />Precautions</h3>
+                <p className="text-muted-foreground whitespace-pre-wrap pl-6">{result.precautions}</p>
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg flex items-center gap-2"><Leaf className="h-4 w-4 text-primary" />Pesticide Recommendations</h3>
+                <p className="text-muted-foreground whitespace-pre-wrap pl-6">{result.pesticideRecommendations}</p>
               </div>
               <div>
                 <h3 className="font-semibold text-lg">Justification</h3>

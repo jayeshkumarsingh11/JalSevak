@@ -24,6 +24,9 @@ const SmartIrrigationScheduleOutputSchema = z.object({
   irrigationSchedule: z.string().describe('The recommended irrigation schedule.'),
   waterAmount: z.number().describe('The recommended amount of water to use for irrigation.'),
   justification: z.string().describe('The justification for the recommended irrigation schedule.'),
+  bestTimeToIrrigate: z.string().describe('The best time of day to irrigate (e.g., early morning, late evening).'),
+  precautions: z.string().describe('Precautions the farmer should take during irrigation.'),
+  pesticideRecommendations: z.string().describe('Recommendations for any necessary pesticides based on crop and conditions.'),
 });
 export type SmartIrrigationScheduleOutput = z.infer<typeof SmartIrrigationScheduleOutputSchema>;
 
@@ -46,7 +49,12 @@ Soil Data: {{{soilData}}}
 
 Consider the crop's water requirements, the farm area, the water source, the weather conditions, and the soil conditions to determine the best irrigation schedule. Provide a justification for your recommendation.
 
-Output the irrigation schedule, the recommended amount of water to use, and the justification for the schedule. Make sure to output the irrigation schedule as an easy to read text.
+In addition, provide the following:
+1. The best time of day to irrigate (e.g., "Early morning to minimize evaporation").
+2. Key precautions the farmer should take (e.g., "Check for leaks in the system," "Avoid waterlogging").
+3. Any relevant pesticide recommendations that might be needed for this crop at this stage, assuming standard conditions. If none are typically needed, state that.
+
+Output all the information in the specified JSON format. Make sure to output the irrigation schedule as an easy to read text.
 `,
 });
 
