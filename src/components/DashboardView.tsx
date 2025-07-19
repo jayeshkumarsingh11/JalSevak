@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import {
   BarChart,
@@ -13,6 +14,7 @@ import {
   Line,
 } from "recharts";
 import { Sun, CloudRain, Droplets, Thermometer, Wind, Leaf } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const impactData = [
   { name: 'Water Usage', 'Without Planner': 8000, 'With Smart Planner': 5200 },
@@ -29,7 +31,55 @@ const yieldData = [
   { name: 'Jun', yield: 410 },
 ];
 
+interface WeatherData {
+  temperature: number;
+  precipitation_probability: number;
+  relative_humidity: number;
+  wind_speed: number;
+  is_day: number;
+}
+
 export default function DashboardView() {
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [loadingWeather, setLoadingWeather] = useState(true);
+
+  useEffect(() => {
+    const fetchWeather = (latitude: number, longitude: number) => {
+      fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation_probability,is_day,wind_speed_10m`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.current) {
+            setWeatherData({
+              temperature: Math.round(data.current.temperature_2m),
+              precipitation_probability: data.current.precipitation_probability,
+              relative_humidity: data.current.relative_humidity_2m,
+              wind_speed: Math.round(data.current.wind_speed_10m),
+              is_day: data.current.is_day,
+            });
+          }
+        })
+        .catch(console.error)
+        .finally(() => setLoadingWeather(false));
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          fetchWeather(position.coords.latitude, position.coords.longitude);
+        },
+        () => {
+          // Fallback to a default location if geolocation fails/is denied
+          fetchWeather(28.61, 77.23); // Delhi
+        }
+      );
+    } else {
+      // Fallback for browsers that don't support geolocation
+      fetchWeather(28.61, 77.23); // Delhi
+    }
+  }, []);
+
   return (
     <div className="grid gap-6 md:gap-8">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -58,26 +108,41 @@ export default function DashboardView() {
             <CardTitle className="text-sm font-medium">Weather Overview</CardTitle>
           </CardHeader>
           <CardContent className="flex items-center justify-around">
-            <div className="flex flex-col items-center gap-1">
-              <Sun className="h-6 w-6 text-accent" />
-              <span className="font-bold text-lg">28°C</span>
-              <span className="text-xs text-muted-foreground">Sunny</span>
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <CloudRain className="h-6 w-6 text-muted-foreground" />
-              <span className="font-bold text-lg">15%</span>
-              <span className="text-xs text-muted-foreground">Rain Chance</span>
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <Thermometer className="h-6 w-6 text-muted-foreground" />
-              <span className="font-bold text-lg">65%</span>
-              <span className="text-xs text-muted-foreground">Humidity</span>
-            </div>
-             <div className="flex flex-col items-center gap-1">
-              <Wind className="h-6 w-6 text-muted-foreground" />
-              <span className="font-bold text-lg">12 km/h</span>
-              <span className="text-xs text-muted-foreground">Wind</span>
-            </div>
+            {loadingWeather ? (
+                <>
+                    <Skeleton className="h-12 w-14" />
+                    <Skeleton className="h-12 w-14" />
+                    <Skeleton className="h-12 w-14" />
+                    <Skeleton className="h-12 w-14" />
+                </>
+            ) : weatherData ? (
+              <>
+                <div className="flex flex-col items-center gap-1">
+                  <Sun className="h-6 w-6 text-accent" />
+                  <span className="font-bold text-lg">{weatherData.temperature}°C</span>
+                  <span className="text-xs text-muted-foreground">
+                    {weatherData.is_day ? "Sunny" : "Clear"}
+                  </span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <CloudRain className="h-6 w-6 text-muted-foreground" />
+                  <span className="font-bold text-lg">{weatherData.precipitation_probability}%</span>
+                  <span className="text-xs text-muted-foreground">Rain Chance</span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <Thermometer className="h-6 w-6 text-muted-foreground" />
+                  <span className="font-bold text-lg">{weatherData.relative_humidity}%</span>
+                  <span className="text-xs text-muted-foreground">Humidity</span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <Wind className="h-6 w-6 text-muted-foreground" />
+                  <span className="font-bold text-lg">{weatherData.wind_speed} km/h</span>
+                  <span className="text-xs text-muted-foreground">Wind</span>
+                </div>
+              </>
+            ) : (
+                <p className="text-sm text-muted-foreground col-span-4 text-center">Could not load weather data.</p>
+            )}
           </CardContent>
         </Card>
       </div>
