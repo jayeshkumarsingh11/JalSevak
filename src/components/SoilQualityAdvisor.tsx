@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -10,11 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { soilQualityAdvisor, type SoilQualityAdvisorOutput } from "@/ai/flows/soil-quality-advisor";
 import { getSoilType } from "@/ai/flows/get-soil-type";
-import { Loader2, Bot, LocateFixed, TestTube2, ChevronsRight, Sparkles } from "lucide-react";
+import { Loader2, Bot, LocateFixed, TestTube2, Sparkles } from "lucide-react";
 
 const formSchema = z.object({
   location: z.string().min(1, "Location is required."),
@@ -25,12 +24,25 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+const CROP_SUGGESTIONS = [
+  "Apple", "Bajra", "Banana", "Barley", "Brinjal", "Cabbage", "Capsicum", "Cauliflower",
+  "Chilli", "Coffee", "Cotton", "Ginger", "Gram", "Grapes", "Groundnut", "Guava",
+  "Jute", "Lentil", "Maize", "Mango", "Millet", "Mustard", "Okra", "Onion", "Papaya",
+  "Pomegranate", "Potato", "Pulses", "Rice", "Sorghum", "Soybean", "Sugarcane",
+  "Tea", "Tomato", "Turmeric", "Wheat"
+];
+
 export default function SoilQualityAdvisor() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SoilQualityAdvisorOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fetchingLocation, setFetchingLocation] = useState(false);
   const [fetchingSoil, setFetchingSoil] = useState(false);
+
+  const [cropSearch, setCropSearch] = useState('');
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const cropInputRef = useRef<HTMLDivElement>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -41,6 +53,39 @@ export default function SoilQualityAdvisor() {
       mainConcern: "Increase Yield",
     },
   });
+
+  const handleCropInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCropSearch(value);
+    if (value) {
+      const existingCrops = form.getValues('pastCrops').split(',').map(c => c.trim().toLowerCase());
+      const filtered = CROP_SUGGESTIONS.filter(crop =>
+        crop.toLowerCase().startsWith(value.toLowerCase()) && !existingCrops.includes(crop.toLowerCase())
+      );
+      setSuggestions(filtered);
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    const currentCrops = form.getValues('pastCrops');
+    const newCrops = currentCrops ? `${currentCrops}, ${suggestion}` : suggestion;
+    form.setValue("pastCrops", newCrops, { shouldValidate: true });
+    setCropSearch('');
+    setShowSuggestions(false);
+  };
+  
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (cropInputRef.current && !cropInputRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const fetchSoilType = async (location: string) => {
     if (!location) return;
@@ -191,25 +236,53 @@ export default function SoilQualityAdvisor() {
                   </FormItem>
                 )}
               />
-                <FormField
-                    control={form.control}
-                    name="pastCrops"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Past Crop History</FormLabel>
-                        <FormControl>
-                        <Textarea
-                            placeholder="e.g., Rice, Wheat, Sugarcane"
-                            {...field}
-                        />
-                        </FormControl>
-                        <FormDescription>
-                         List crops from the last 2-3 seasons, separated by commas.
-                        </FormDescription>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
+              <FormField
+                control={form.control}
+                name="pastCrops"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Past Crop History</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Selected crops appear here"
+                        {...field}
+                        readOnly
+                        className="bg-muted"
+                      />
+                    </FormControl>
+                     <div ref={cropInputRef}>
+                      <Input
+                        placeholder="Search and add a crop..."
+                        value={cropSearch}
+                        onChange={handleCropInputChange}
+                        onFocus={() => setShowSuggestions(true)}
+                        autoComplete="off"
+                      />
+                      {showSuggestions && suggestions.length > 0 && (
+                        <div className="relative z-10">
+                          <div className="absolute w-full bg-background border border-input rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
+                            <ul className="py-1">
+                              {suggestions.map((suggestion) => (
+                                <li
+                                  key={suggestion}
+                                  className="px-3 py-2 cursor-pointer hover:bg-accent text-sm"
+                                  onMouseDown={() => handleSuggestionClick(suggestion)}
+                                >
+                                  {suggestion}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <FormDescription>
+                      List crops from the last 2-3 seasons.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
                <FormField
                 control={form.control}
                 name="mainConcern"
