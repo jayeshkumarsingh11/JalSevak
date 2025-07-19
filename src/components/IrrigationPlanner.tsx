@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -22,12 +22,23 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+const CROP_SUGGESTIONS = [
+  "Wheat", "Rice", "Maize", "Sugarcane", "Cotton", "Soybean", "Groundnut",
+  "Mustard", "Potato", "Onion", "Tomato", "Mango", "Banana", "Pulses", "Jute",
+  "Tea", "Coffee", "Millet", "Barley", "Lentil", "Gram", "Sorghum", "Bajra"
+];
+
 export default function IrrigationPlanner() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SmartIrrigationScheduleOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fetchingLocation, setFetchingLocation] = useState(false);
   const [weatherAndSoilData, setWeatherAndSoilData] = useState<{weatherData: string; soilData: string} | null>(null);
+  
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const cropInputRef = useRef<HTMLDivElement>(null);
+
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -38,6 +49,35 @@ export default function IrrigationPlanner() {
       location: "",
     },
   });
+  
+  const handleCropInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    form.setValue("cropType", value);
+    if (value) {
+      const filtered = CROP_SUGGESTIONS.filter(crop =>
+        crop.toLowerCase().startsWith(value.toLowerCase())
+      );
+      setSuggestions(filtered);
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    form.setValue("cropType", suggestion);
+    setShowSuggestions(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (cropInputRef.current && !cropInputRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const fetchWeatherAndLocation = async (latitude: number, longitude: number) => {
     setFetchingLocation(true);
@@ -141,15 +181,35 @@ export default function IrrigationPlanner() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid sm:grid-cols-2 gap-4">
-                <FormField
+                 <FormField
                   control={form.control}
                   name="cropType"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem ref={cropInputRef}>
                       <FormLabel>Crop Type</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Wheat, Rice" {...field} />
+                        <Input
+                          placeholder="e.g., Wheat, Rice"
+                          {...field}
+                          onChange={handleCropInputChange}
+                          autoComplete="off"
+                        />
                       </FormControl>
+                      {showSuggestions && suggestions.length > 0 && (
+                        <div className="absolute z-10 w-full bg-background border border-input rounded-md shadow-lg mt-1">
+                          <ul className="py-1">
+                            {suggestions.map((suggestion) => (
+                              <li
+                                key={suggestion}
+                                className="px-3 py-2 cursor-pointer hover:bg-accent"
+                                onClick={() => handleSuggestionClick(suggestion)}
+                              >
+                                {suggestion}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                       <FormMessage />
                     </FormItem>
                   )}
