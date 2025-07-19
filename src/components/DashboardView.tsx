@@ -426,6 +426,7 @@ export default function DashboardView() {
                       <Skeleton className="h-5 w-8" />
                       <Skeleton className="h-8 w-8 rounded-full" />
                       <Skeleton className="h-5 w-12" />
+                      <Skeleton className="h-4 w-10 mt-1" />
                     </div>
                   ))}
                 </div>
@@ -437,6 +438,10 @@ export default function DashboardView() {
                       <WeatherIcon code={day.weathercode} className="h-7 w-7 text-accent" />
                       <p className="text-sm font-bold">{day.temp_max}°</p>
                       <p className="text-xs text-muted-foreground">{day.temp_min}°</p>
+                      <div className="flex items-center gap-1 text-xs text-blue-500 mt-1">
+                        <CloudRain className="h-3 w-3" />
+                        <span>{day.precipitation_probability_max}%</span>
+                      </div>
                     </div>
                   ))}
                 </div>
