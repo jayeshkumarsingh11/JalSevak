@@ -17,7 +17,8 @@ import {
   Droplets,
   Landmark,
   Leaf,
-  BrainCircuit
+  BrainCircuit,
+  TestTube2
 } from "lucide-react";
 
 import DashboardView from "@/components/DashboardView";
@@ -25,8 +26,9 @@ import IrrigationPlanner from "@/components/IrrigationPlanner";
 import SchemeFinder from "@/components/SchemeFinder";
 import CropAdvisor from "@/components/CropAdvisor";
 import AppHeader from "@/components/AppHeader";
+import SoilQualityAdvisor from "@/components/SoilQualityAdvisor";
 
-type View = "dashboard" | "planner" | "schemes" | "advisor";
+type View = "dashboard" | "planner" | "schemes" | "advisor" | "soil";
 
 export default function JalSevakApp() {
   const [activeView, setActiveView] = useState<View>("dashboard");
@@ -41,6 +43,8 @@ export default function JalSevakApp() {
         return <SchemeFinder />;
       case "advisor":
         return <CropAdvisor />;
+      case "soil":
+        return <SoilQualityAdvisor />;
       default:
         return <DashboardView />;
     }
@@ -56,6 +60,8 @@ export default function JalSevakApp() {
         return 'Government Scheme Finder';
       case 'advisor':
         return 'AI Crop Advisor';
+      case 'soil':
+        return 'Soil Quality Advisor';
       default:
         return 'Dashboard';
     }
@@ -102,6 +108,16 @@ export default function JalSevakApp() {
               >
                 <Droplets />
                 <span>Irrigation Planner</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => setActiveView("soil")}
+                isActive={activeView === "soil"}
+                tooltip="Soil Quality Advisor"
+              >
+                <TestTube2 />
+                <span>Soil Quality</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
