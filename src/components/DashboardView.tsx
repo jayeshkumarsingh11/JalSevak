@@ -13,7 +13,7 @@ import {
   LineChart,
   Line,
 } from "recharts";
-import { Sun, CloudRain, Droplets, Thermometer, Wind, Leaf } from "lucide-react";
+import { Sun, CloudRain, Droplets, Thermometer, Wind, Leaf, MapPin } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const impactData = [
@@ -42,41 +42,72 @@ interface WeatherData {
 export default function DashboardView() {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loadingWeather, setLoadingWeather] = useState(true);
+  const [locationName, setLocationName] = useState<string | null>("Loading location...");
 
   useEffect(() => {
-    const fetchWeather = (latitude: number, longitude: number) => {
-      fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation_probability,is_day,wind_speed_10m`
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          if (data && data.current) {
-            setWeatherData({
-              temperature: Math.round(data.current.temperature_2m),
-              precipitation_probability: data.current.precipitation_probability,
-              relative_humidity: data.current.relative_humidity_2m,
-              wind_speed: Math.round(data.current.wind_speed_10m),
-              is_day: data.current.is_day,
-            });
-          }
-        })
-        .catch(console.error)
-        .finally(() => setLoadingWeather(false));
+    const fetchWeatherAndLocation = async (latitude: number, longitude: number) => {
+      setLoadingWeather(true);
+      try {
+        // Fetch weather
+        const weatherResponse = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation_probability,is_day,wind_speed_10m`
+        );
+        const weatherData = await weatherResponse.json();
+        if (weatherData && weatherData.current) {
+          setWeatherData({
+            temperature: Math.round(weatherData.current.temperature_2m),
+            precipitation_probability: weatherData.current.precipitation_probability,
+            relative_humidity: weatherData.current.relative_humidity_2m,
+            wind_speed: Math.round(weatherData.current.wind_speed_10m),
+            is_day: weatherData.current.is_day,
+          });
+        }
+
+        // Fetch location name
+        try {
+            const locationResponse = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            );
+            const locationData = await locationResponse.json();
+            if (locationData && locationData.address) {
+                const { address } = locationData;
+                const locationString = [
+                    address.village || address.town || address.city || address.county,
+                    address.state,
+                ]
+                .filter(Boolean)
+                .join(", ");
+                setLocationName(locationString || "Current Location");
+            } else {
+                setLocationName("Unknown Location");
+            }
+        } catch (locationError) {
+             console.error("Error fetching location name:", locationError);
+             setLocationName("Could not fetch location");
+        }
+
+      } catch (error) {
+        console.error("Failed to fetch weather data:", error);
+        setWeatherData(null);
+        setLocationName("Could not fetch location");
+      } finally {
+        setLoadingWeather(false);
+      }
     };
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          fetchWeather(position.coords.latitude, position.coords.longitude);
+            fetchWeatherAndLocation(position.coords.latitude, position.coords.longitude);
         },
         () => {
           // Fallback to a default location if geolocation fails/is denied
-          fetchWeather(28.61, 77.23); // Delhi
+          fetchWeatherAndLocation(28.61, 77.23); // Delhi
         }
       );
     } else {
       // Fallback for browsers that don't support geolocation
-      fetchWeather(28.61, 77.23); // Delhi
+      fetchWeatherAndLocation(28.61, 77.23); // Delhi
     }
   }, []);
 
@@ -104,10 +135,20 @@ export default function DashboardView() {
           </CardContent>
         </Card>
         <Card className="lg:col-span-2">
-          <CardHeader className="pb-2">
+          <CardHeader className="flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Weather Overview</CardTitle>
+            <CardDescription className="flex items-center gap-1 text-xs">
+                {loadingWeather ? (
+                    <Skeleton className="h-4 w-24" />
+                ) : (
+                    <>
+                    <MapPin className="h-3 w-3" />
+                    {locationName}
+                    </>
+                )}
+            </CardDescription>
           </CardHeader>
-          <CardContent className="flex items-center justify-around">
+          <CardContent className="flex items-center justify-around pt-2">
             {loadingWeather ? (
                 <>
                     <Skeleton className="h-12 w-14" />
@@ -186,3 +227,5 @@ export default function DashboardView() {
     </div>
   );
 }
+
+    
