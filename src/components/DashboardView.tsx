@@ -81,24 +81,45 @@ export default function DashboardView() {
       setShowYieldSuggestions(true);
     } else {
       setShowYieldSuggestions(false);
+      setYieldSuggestions(Object.keys(allYieldData)); // Show all if input is empty
     }
   };
 
   const handleYieldSuggestionClick = (suggestion: YieldDataKey) => {
-    setYieldCropInput(suggestion);
     setSelectedYieldCrop(suggestion);
+    setYieldCropInput(suggestion); // Set input to the selected crop
     setShowYieldSuggestions(false);
   };
+
+  const handleYieldInputFocus = () => {
+    if (yieldCropInput === 'Overall') {
+      setYieldCropInput(''); // Clear "Overall" when user focuses to search
+    }
+    setYieldSuggestions(Object.keys(allYieldData)); // Show all suggestions on focus
+    setShowYieldSuggestions(true);
+  };
+
+  const handleYieldInputBlur = () => {
+     // If the input is empty on blur, revert to the last selected crop
+    if (!yieldCropInput) {
+      setYieldCropInput(selectedYieldCrop);
+    }
+  }
+
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (yieldInputRef.current && !yieldInputRef.current.contains(event.target as Node)) {
         setShowYieldSuggestions(false);
+        // If suggestions are hidden and input is empty, revert to selected crop
+        if (!yieldCropInput) {
+            setYieldCropInput(selectedYieldCrop);
+        }
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [yieldCropInput, selectedYieldCrop]);
 
   useEffect(() => {
     // Calculate irrigation time on client-side to avoid hydration mismatch
@@ -248,16 +269,16 @@ export default function DashboardView() {
         <Card className="lg:col-span-2">
           <CardHeader className="flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Weather Overview</CardTitle>
-            {loadingWeather ? (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+             <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              {loadingWeather ? (
                 <Skeleton className="h-4 w-24" />
-              </div>
-            ) : (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <MapPin className="h-3 w-3" />
-                <span>{locationName}</span>
-              </div>
-            )}
+              ) : (
+                <>
+                  <MapPin className="h-3 w-3" />
+                  <span>{locationName}</span>
+                </>
+              )}
+            </div>
           </CardHeader>
           <CardContent className="flex items-center justify-around pt-2">
             {loadingWeather ? (
@@ -311,17 +332,18 @@ export default function DashboardView() {
                   placeholder="Search Crop"
                   value={yieldCropInput}
                   onChange={handleYieldInputChange}
-                  onFocus={() => setShowYieldSuggestions(true)}
+                  onFocus={handleYieldInputFocus}
+                  onBlur={handleYieldInputBlur}
                   autoComplete="off"
                 />
                 {showYieldSuggestions && yieldSuggestions.length > 0 && (
-                  <div className="absolute z-10 w-full bg-background border border-input rounded-md shadow-lg mt-1">
+                  <div className="absolute z-10 w-full bg-background border border-input rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
                     <ul className="py-1">
                       {yieldSuggestions.map((suggestion) => (
                         <li
                           key={suggestion}
                           className="px-3 py-2 cursor-pointer hover:bg-accent text-sm"
-                          onClick={() => handleYieldSuggestionClick(suggestion as YieldDataKey)}
+                          onMouseDown={() => handleYieldSuggestionClick(suggestion as YieldDataKey)}
                         >
                           {suggestion}
                         </li>
@@ -346,4 +368,5 @@ export default function DashboardView() {
     </div>
   );
 }
+
 
