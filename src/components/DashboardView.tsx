@@ -137,16 +137,16 @@ export default function DashboardView() {
         <Card className="lg:col-span-2">
           <CardHeader className="flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Weather Overview</CardTitle>
-            <CardDescription className="flex items-center gap-1 text-xs">
-                {loadingWeather ? (
-                    <Skeleton className="h-4 w-24" />
-                ) : (
-                    <>
-                    <MapPin className="h-3 w-3" />
-                    {locationName}
-                    </>
-                )}
-            </CardDescription>
+              {loadingWeather ? (
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <Skeleton className="h-4 w-24" />
+                </div>
+              ) : (
+                <CardDescription className="flex items-center gap-1 text-xs">
+                  <MapPin className="h-3 w-3" />
+                  {locationName}
+                </CardDescription>
+              )}
           </CardHeader>
           <CardContent className="flex items-center justify-around pt-2">
             {loadingWeather ? (
@@ -227,5 +227,3 @@ export default function DashboardView() {
     </div>
   );
 }
-
-    
