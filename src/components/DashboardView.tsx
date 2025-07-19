@@ -72,9 +72,21 @@ export default function DashboardView() {
       } else {
         relativeString = "now";
       }
+      
+      const irrigationDate = tomorrow.toLocaleDateString(undefined, {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+      const irrigationTimeOnly = tomorrow.toLocaleTimeString(undefined, {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+      });
 
       setIrrigationTime({
-        time: "Tomorrow, 6 AM",
+        time: `${irrigationDate} at ${irrigationTimeOnly}`,
         relative: relativeString,
       });
     };
@@ -164,8 +176,8 @@ export default function DashboardView() {
           <CardContent>
             {irrigationTime ? (
               <>
-                <div className="text-2xl font-bold font-headline">{irrigationTime.time}</div>
-                <p className="text-xs text-muted-foreground">{irrigationTime.relative}</p>
+                <div className="text-2xl font-bold font-headline">{irrigationTime.relative}</div>
+                <p className="text-xs text-muted-foreground">{irrigationTime.time}</p>
               </>
             ) : (
                <>
