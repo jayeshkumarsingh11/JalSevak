@@ -9,7 +9,6 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { governmentSchemeSuggestions, type GovernmentSchemeSuggestionsOutput } from "@/ai/flows/government-scheme-suggestions";
 import { Loader2, Bot, LocateFixed } from "lucide-react";
@@ -140,36 +139,9 @@ export default function SchemeFinder() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Primary Crop</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger><SelectValue placeholder="Select a crop" /></SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="Any">Any / Multiple</SelectItem>
-                        <SelectItem value="Wheat">Wheat</SelectItem>
-                        <SelectItem value="Rice">Rice</SelectItem>
-                        <SelectItem value="Sugarcane">Sugarcane</SelectItem>
-                        <SelectItem value="Cotton">Cotton</SelectItem>
-                        <SelectItem value="Maize">Maize</SelectItem>
-                        <SelectItem value="Soybean">Soybean</SelectItem>
-                        <SelectItem value="Pulses">Pulses</SelectItem>
-                        <SelectItem value="Barley">Barley</SelectItem>
-                        <SelectItem value="Jute">Jute</SelectItem>
-                        <SelectItem value="Millets">Millets</SelectItem>
-                        <SelectItem value="Groundnut">Groundnut</SelectItem>
-                        <SelectItem value="Mustard">Mustard</SelectItem>
-                        <SelectItem value="Sunflower">Sunflower</SelectItem>
-                        <SelectItem value="Potato">Potato</SelectItem>
-                        <SelectItem value="Onion">Onion</SelectItem>
-                        <SelectItem value="Tomato">Tomato</SelectItem>
-                        <SelectItem value="Mango">Mango</SelectItem>
-                        <SelectItem value="Banana">Banana</SelectItem>
-                        <SelectItem value="Grapes">Grapes</SelectItem>
-                        <SelectItem value="Spices">Spices</SelectItem>
-                        <SelectItem value="Tea">Tea</SelectItem>
-                        <SelectItem value="Coffee">Coffee</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <Input placeholder="e.g., Wheat, Rice" {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
