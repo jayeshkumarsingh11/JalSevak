@@ -16,6 +16,8 @@ const CropSuggestionInputSchema = z.object({
   soilType: z.string().describe('The type of soil in the farm (e.g., Loamy, Clay, Sandy).'),
   waterAvailability: z.string().describe('The availability of water for irrigation (e.g., Abundant, Moderate, Scarce).'),
   farmerPreference: z.string().describe('The farmer\'s primary goal (e.g., Maximize Profit, Drought Resistant, Low Maintenance).'),
+  farmArea: z.coerce.number().describe('The area of the farm in acres.'),
+  personalConsumption: z.string().describe("The farmer's primary usage for the crops (e.g., Personal Use, Local Market, Commercial Farming)."),
 });
 export type CropSuggestionInput = z.infer<typeof CropSuggestionInputSchema>;
 
@@ -27,6 +29,7 @@ const CropSuggestionOutputSchema = z.object({
       estimatedProfit: z.string().describe('A qualitative estimate of the profit potential (e.g., High, Medium, Low).'),
       waterNeeds: z.string().describe('The water requirement for this crop (e.g., High, Moderate, Low).'),
       growingSeason: z.string().describe('The typical growing season for this crop (e.g., Kharif, Rabi, All-season).'),
+      landAllocation: z.string().describe('A suggestion on how much land to allocate for this crop based on the farm size and farmer needs.'),
     })
   ).describe('A list of recommended crops.'),
 });
@@ -50,12 +53,15 @@ const prompt = ai.definePrompt({
   - Soil Type: {{{soilType}}}
   - Water Availability: {{{waterAvailability}}}
   - Primary Goal: {{{farmerPreference}}}
+  - Farm Area: {{{farmArea}}} acres
+  - Primary Crop Usage: {{{personalConsumption}}}
 
   For each suggested crop, provide:
   1.  A clear justification explaining why it's suitable based on the combination of location (climate), soil, water, and the farmer's goal.
   2.  An estimated profit potential (High, Medium, or Low).
   3.  The crop's typical water needs (High, Moderate, or Low).
   4.  The typical growing season (e.g., Kharif, Rabi, Zaid, All-season).
+  5.  A specific recommendation on land allocation (e.g., "Dedicate 0.5 acres to this crop for family needs," or "Plant on 8 out of 10 acres for commercial yield"). This should be tailored based on the farm area and the farmer's personal consumption needs.
 
   Return the response in the specified JSON format.
 `,

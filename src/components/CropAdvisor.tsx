@@ -12,13 +12,15 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cropSuggestion, type CropSuggestionOutput } from "@/ai/flows/crop-suggestion";
 import { getSoilType } from "@/ai/flows/get-soil-type";
-import { Loader2, Bot, LocateFixed, Leaf, Droplets, Banknote, CalendarDays } from "lucide-react";
+import { Loader2, Bot, LocateFixed, Leaf, Droplets, Banknote, CalendarDays, Rss } from "lucide-react";
 
 const formSchema = z.object({
   location: z.string().min(1, "Location is required."),
   soilType: z.string().min(1, "Soil type is required."),
   waterAvailability: z.string().min(1, "Water availability is required."),
   farmerPreference: z.string().min(1, "Please select a preference."),
+  farmArea: z.coerce.number().min(0.1, "Farm area must be positive."),
+  personalConsumption: z.string().min(1, "Please select your crop usage."),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -37,6 +39,8 @@ export default function CropAdvisor() {
       soilType: "",
       waterAvailability: "",
       farmerPreference: "Maximize Profit",
+      farmArea: 1,
+      personalConsumption: "Local Market",
     },
   });
 
@@ -155,46 +159,59 @@ export default function CropAdvisor() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="soilType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Soil Type</FormLabel>
-                     <Select onValueChange={field.onChange} value={field.value} disabled={fetchingSoil}>
-                        <FormControl>
-                           <SelectTrigger>
-                            {fetchingSoil ? (
-                              <div className="flex items-center gap-2 text-muted-foreground">
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                                <span>Determining soil type...</span>
-                              </div>
-                            ) : (
-                              <SelectValue placeholder="Select soil type" />
-                            )}
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Loamy">Loamy</SelectItem>
-                          <SelectItem value="Clay">Clay</SelectItem>
-                          <SelectItem value="Sandy">Sandy</SelectItem>
-                          <SelectItem value="Alluvial">Alluvial</SelectItem>
-                          <SelectItem value="Black Soil">Black Soil (Regur)</SelectItem>
-                          <SelectItem value="Red and Yellow Soil">Red and Yellow Soil</SelectItem>
-                          <SelectItem value="Laterite Soil">Laterite Soil</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-2 gap-4">
+                 <FormField
+                    control={form.control}
+                    name="farmArea"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Farm Area (acres)</FormLabel>
+                        <FormControl><Input type="number" step="0.1" {...field} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="soilType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Soil Type</FormLabel>
+                         <Select onValueChange={field.onChange} value={field.value} disabled={fetchingSoil}>
+                            <FormControl>
+                               <SelectTrigger>
+                                {fetchingSoil ? (
+                                  <div className="flex items-center gap-2 text-muted-foreground">
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    <span>...</span>
+                                  </div>
+                                ) : (
+                                  <SelectValue placeholder="Select soil" />
+                                )}
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="Loamy">Loamy</SelectItem>
+                              <SelectItem value="Clay">Clay</SelectItem>
+                              <SelectItem value="Sandy">Sandy</SelectItem>
+                              <SelectItem value="Alluvial">Alluvial</SelectItem>
+                              <SelectItem value="Black Soil">Black Soil (Regur)</SelectItem>
+                              <SelectItem value="Red and Yellow Soil">Red and Yellow Soil</SelectItem>
+                              <SelectItem value="Laterite Soil">Laterite Soil</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+              </div>
                 <FormField
                 control={form.control}
                 name="waterAvailability"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Water Availability</FormLabel>
-                     <Select onValueChange={field.onChange} defaultValue={field.value}>
+                     <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger><SelectValue placeholder="Select water availability" /></SelectTrigger>
                         </FormControl>
@@ -214,7 +231,7 @@ export default function CropAdvisor() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Primary Goal</FormLabel>
-                     <Select onValueChange={field.onChange} defaultValue={field.value}>
+                     <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger><SelectValue placeholder="What is your main goal?" /></SelectTrigger>
                         </FormControl>
@@ -223,6 +240,26 @@ export default function CropAdvisor() {
                           <SelectItem value="Drought Resistant">Drought Resistant</SelectItem>
                           <SelectItem value="Low Maintenance">Low Maintenance</SelectItem>
                           <SelectItem value="Improve Soil Health">Improve Soil Health</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="personalConsumption"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Primary Crop Usage</FormLabel>
+                     <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger><SelectValue placeholder="How will the crops be used?" /></SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Personal Use">Personal Use (Subsistence)</SelectItem>
+                          <SelectItem value="Local Market">Sell in Local Market</SelectItem>
+                          <SelectItem value="Commercial Farming">Commercial Farming</SelectItem>
                         </SelectContent>
                       </Select>
                     <FormMessage />
@@ -264,7 +301,11 @@ export default function CropAdvisor() {
                             <h4 className="font-semibold text-base">Why we suggest this crop:</h4>
                             <p className="text-muted-foreground">{crop.justification}</p>
                        </div>
-                       <div className="grid grid-cols-3 gap-4 text-sm">
+                       <div className="border-t pt-4">
+                            <h4 className="font-semibold text-base flex items-center gap-2 mb-2"><Rss className="h-4 w-4" />Land Allocation Tip</h4>
+                            <p className="text-muted-foreground">{crop.landAllocation}</p>
+                       </div>
+                       <div className="grid grid-cols-3 gap-4 text-sm pt-4 border-t">
                            <div className="flex items-center gap-2">
                                 <Banknote className="h-4 w-4 text-muted-foreground"/>
                                 <div>
