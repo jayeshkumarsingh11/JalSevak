@@ -5,7 +5,6 @@ import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useTranslations } from "next-intl";
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,8 +32,6 @@ const CROP_SUGGESTIONS = [
 ];
 
 export default function IrrigationPlanner() {
-  const t = useTranslations('IrrigationPlanner');
-  const tGeneric = useTranslations('Generic');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SmartIrrigationScheduleOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -153,7 +150,7 @@ export default function IrrigationPlanner() {
 
   async function onSubmit(values: FormValues) {
     if (!weatherAndSoilData) {
-        setError(t('error_no_data'));
+        setError("Weather and soil data is not available yet. Please wait a moment and try again.");
         return;
     }
     setLoading(true);
@@ -168,7 +165,7 @@ export default function IrrigationPlanner() {
       const res = await smartIrrigationSchedule(input);
       setResult(res);
     } catch (e: any) {
-      setError(e.message || tGeneric('error_unexpected'));
+      setError(e.message || "An unexpected error occurred.");
     } finally {
       setLoading(false);
     }
@@ -178,8 +175,8 @@ export default function IrrigationPlanner() {
     <div className="grid md:grid-cols-2 gap-8 items-start">
       <Card>
         <CardHeader>
-          <CardTitle className="font-headline">{t('title')}</CardTitle>
-          <CardDescription>{t('description')}</CardDescription>
+          <CardTitle className="font-headline">Plan Your Irrigation</CardTitle>
+          <CardDescription>Enter your farm's details to get a smart, dynamic irrigation schedule.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -190,10 +187,10 @@ export default function IrrigationPlanner() {
                   name="cropType"
                   render={({ field }) => (
                     <FormItem ref={cropInputRef}>
-                      <FormLabel>{t('crop_type_label')}</FormLabel>
+                      <FormLabel>Crop Type</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder={t('crop_type_placeholder')}
+                          placeholder="e.g., Wheat, Rice"
                           {...field}
                           onChange={handleCropInputChange}
                           autoComplete="off"
@@ -223,7 +220,7 @@ export default function IrrigationPlanner() {
                   name="farmArea"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('farm_area_label')}</FormLabel>
+                      <FormLabel>Farm Area (acres)</FormLabel>
                       <FormControl><Input type="number" step="0.1" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -235,10 +232,10 @@ export default function IrrigationPlanner() {
                 name="waterSource"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('water_source_label')}</FormLabel>
+                    <FormLabel>Water Source</FormLabel>
                      <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger><SelectValue placeholder={t('select_water_source')} /></SelectTrigger>
+                          <SelectTrigger><SelectValue placeholder="Select a water source" /></SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="Canal">Canal</SelectItem>
@@ -257,11 +254,11 @@ export default function IrrigationPlanner() {
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('location_label')}</FormLabel>
+                    <FormLabel>Location</FormLabel>
                     <div className="relative">
                       <FormControl>
                         <Input
-                          placeholder={t('location_placeholder')}
+                          placeholder="e.g., Village, District, State"
                           {...field}
                           className="pr-10"
                         />
@@ -289,7 +286,7 @@ export default function IrrigationPlanner() {
               
               <Button type="submit" disabled={loading || fetchingLocation} className="w-full">
                 {(loading || fetchingLocation) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('get_schedule')}
+                Get Schedule
               </Button>
             </form>
           </Form>
@@ -300,8 +297,8 @@ export default function IrrigationPlanner() {
         {loading && (
           <div className="flex flex-col items-center gap-4 text-center p-8">
             <Bot className="h-16 w-16 text-primary animate-bounce" />
-            <p className="font-headline text-xl">{t('analyzing_farm_data')}</p>
-            <p className="text-muted-foreground">{t('ai_preparing_plan')}</p>
+            <p className="font-headline text-xl">Analyzing your farm data...</p>
+            <p className="text-muted-foreground">Our AI is preparing your custom irrigation plan.</p>
           </div>
         )}
         {error && <p className="text-destructive p-8">{error}</p>}
@@ -309,28 +306,28 @@ export default function IrrigationPlanner() {
           <Card className="w-full">
             <CardHeader>
               <CardTitle className="font-headline flex items-center gap-2">
-                <Droplets className="text-primary"/> {t('recommended_schedule')}
+                <Droplets className="text-primary"/> Recommended Schedule
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <h3 className="font-semibold text-lg flex items-center gap-2"><Droplets className="h-4 w-4 text-primary" />{t('schedule_title')}</h3>
+                <h3 className="font-semibold text-lg flex items-center gap-2"><Droplets className="h-4 w-4 text-primary" />Schedule</h3>
                 <p className="text-muted-foreground whitespace-pre-wrap pl-6">{result.irrigationSchedule}</p>
               </div>
               <div>
-                <h3 className="font-semibold text-lg flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />{t('best_time_title')}</h3>
+                <h3 className="font-semibold text-lg flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />Best Time to Irrigate</h3>
                 <p className="text-muted-foreground pl-6">{result.bestTimeToIrrigate}</p>
               </div>
               <div>
-                <h3 className="font-semibold text-lg flex items-center gap-2"><Shield className="h-4 w-4 text-primary" />{t('precautions_title')}</h3>
+                <h3 className="font-semibold text-lg flex items-center gap-2"><Shield className="h-4 w-4 text-primary" />Precautions</h3>
                 <p className="text-muted-foreground whitespace-pre-wrap pl-6">{result.precautions}</p>
               </div>
               <div>
-                <h3 className="font-semibold text-lg flex items-center gap-2"><Leaf className="h-4 w-4 text-primary" />{t('pesticide_title')}</h3>
+                <h3 className="font-semibold text-lg flex items-center gap-2"><Leaf className="h-4 w-4 text-primary" />Pesticide Recommendations</h3>
                 <p className="text-muted-foreground whitespace-pre-wrap pl-6">{result.pesticideRecommendations}</p>
               </div>
               <div>
-                <h3 className="font-semibold text-lg">{t('justification_title')}</h3>
+                <h3 className="font-semibold text-lg">Justification</h3>
                 <p className="text-muted-foreground">{result.justification}</p>
               </div>
             </CardContent>

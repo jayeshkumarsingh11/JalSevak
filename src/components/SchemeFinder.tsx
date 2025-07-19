@@ -5,7 +5,6 @@ import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useTranslations } from "next-intl";
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -30,8 +29,6 @@ const CROP_SUGGESTIONS = [
 ];
 
 export default function SchemeFinder() {
-  const t = useTranslations('SchemeFinder');
-  const tGeneric = useTranslations('Generic');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<GovernmentSchemeSuggestionsOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -126,7 +123,7 @@ export default function SchemeFinder() {
       const res = await governmentSchemeSuggestions(values);
       setResult(res);
     } catch (e: any) {
-      setError(e.message || tGeneric('error_unexpected'));
+      setError(e.message || "An unexpected error occurred.");
     } finally {
       setLoading(false);
     }
@@ -136,8 +133,8 @@ export default function SchemeFinder() {
     <div className="grid md:grid-cols-3 gap-8 items-start">
       <Card className="md:col-span-1">
         <CardHeader>
-          <CardTitle className="font-headline">{t('title')}</CardTitle>
-          <CardDescription>{t('description')}</CardDescription>
+          <CardTitle className="font-headline">Find Government Schemes</CardTitle>
+          <CardDescription>Discover subsidies and schemes you are eligible for.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -147,11 +144,11 @@ export default function SchemeFinder() {
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('location_label')}</FormLabel>
+                    <FormLabel>Your Location</FormLabel>
                     <div className="relative">
                       <FormControl>
                         <Input
-                          placeholder={t('location_placeholder')}
+                          placeholder="e.g., Village, State"
                           {...field}
                           className="pr-10"
                         />
@@ -181,10 +178,10 @@ export default function SchemeFinder() {
                 name="cropType"
                 render={({ field }) => (
                   <FormItem ref={cropInputRef}>
-                    <FormLabel>{t('primary_crop_label')}</FormLabel>
+                    <FormLabel>Primary Crop</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t('crop_placeholder')}
+                        placeholder="e.g., Wheat, Rice"
                         {...field}
                         onChange={handleCropInputChange}
                         autoComplete="off"
@@ -214,7 +211,7 @@ export default function SchemeFinder() {
                 name="landArea"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('land_area_label')}</FormLabel>
+                    <FormLabel>Land Area (acres)</FormLabel>
                     <FormControl><Input type="number" step="0.1" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -222,7 +219,7 @@ export default function SchemeFinder() {
               />
               <Button type="submit" disabled={loading} className="w-full">
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('find_schemes')}
+                Find Schemes
               </Button>
             </form>
           </Form>
@@ -233,14 +230,14 @@ export default function SchemeFinder() {
         {loading && (
           <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-8">
             <Bot className="h-16 w-16 text-primary animate-bounce" />
-            <p className="font-headline text-xl">{t('finding_schemes')}</p>
-            <p className="text-muted-foreground">{t('ai_searching_programs')}</p>
+            <p className="font-headline text-xl">Finding relevant schemes...</p>
+            <p className="text-muted-foreground">Our AI is searching for programs tailored to your needs.</p>
           </div>
         )}
         {error && <p className="text-destructive p-8">{error}</p>}
         {result && (
           <div>
-            <h2 className="text-2xl font-headline mb-4">{t('suggested_schemes')}</h2>
+            <h2 className="text-2xl font-headline mb-4">Suggested Schemes for You</h2>
             {result.schemes.length > 0 ? (
               <Accordion type="single" collapsible className="w-full">
                 {result.schemes.map((scheme, index) => (
@@ -248,19 +245,19 @@ export default function SchemeFinder() {
                     <AccordionTrigger className="font-headline text-lg text-left">{scheme.name}</AccordionTrigger>
                     <AccordionContent className="space-y-4 pt-2">
                       <div>
-                        <h4 className="font-semibold text-base">{t('description_heading')}</h4>
+                        <h4 className="font-semibold text-base">Description</h4>
                         <p className="text-muted-foreground">{scheme.description}</p>
                       </div>
                       <div>
-                        <h4 className="font-semibold text-base">{t('eligibility_heading')}</h4>
+                        <h4 className="font-semibold text-base">Eligibility</h4>
                         <p className="text-muted-foreground">{scheme.eligibilityCriteria}</p>
                       </div>
                        <div>
-                        <h4 className="font-semibold text-base">{t('benefits_heading')}</h4>
+                        <h4 className="font-semibold text-base">Benefits</h4>
                         <p className="text-muted-foreground">{scheme.benefits}</p>
                       </div>
                        <div>
-                        <h4 className="font-semibold text-base">{t('how_to_apply_heading')}</h4>
+                        <h4 className="font-semibold text-base">How to Apply</h4>
                         <p className="text-muted-foreground">{scheme.applicationProcedure}</p>
                       </div>
                     </AccordionContent>
@@ -270,10 +267,10 @@ export default function SchemeFinder() {
             ) : (
                 <Card className="flex flex-col items-center justify-center p-8 text-center">
                     <CardHeader>
-                        <CardTitle className="font-headline">{t('no_schemes_title')}</CardTitle>
+                        <CardTitle className="font-headline">No Schemes Found</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-muted-foreground">{t('no_schemes_desc')}</p>
+                        <p className="text-muted-foreground">We couldn't find any specific government schemes based on the information you provided. Please try adjusting your search criteria.</p>
                     </CardContent>
                 </Card>
             )}
