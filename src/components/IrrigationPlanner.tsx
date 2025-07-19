@@ -9,9 +9,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { smartIrrigationSchedule, type SmartIrrigationScheduleOutput } from "@/ai/flows/smart-irrigation-scheduling";
+import { smartIrrigationSchedule, type SmartIrrigationScheduleInput, type SmartIrrigationScheduleOutput } from "@/ai/flows/smart-irrigation-scheduling";
 import { Loader2, Droplets, Bot, LocateFixed } from "lucide-react";
 
 const formSchema = z.object({
@@ -19,72 +18,108 @@ const formSchema = z.object({
   farmArea: z.coerce.number().min(0.1, "Farm area must be positive."),
   waterSource: z.string().min(1, "Water source is required."),
   location: z.string().min(1, "Location is required."),
-  weatherData: z.string().min(1, "Weather data is required."),
-  soilData: z.string().min(1, "Soil data is required."),
 });
+
+type FormValues = z.infer<typeof formSchema>;
 
 export default function IrrigationPlanner() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SmartIrrigationScheduleOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fetchingLocation, setFetchingLocation] = useState(false);
+  const [weatherAndSoilData, setWeatherAndSoilData] = useState<{weatherData: string; soilData: string} | null>(null);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       cropType: "",
       farmArea: 1,
       waterSource: "",
       location: "",
-      weatherData: "Temperature: 28°C, Humidity: 65%, Chance of rain: 15%, Wind: 12 km/h",
-      soilData: "Soil Moisture: 45%, Soil Temperature: 22°C, Type: Loamy",
     },
   });
+
+  const fetchWeatherAndLocation = async (latitude: number, longitude: number) => {
+    setFetchingLocation(true);
+    try {
+      // Fetch location name
+      const locationResponse = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+      );
+      const locationData = await locationResponse.json();
+      const { address } = locationData;
+      const locationString = [
+        address.village || address.town || address.city_district,
+        address.city,
+        address.state,
+      ]
+        .filter(Boolean)
+        .join(", ");
+      form.setValue("location", locationString || locationData.display_name);
+
+      // Fetch weather data
+      const weatherResponse = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation_probability,wind_speed_10m`
+      );
+      const weatherData = await weatherResponse.json();
+      if (weatherData && weatherData.current) {
+        const { temperature_2m, relative_humidity_2m, precipitation_probability, wind_speed_10m } = weatherData.current;
+        const weatherString = `Temperature: ${Math.round(temperature_2m)}°C, Humidity: ${relative_humidity_2m}%, Chance of rain: ${precipitation_probability}%, Wind: ${Math.round(wind_speed_10m)} km/h`;
+        
+        // Using static soil data as there is no free public API for it.
+        const soilString = "Soil Moisture: 45%, Soil Temperature: 22°C, Type: Loamy";
+        
+        setWeatherAndSoilData({ weatherData: weatherString, soilData: soilString });
+      }
+    } catch (error) {
+      console.error("Error fetching location or weather data:", error);
+      setError("Could not fetch location or weather data. Please enter manually.");
+    } finally {
+      setFetchingLocation(false);
+    }
+  };
+
 
   const getLocation = () => {
     if (navigator.geolocation) {
       setFetchingLocation(true);
       navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          try {
-            const response = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-            );
-            const data = await response.json();
-            const { address } = data;
-            const locationString = [
-              address.village || address.town || address.city_district,
-              address.city,
-              address.state,
-            ]
-              .filter(Boolean)
-              .join(", ");
-            form.setValue("location", locationString || data.display_name);
-          } catch (error) {
-            console.error("Error fetching location name:", error);
-          } finally {
-            setFetchingLocation(false);
-          }
+        (position) => {
+          fetchWeatherAndLocation(position.coords.latitude, position.coords.longitude);
         },
         (error) => {
           console.error("Geolocation error:", error);
+          // Fallback to a default location if geolocation fails/is denied
+          fetchWeatherAndLocation(28.61, 77.23); // Delhi
           setFetchingLocation(false);
         }
       );
+    } else {
+        // Fallback for browsers that don't support geolocation
+        fetchWeatherAndLocation(28.61, 77.23); // Delhi
     }
   };
 
   useEffect(() => {
     getLocation();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: FormValues) {
+    if (!weatherAndSoilData) {
+        setError("Weather and soil data is not available yet. Please wait a moment and try again.");
+        return;
+    }
     setLoading(true);
     setResult(null);
     setError(null);
     try {
-      const res = await smartIrrigationSchedule(values);
+      const input: SmartIrrigationScheduleInput = {
+        ...values,
+        weatherData: weatherAndSoilData.weatherData,
+        soilData: weatherAndSoilData.soilData,
+      };
+      const res = await smartIrrigationSchedule(input);
       setResult(res);
     } catch (e: any) {
       setError(e.message || "An unexpected error occurred.");
@@ -196,30 +231,9 @@ export default function IrrigationPlanner() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="weatherData"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Current Weather Data</FormLabel>
-                    <FormControl><Textarea {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="soilData"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Current Soil Data</FormLabel>
-                    <FormControl><Textarea {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" disabled={loading} className="w-full">
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              
+              <Button type="submit" disabled={loading || fetchingLocation} className="w-full">
+                {(loading || fetchingLocation) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Get Schedule
               </Button>
             </form>
