@@ -16,6 +16,8 @@ import {
 } from "recharts";
 import { Sun, CloudRain, Droplets, Thermometer, Wind, Leaf, MapPin } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 
 const impactData = [
   { name: 'Water Usage', 'Without Planner': 8000, 'With Smart Planner': 5200 },
@@ -23,14 +25,42 @@ const impactData = [
   { name: 'Manual Work', 'Without Planner': 100, 'With Smart Planner': 40 },
 ];
 
-const yieldData = [
-  { name: 'Jan', yield: 280 },
-  { name: 'Feb', yield: 310 },
-  { name: 'Mar', yield: 290 },
-  { name: 'Apr', yield: 350 },
-  { name: 'May', yield: 380 },
-  { name: 'Jun', yield: 410 },
-];
+const allYieldData = {
+  'Overall': [
+    { name: 'Jan', yield: 280 },
+    { name: 'Feb', yield: 310 },
+    { name: 'Mar', yield: 290 },
+    { name: 'Apr', yield: 350 },
+    { name: 'May', yield: 380 },
+    { name: 'Jun', yield: 410 },
+  ],
+  'Wheat': [
+    { name: 'Jan', yield: 450 },
+    { name: 'Feb', yield: 460 },
+    { name: 'Mar', yield: 475 },
+    { name: 'Apr', yield: 480 },
+    { name: 'May', yield: 490 },
+    { name: 'Jun', yield: 500 },
+  ],
+  'Rice': [
+    { name: 'Jan', yield: 300 },
+    { name: 'Feb', yield: 320 },
+    { name: 'Mar', yield: 310 },
+    { name: 'Apr', yield: 340 },
+    { name: 'May', yield: 360 },
+    { name: 'Jun', yield: 380 },
+  ],
+   'Maize': [
+    { name: 'Jan', yield: 250 },
+    { name: 'Feb', yield: 260 },
+    { name: 'Mar', yield: 270 },
+    { name: 'Apr', yield: 280 },
+    { name: 'May', yield: 300 },
+    { name: 'Jun', yield: 320 },
+  ]
+};
+
+type YieldDataKey = keyof typeof allYieldData;
 
 interface WeatherData {
   temperature: number;
@@ -50,6 +80,7 @@ export default function DashboardView() {
   const [loadingWeather, setLoadingWeather] = useState(true);
   const [locationName, setLocationName] = useState<string | null>("Loading location...");
   const [irrigationTime, setIrrigationTime] = useState<IrrigationTime | null>(null);
+  const [selectedYieldCrop, setSelectedYieldCrop] = useState<YieldDataKey>('Overall');
 
 
   useEffect(() => {
@@ -271,13 +302,27 @@ export default function DashboardView() {
           </CardContent>
         </Card>
         <Card className="lg:col-span-3">
-          <CardHeader>
-            <CardTitle className="font-headline">Crop Yield Trend</CardTitle>
-            <CardDescription>Projected yield consistency improvement.</CardDescription>
+          <CardHeader className="flex items-start justify-between gap-4">
+            <div className="space-y-1">
+              <CardTitle className="font-headline">Crop Yield Trend</CardTitle>
+              <CardDescription>Projected yield consistency improvement.</CardDescription>
+            </div>
+             <Select value={selectedYieldCrop} onValueChange={(value) => setSelectedYieldCrop(value as YieldDataKey)}>
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="Select Crop" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.keys(allYieldData).map((crop) => (
+                    <SelectItem key={crop} value={crop}>
+                      {crop}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
           </CardHeader>
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={yieldData}>
+              <LineChart data={allYieldData[selectedYieldCrop]}>
                 <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip wrapperClassName="!bg-card !border-border" />
