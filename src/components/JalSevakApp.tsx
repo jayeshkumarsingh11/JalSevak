@@ -17,14 +17,12 @@ import {
   Droplets,
   Landmark,
   Leaf,
-  LogOut,
 } from "lucide-react";
 
 import DashboardView from "@/components/DashboardView";
 import IrrigationPlanner from "@/components/IrrigationPlanner";
 import SchemeFinder from "@/components/SchemeFinder";
 import AppHeader from "@/components/AppHeader";
-import { Button } from "@/components/ui/button";
 
 type View = "dashboard" | "planner" | "schemes";
 
@@ -103,13 +101,7 @@ export default function JalSevakApp() {
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-           <div className="p-2 w-full">
-            <div className="p-4 rounded-lg bg-accent/30 text-center">
-                <h3 className="font-headline text-accent-foreground">Upgrade to Pro</h3>
-                <p className="text-sm text-accent-foreground/80 mt-1">Get advanced analytics, historical data, and more.</p>
-                <Button size="sm" className="mt-4 w-full bg-accent text-accent-foreground hover:bg-accent/90">Upgrade</Button>
-            </div>
-           </div>
+           {/* Pro upgrade banner removed */}
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
