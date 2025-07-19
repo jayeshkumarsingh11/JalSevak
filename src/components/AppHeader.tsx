@@ -22,7 +22,7 @@ export default function AppHeader({ title }: AppHeaderProps) {
         </Button>
         <ThemeToggle />
         <Avatar>
-          <AvatarImage src="https://placehold.co/40x40.png" alt="@farmer" data-ai-hint="farmer portrait" />
+          <AvatarImage alt="@farmer" data-ai-hint="farmer portrait" />
           <AvatarFallback>FP</AvatarFallback>
         </Avatar>
       </div>
