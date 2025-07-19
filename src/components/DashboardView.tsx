@@ -34,12 +34,43 @@ const generateYieldData = (baseYield: number, volatility: number, trend: number)
 
 
 const allYieldData = {
-  'Overall': generateYieldData(280, 50, 2.5),
-  'Wheat': generateYieldData(450, 20, 1),
-  'Rice': generateYieldData(300, 30, 1.8),
-  'Maize': generateYieldData(250, 40, 2),
-  'Sugarcane': generateYieldData(600, 60, 3),
-  'Cotton': generateYieldData(200, 25, 1.2),
+    'Overall': generateYieldData(300, 60, 2.5),
+    'Wheat': generateYieldData(450, 20, 1.5),
+    'Rice': generateYieldData(350, 35, 2),
+    'Maize': generateYieldData(280, 45, 2.2),
+    'Sugarcane': generateYieldData(700, 80, 4),
+    'Cotton': generateYieldData(220, 30, 1.3),
+    'Soybean': generateYieldData(200, 25, 1.8),
+    'Groundnut': generateYieldData(150, 20, 1.1),
+    'Mustard': generateYieldData(130, 15, 0.9),
+    'Potato': generateYieldData(500, 50, 3),
+    'Onion': generateYieldData(400, 40, 2.5),
+    'Tomato': generateYieldData(450, 55, 2.8),
+    'Mango': generateYieldData(100, 10, 0.5),
+    'Banana': generateYieldData(600, 70, 3.5),
+    'Pulses': generateYieldData(120, 18, 1),
+    'Jute': generateYieldData(180, 22, 1.2),
+    'Tea': generateYieldData(90, 12, 0.7),
+    'Coffee': generateYieldData(80, 10, 0.6),
+    'Millet': generateYieldData(100, 15, 0.8),
+    'Barley': generateYieldData(160, 20, 1),
+    'Lentil': generateYieldData(110, 14, 0.9),
+    'Gram': generateYieldData(105, 13, 0.85),
+    'Sorghum': generateYieldData(140, 18, 1.1),
+    'Bajra': generateYieldData(130, 17, 1),
+    'Turmeric': generateYieldData(250, 30, 1.7),
+    'Ginger': generateYieldData(230, 28, 1.6),
+    'Chilli': generateYieldData(200, 25, 1.4),
+    'Capsicum': generateYieldData(300, 35, 2),
+    'Brinjal': generateYieldData(280, 33, 1.9),
+    'Okra': generateYieldData(260, 31, 1.8),
+    'Cabbage': generateYieldData(350, 40, 2.3),
+    'Cauliflower': generateYieldData(330, 38, 2.2),
+    'Grapes': generateYieldData(400, 45, 2.6),
+    'Apple': generateYieldData(120, 15, 0.9),
+    'Pomegranate': generateYieldData(150, 20, 1.2),
+    'Guava': generateYieldData(180, 22, 1.3),
+    'Papaya': generateYieldData(500, 60, 3.2),
 };
 
 type YieldDataKey = keyof typeof allYieldData;
@@ -368,5 +399,6 @@ export default function DashboardView() {
     </div>
   );
 }
+
 
 

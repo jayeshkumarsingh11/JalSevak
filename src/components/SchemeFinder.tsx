@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -20,9 +21,11 @@ const formSchema = z.object({
 });
 
 const CROP_SUGGESTIONS = [
-  "Wheat", "Rice", "Maize", "Sugarcane", "Cotton", "Soybean", "Groundnut",
-  "Mustard", "Potato", "Onion", "Tomato", "Mango", "Banana", "Pulses", "Jute",
-  "Tea", "Coffee", "Millet", "Barley", "Lentil", "Gram", "Sorghum", "Bajra"
+  "Apple", "Bajra", "Banana", "Barley", "Brinjal", "Cabbage", "Capsicum", "Cauliflower",
+  "Chilli", "Coffee", "Cotton", "Ginger", "Gram", "Grapes", "Groundnut", "Guava",
+  "Jute", "Lentil", "Maize", "Mango", "Millet", "Mustard", "Okra", "Onion", "Papaya",
+  "Pomegranate", "Potato", "Pulses", "Rice", "Sorghum", "Soybean", "Sugarcane",
+  "Tea", "Tomato", "Turmeric", "Wheat"
 ];
 
 export default function SchemeFinder() {
