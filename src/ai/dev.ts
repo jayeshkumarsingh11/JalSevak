@@ -4,3 +4,4 @@ config();
 import '@/ai/flows/government-scheme-suggestions.ts';
 import '@/ai/flows/smart-irrigation-scheduling.ts';
 import '@/ai/flows/crop-price-info.ts';
+import '@/ai/flows/crop-suggestion.ts';

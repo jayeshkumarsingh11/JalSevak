@@ -17,14 +17,16 @@ import {
   Droplets,
   Landmark,
   Leaf,
+  BrainCircuit
 } from "lucide-react";
 
 import DashboardView from "@/components/DashboardView";
 import IrrigationPlanner from "@/components/IrrigationPlanner";
 import SchemeFinder from "@/components/SchemeFinder";
+import CropAdvisor from "@/components/CropAdvisor";
 import AppHeader from "@/components/AppHeader";
 
-type View = "dashboard" | "planner" | "schemes";
+type View = "dashboard" | "planner" | "schemes" | "advisor";
 
 export default function JalSevakApp() {
   const [activeView, setActiveView] = useState<View>("dashboard");
@@ -37,6 +39,8 @@ export default function JalSevakApp() {
         return <IrrigationPlanner />;
       case "schemes":
         return <SchemeFinder />;
+      case "advisor":
+        return <CropAdvisor />;
       default:
         return <DashboardView />;
     }
@@ -50,6 +54,8 @@ export default function JalSevakApp() {
         return 'Smart Irrigation Planner';
       case 'schemes':
         return 'Government Scheme Finder';
+      case 'advisor':
+        return 'AI Crop Advisor';
       default:
         return 'Dashboard';
     }
@@ -76,6 +82,16 @@ export default function JalSevakApp() {
               >
                 <LayoutDashboard />
                 <span>Dashboard</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => setActiveView("advisor")}
+                isActive={activeView === "advisor"}
+                tooltip="Crop Advisor"
+              >
+                <BrainCircuit />
+                <span>Crop Advisor</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
