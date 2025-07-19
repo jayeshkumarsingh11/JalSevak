@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { cropPriceInfo, type CropPriceInfoOutput } from "@/ai/flows/crop-price-info";
 import { Separator } from "@/components/ui/separator";
+import { useTranslations } from "next-intl";
 
 
 const generateMspData = (basePrice: number, volatility: number, trend: number) => {
@@ -100,9 +101,10 @@ interface IrrigationTime {
 }
 
 export default function DashboardView() {
+  const t = useTranslations('DashboardView');
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loadingWeather, setLoadingWeather] = useState(true);
-  const [locationName, setLocationName] = useState<string | null>("Loading location...");
+  const [locationName, setLocationName] = useState<string | null>(t('loading_location'));
   const [irrigationTime, setIrrigationTime] = useState<IrrigationTime | null>(null);
   const [selectedCrop, setSelectedCrop] = useState<MspDataKey>('Overall');
 
@@ -260,19 +262,19 @@ export default function DashboardView() {
                 ]
                 .filter(Boolean)
                 .join(", ");
-                setLocationName(locationString || "Current Location");
+                setLocationName(locationString || t('current_location'));
             } else {
-                setLocationName("Unknown Location");
+                setLocationName(t('unknown_location'));
             }
         } catch (locationError) {
              console.error("Error fetching location name:", locationError);
-             setLocationName("Could not fetch location");
+             setLocationName(t('could_not_fetch_location'));
         }
 
       } catch (error) {
         console.error("Failed to fetch weather data:", error);
         setWeatherData(null);
-        setLocationName("Could not fetch location");
+        setLocationName(t('could_not_fetch_location'));
       } finally {
         setLoadingWeather(false);
       }
@@ -290,14 +292,14 @@ export default function DashboardView() {
     } else {
       fetchWeatherAndLocation(28.61, 77.23);
     }
-  }, []);
+  }, [t]);
 
   return (
     <div className="grid gap-6 md:gap-8">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Next Irrigation</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('next_irrigation')}</CardTitle>
             <Droplets className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -316,25 +318,25 @@ export default function DashboardView() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Latest Schemes</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('latest_schemes')}</CardTitle>
             <Landmark className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="pt-4">
             <div className="space-y-3">
               <div className="text-sm">
-                  <p className="font-semibold truncate">PM-KISAN</p>
-                  <p className="text-xs text-muted-foreground">Income support for small farmers.</p>
+                  <p className="font-semibold truncate">{t('pm_kisan_title')}</p>
+                  <p className="text-xs text-muted-foreground">{t('pm_kisan_desc')}</p>
               </div>
               <div className="text-sm">
-                  <p className="font-semibold truncate">Fasal Bima Yojana</p>
-                  <p className="text-xs text-muted-foreground">Crop insurance against yield loss.</p>
+                  <p className="font-semibold truncate">{t('fasal_bima_title')}</p>
+                  <p className="text-xs text-muted-foreground">{t('fasal_bima_desc')}</p>
               </div>
             </div>
           </CardContent>
         </Card>
         <Card className="lg:col-span-2">
           <CardHeader className="flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">Weather Overview</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('weather_overview')}</CardTitle>
              <div className="flex items-center gap-1 text-xs text-muted-foreground">
               {loadingWeather ? (
                 <Skeleton className="h-4 w-24" />
@@ -360,27 +362,27 @@ export default function DashboardView() {
                   <Sun className="h-6 w-6 text-accent" />
                   <span className="font-bold text-lg">{weatherData.temperature}°C</span>
                   <span className="text-xs text-muted-foreground">
-                    {weatherData.is_day ? "Sunny" : "Clear"}
+                    {weatherData.is_day ? t('sunny') : t('clear')}
                   </span>
                 </div>
                 <div className="flex flex-col items-center gap-1">
                   <CloudRain className="h-6 w-6 text-muted-foreground" />
                   <span className="font-bold text-lg">{weatherData.precipitation_probability}%</span>
-                  <span className="text-xs text-muted-foreground">Rain Chance</span>
+                  <span className="text-xs text-muted-foreground">{t('rain_chance')}</span>
                 </div>
                 <div className="flex flex-col items-center gap-1">
                   <Thermometer className="h-6 w-6 text-muted-foreground" />
                   <span className="font-bold text-lg">{weatherData.relative_humidity}%</span>
-                  <span className="text-xs text-muted-foreground">Humidity</span>
+                  <span className="text-xs text-muted-foreground">{t('humidity')}</span>
                 </div>
                 <div className="flex flex-col items-center gap-1">
                   <Wind className="h-6 w-6 text-muted-foreground" />
                   <span className="font-bold text-lg">{weatherData.wind_speed} km/h</span>
-                  <span className="text-xs text-muted-foreground">Wind</span>
+                  <span className="text-xs text-muted-foreground">{t('wind')}</span>
                 </div>
               </>
             ) : (
-                <p className="text-sm text-muted-foreground col-span-4 text-center">Could not load weather data.</p>
+                <p className="text-sm text-muted-foreground col-span-4 text-center">{t('could_not_load_weather')}</p>
             )}
           </CardContent>
         </Card>
@@ -390,12 +392,12 @@ export default function DashboardView() {
         <Card className="md:col-span-2">
           <CardHeader className="flex flex-row items-start justify-between gap-4">
             <div className="space-y-1">
-              <CardTitle className="font-headline">Govt. Crop Price Trend (MSP)</CardTitle>
-              <CardDescription>Minimum Support Price (MSP) in ₹ per Quintal for the last 12 months.</CardDescription>
+              <CardTitle className="font-headline">{t('price_trend_title')}</CardTitle>
+              <CardDescription>{t('price_trend_desc')}</CardDescription>
             </div>
              <div className="relative w-40" ref={cropInputRef}>
                 <Input
-                  placeholder="Search Crop"
+                  placeholder={t('search_crop')}
                   value={cropInput}
                   onChange={handleCropInputChange}
                   onFocus={handleCropInputFocus}
@@ -439,9 +441,9 @@ export default function DashboardView() {
             <CardHeader>
                 <CardTitle className="font-headline flex items-center gap-2">
                     <Info className="h-5 w-5" />
-                    Price Analysis
+                    {t('price_analysis_title')}
                 </CardTitle>
-                <CardDescription>AI-powered insights on the selected crop&apos;s price trends.</CardDescription>
+                <CardDescription>{t('price_analysis_desc')}</CardDescription>
             </CardHeader>
             <CardContent>
                 {loadingPriceInfo ? (
@@ -458,19 +460,19 @@ export default function DashboardView() {
                         <p className="text-sm text-muted-foreground">{priceInfo.analysis}</p>
                         <div className="flex justify-between items-center pt-2">
                             <div className="text-center">
-                                <div className="text-xs text-muted-foreground">Last Year</div>
+                                <div className="text-xs text-muted-foreground">{t('last_year')}</div>
                                 <div className="font-bold text-lg">₹{priceInfo.lastYearMsp}</div>
                             </div>
                             <TrendingUp className="h-6 w-6 text-green-500" />
                              <div className="text-center">
-                                <div className="text-xs text-muted-foreground">Current</div>
+                                <div className="text-xs text-muted-foreground">{t('current')}</div>
                                 <div className="font-bold text-lg">₹{priceInfo.currentMsp}</div>
                             </div>
                         </div>
                     </div>
                 ) : (
                     <div className="text-center text-sm text-muted-foreground h-full flex items-center justify-center">
-                        <p>Select a crop to see price analysis.</p>
+                        <p>{t('select_crop_for_analysis')}</p>
                     </div>
                 )}
             </CardContent>
@@ -480,9 +482,9 @@ export default function DashboardView() {
             <CardHeader>
                 <CardTitle className="font-headline flex items-center gap-2">
                     <Wheat className="h-5 w-5" />
-                    Latest Prices
+                    {t('latest_prices_title')}
                 </CardTitle>
-                <CardDescription>Quick view of current MSP.</CardDescription>
+                <CardDescription>{t('latest_prices_desc')}</CardDescription>
             </CardHeader>
             <CardContent>
                 <ul className="space-y-3">

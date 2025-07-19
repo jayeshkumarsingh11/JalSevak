@@ -27,11 +27,13 @@ import SchemeFinder from "@/components/SchemeFinder";
 import CropAdvisor from "@/components/CropAdvisor";
 import AppHeader from "@/components/AppHeader";
 import SoilQualityAdvisor from "@/components/SoilQualityAdvisor";
+import { useTranslations } from "next-intl";
 
 type View = "dashboard" | "planner" | "schemes" | "advisor" | "soil";
 
 export default function JalSevakApp() {
   const [activeView, setActiveView] = useState<View>("dashboard");
+  const t = useTranslations('JalSevakApp');
 
   const renderContent = () => {
     switch (activeView) {
@@ -53,17 +55,17 @@ export default function JalSevakApp() {
   const getPageTitle = () => {
     switch (activeView) {
       case 'dashboard':
-        return 'Dashboard';
+        return t('page_title_dashboard');
       case 'planner':
-        return 'Smart Irrigation Planner';
+        return t('page_title_planner');
       case 'schemes':
-        return 'Government Scheme Finder';
+        return t('page_title_schemes');
       case 'advisor':
-        return 'AI Crop Advisor';
+        return t('page_title_advisor');
       case 'soil':
-        return 'Soil Quality Advisor';
+        return t('page_title_soil');
       default:
-        return 'Dashboard';
+        return t('page_title_dashboard');
     }
   };
 
@@ -75,7 +77,7 @@ export default function JalSevakApp() {
             <div className="bg-primary/10 text-primary p-2 rounded-lg">
               <Leaf className="h-6 w-6" />
             </div>
-            <h1 className="text-2xl font-headline font-semibold">JalSevak</h1>
+            <h1 className="text-2xl font-headline font-semibold">{t('title')}</h1>
           </div>
         </SidebarHeader>
         <SidebarContent>
@@ -84,50 +86,50 @@ export default function JalSevakApp() {
               <SidebarMenuButton
                 onClick={() => setActiveView("dashboard")}
                 isActive={activeView === "dashboard"}
-                tooltip="Dashboard"
+                tooltip={t('dashboard')}
               >
                 <LayoutDashboard />
-                <span>Dashboard</span>
+                <span>{t('dashboard')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => setActiveView("advisor")}
                 isActive={activeView === "advisor"}
-                tooltip="Crop Advisor"
+                tooltip={t('crop_advisor')}
               >
                 <BrainCircuit />
-                <span>Crop Advisor</span>
+                <span>{t('crop_advisor')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => setActiveView("planner")}
                 isActive={activeView === "planner"}
-                tooltip="Irrigation Planner"
+                tooltip={t('irrigation_planner')}
               >
                 <Droplets />
-                <span>Irrigation Planner</span>
+                <span>{t('irrigation_planner')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => setActiveView("soil")}
                 isActive={activeView === "soil"}
-                tooltip="Soil Quality Advisor"
+                tooltip={t('soil_quality')}
               >
                 <TestTube2 />
-                <span>Soil Quality</span>
+                <span>{t('soil_quality')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={() => setActiveView("schemes")}
                 isActive={activeView === "schemes"}
-                tooltip="Government Schemes"
+                tooltip={t('government_schemes')}
               >
                 <Landmark />
-                <span>Government Schemes</span>
+                <span>{t('government_schemes')}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

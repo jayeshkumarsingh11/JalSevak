@@ -1,7 +1,5 @@
-"use client";
+import { redirect } from 'next/navigation';
 
-import JalSevakApp from "@/components/JalSevakApp";
-
-export default function Home() {
-  return <JalSevakApp />;
+export default function RootPage() {
+  redirect('/en');
 }

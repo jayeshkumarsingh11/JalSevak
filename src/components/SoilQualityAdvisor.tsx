@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useTranslations } from "next-intl";
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,8 @@ const CROP_SUGGESTIONS = [
 ];
 
 export default function SoilQualityAdvisor() {
+  const t = useTranslations('SoilQualityAdvisor');
+  const tGeneric = useTranslations('Generic');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SoilQualityAdvisorOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -150,7 +153,7 @@ export default function SoilQualityAdvisor() {
       const res = await soilQualityAdvisor(values);
       setResult(res);
     } catch (e: any) {
-      setError(e.message || "An unexpected error occurred.");
+      setError(e.message || tGeneric('error_unexpected'));
     } finally {
       setLoading(false);
     }
@@ -160,10 +163,8 @@ export default function SoilQualityAdvisor() {
     <div className="grid md:grid-cols-3 gap-8 items-start">
       <Card className="md:col-span-1">
         <CardHeader>
-          <CardTitle className="font-headline">Soil Quality Advisor</CardTitle>
-          <CardDescription>
-            Get AI advice on improving your soil's health based on its history.
-          </CardDescription>
+          <CardTitle className="font-headline">{t('title')}</CardTitle>
+          <CardDescription>{t('description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -173,11 +174,11 @@ export default function SoilQualityAdvisor() {
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Your Location</FormLabel>
+                    <FormLabel>{t('location_label')}</FormLabel>
                     <div className="relative">
                       <FormControl>
                         <Input
-                          placeholder="e.g., Village, State"
+                          placeholder={t('location_placeholder')}
                           {...field}
                           className="pr-10"
                           onBlur={(e) => fetchSoilType(e.target.value)}
@@ -208,17 +209,17 @@ export default function SoilQualityAdvisor() {
                 name="soilType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Soil Type</FormLabel>
+                    <FormLabel>{t('soil_type_label')}</FormLabel>
                      <Select onValueChange={field.onChange} value={field.value} disabled={fetchingSoil}>
                         <FormControl>
                           <SelectTrigger>
                             {fetchingSoil ? (
                               <div className="flex items-center gap-2 text-muted-foreground">
                                 <Loader2 className="h-4 w-4 animate-spin" />
-                                <span>Determining soil type...</span>
+                                <span>{t('determining_soil')}</span>
                               </div>
                             ) : (
-                              <SelectValue placeholder="Select soil type" />
+                              <SelectValue placeholder={t('select_soil_type')} />
                             )}
                           </SelectTrigger>
                         </FormControl>
@@ -241,10 +242,10 @@ export default function SoilQualityAdvisor() {
                 name="pastCrops"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Past Crop History</FormLabel>
+                    <FormLabel>{t('past_crop_history_label')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Selected crops appear here"
+                        placeholder={t('past_crop_history_placeholder')}
                         {...field}
                         readOnly
                         className="bg-muted"
@@ -252,7 +253,7 @@ export default function SoilQualityAdvisor() {
                     </FormControl>
                      <div ref={cropInputRef}>
                       <Input
-                        placeholder="Search and add a crop..."
+                        placeholder={t('search_add_crop_placeholder')}
                         value={cropSearch}
                         onChange={handleCropInputChange}
                         onFocus={() => setShowSuggestions(true)}
@@ -277,7 +278,7 @@ export default function SoilQualityAdvisor() {
                       )}
                     </div>
                     <FormDescription>
-                      List crops from the last 2-3 seasons.
+                      {t('past_crop_desc')}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -288,16 +289,16 @@ export default function SoilQualityAdvisor() {
                 name="mainConcern"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Primary Goal for Soil</FormLabel>
+                    <FormLabel>{t('primary_goal_label')}</FormLabel>
                      <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger><SelectValue placeholder="What is your main goal?" /></SelectTrigger>
+                          <SelectTrigger><SelectValue placeholder={t('primary_goal_placeholder')} /></SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Increase Yield">Increase Yield</SelectItem>
-                          <SelectItem value="Reduce Fertilizer Cost">Reduce Fertilizer Cost</SelectItem>
-                          <SelectItem value="Long-term Sustainability">Long-term Sustainability</SelectItem>
-                          <SelectItem value="Improve Water Retention">Improve Water Retention</SelectItem>
+                          <SelectItem value="Increase Yield">{t('increase_yield')}</SelectItem>
+                          <SelectItem value="Reduce Fertilizer Cost">{t('reduce_fertilizer_cost')}</SelectItem>
+                          <SelectItem value="Long-term Sustainability">{t('long_term_sustainability')}</SelectItem>
+                          <SelectItem value="Improve Water Retention">{t('improve_water_retention')}</SelectItem>
                         </SelectContent>
                       </Select>
                     <FormMessage />
@@ -306,7 +307,7 @@ export default function SoilQualityAdvisor() {
               />
               <Button type="submit" disabled={loading} className="w-full">
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Get Soil Advice
+                {t('get_soil_advice')}
               </Button>
             </form>
           </Form>
@@ -317,8 +318,8 @@ export default function SoilQualityAdvisor() {
         {loading && (
           <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-8">
             <Bot className="h-16 w-16 text-primary animate-bounce" />
-            <p className="font-headline text-xl">Analyzing your soil's history...</p>
-            <p className="text-muted-foreground">Our AI soil scientist is preparing your recommendations.</p>
+            <p className="font-headline text-xl">{t('analyzing_soil_history')}</p>
+            <p className="text-muted-foreground">{t('ai_preparing_recommendations')}</p>
           </div>
         )}
         {error && <p className="text-destructive p-8">{error}</p>}
@@ -328,7 +329,7 @@ export default function SoilQualityAdvisor() {
                 <CardHeader>
                     <CardTitle className="font-headline flex items-center gap-3">
                         <TestTube2 className="h-6 w-6 text-primary" />
-                        Initial Soil Health Analysis
+                        {t('initial_analysis_title')}
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -336,7 +337,7 @@ export default function SoilQualityAdvisor() {
                 </CardContent>
             </Card>
 
-            <h2 className="text-2xl font-headline pt-4">Improvement Recommendations</h2>
+            <h2 className="text-2xl font-headline pt-4">{t('improvement_recommendations_title')}</h2>
 
             {result.recommendations.length > 0 ? (
                 <Accordion type="single" collapsible className="w-full" defaultValue="item-0">
@@ -345,17 +346,17 @@ export default function SoilQualityAdvisor() {
                         <AccordionTrigger className="font-headline text-lg text-left">{rec.title}</AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2">
                         <div>
-                            <h4 className="font-semibold text-base">What to do:</h4>
+                            <h4 className="font-semibold text-base">{t('what_to_do')}</h4>
                             <p className="text-muted-foreground">{rec.description}</p>
                         </div>
                         <div>
-                            <h4 className="font-semibold text-base">How to implement:</h4>
+                            <h4 className="font-semibold text-base">{t('how_to_implement')}</h4>
                             <p className="text-muted-foreground whitespace-pre-wrap">{rec.implementation}</p>
                         </div>
                         <div>
                             <h4 className="font-semibold text-base flex items-center gap-2">
                                 <Sparkles className="h-4 w-4 text-accent" />
-                                Why it's important (Benefits):
+                                {t('why_important')}
                             </h4>
                             <p className="text-muted-foreground">{rec.benefits}</p>
                         </div>
@@ -366,10 +367,10 @@ export default function SoilQualityAdvisor() {
             ) : (
                 <Card className="flex flex-col items-center justify-center p-8 text-center">
                     <CardHeader>
-                        <CardTitle className="font-headline">No Specific Recommendations Found</CardTitle>
+                        <CardTitle className="font-headline">{t('no_recommendations_title')}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-muted-foreground">We couldn't generate recommendations based on your inputs. Please try different criteria.</p>
+                        <p className="text-muted-foreground">{t('no_recommendations_desc')}</p>
                     </CardContent>
                 </Card>
             )}
