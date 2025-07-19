@@ -3,31 +3,13 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Bell, LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/use-toast";
-import { useEffect, useState } from "react";
+import { Bell } from "lucide-react";
 
 interface AppHeaderProps {
   title: string;
 }
 
-interface User {
-  name: string;
-  email: string;
-}
-
 export default function AppHeader({ title }: AppHeaderProps) {
-  const router = useRouter();
-  const { toast } = useToast();
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("jal-sevak-user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
   
   const getInitials = (name: string) => {
     return name
@@ -35,15 +17,6 @@ export default function AppHeader({ title }: AppHeaderProps) {
       .map(n => n[0])
       .slice(0, 2)
       .join('');
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("jal-sevak-user");
-    toast({
-      title: "Logged Out",
-      description: "You have been successfully logged out.",
-    });
-    router.push("/login");
   };
 
   return (
@@ -57,11 +30,8 @@ export default function AppHeader({ title }: AppHeaderProps) {
         </Button>
         <Avatar>
           <AvatarImage src="https://placehold.co/40x40.png" alt="@farmer" data-ai-hint="farmer portrait" />
-          <AvatarFallback>{user ? getInitials(user.name) : 'FP'}</AvatarFallback>
+          <AvatarFallback>FP</AvatarFallback>
         </Avatar>
-        <Button variant="ghost" size="icon" onClick={handleLogout} className="rounded-full" aria-label="Log out">
-            <LogOut className="h-5 w-5" />
-        </Button>
       </div>
     </header>
   );
