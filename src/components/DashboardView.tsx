@@ -11,10 +11,11 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Sun, CloudRain, Droplets, Thermometer, Wind, Leaf, MapPin, TrendingUp, Info, Landmark } from "lucide-react";
+import { Sun, CloudRain, Droplets, Thermometer, Wind, Leaf, MapPin, TrendingUp, Info, Landmark, Wheat } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { cropPriceInfo, type CropPriceInfoOutput } from "@/ai/flows/crop-price-info";
+import { Separator } from "@/components/ui/separator";
 
 
 const generateMspData = (basePrice: number, volatility: number, trend: number) => {
@@ -74,6 +75,14 @@ const allMspData = {
     'Guava': generateMspData(2000, 200, 5), // Market price
     'Papaya': generateMspData(1500, 150, 4), // Market price
 };
+
+const latestPrices = [
+    { name: 'Wheat', price: 2275, change: 150 },
+    { name: 'Rice', price: 2183, change: 100 },
+    { name: 'Cotton', price: 6620, change: 580 },
+    { name: 'Mustard', price: 5650, change: 200 },
+    { name: 'Gram', price: 5440, change: 105 },
+];
 
 type MspDataKey = keyof typeof allMspData;
 
@@ -377,7 +386,7 @@ export default function DashboardView() {
         </Card>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-5">
         <Card className="md:col-span-2">
           <CardHeader className="flex flex-row items-start justify-between gap-4">
             <div className="space-y-1">
@@ -426,7 +435,7 @@ export default function DashboardView() {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="md:col-span-2">
             <CardHeader>
                 <CardTitle className="font-headline flex items-center gap-2">
                     <Info className="h-5 w-5" />
@@ -466,9 +475,36 @@ export default function DashboardView() {
                 )}
             </CardContent>
         </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline flex items-center gap-2">
+                    <Wheat className="h-5 w-5" />
+                    Latest Prices
+                </CardTitle>
+                <CardDescription>Quick view of current MSP.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ul className="space-y-3">
+                    {latestPrices.map((crop, index) => (
+                        <li key={crop.name}>
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="font-medium">{crop.name}</span>
+                                <div className="flex items-center gap-2">
+                                    <span className="font-semibold">₹{crop.price}</span>
+                                    <span className={`text-xs flex items-center gap-1 ${crop.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                        <TrendingUp className="h-3 w-3" />
+                                        {crop.change}
+                                    </span>
+                                </div>
+                            </div>
+                            {index < latestPrices.length - 1 && <Separator className="mt-3" />}
+                        </li>
+                    ))}
+                </ul>
+            </CardContent>
+        </Card>
       </div>
     </div>
   );
 }
-
-    
