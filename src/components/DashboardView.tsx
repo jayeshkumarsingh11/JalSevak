@@ -22,14 +22,14 @@ const generateMspData = (basePrice: number, volatility: number, trend: number) =
   const data = [];
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const today = new Date();
-  for (let i = 23; i >= 0; i--) {
+  for (let i = 11; i >= 0; i--) {
     const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
     const monthName = months[date.getMonth()];
     const year = date.getFullYear().toString().slice(-2);
     const name = `${monthName} '${year}`;
     
     // Simplified trend application for mock data
-    let priceValue = basePrice + (23 - i) * trend * (basePrice / 1000) + (Math.random() - 0.5) * volatility;
+    let priceValue = basePrice + (11 - i) * trend * (basePrice / 1000) + (Math.random() - 0.5) * volatility;
     data.push({ name, msp: Math.round(priceValue) });
   }
   return data;
@@ -391,7 +391,7 @@ export default function DashboardView() {
           <CardHeader className="flex flex-row items-start justify-between gap-4">
             <div className="space-y-1">
               <CardTitle className="font-headline">Govt. Crop Price Trend (MSP)</CardTitle>
-              <CardDescription>Minimum Support Price (MSP) in ₹ per Quintal for the last 24 months.</CardDescription>
+              <CardDescription>Minimum Support Price (MSP) in ₹ per Quintal for the last 12 months.</CardDescription>
             </div>
              <div className="relative w-40" ref={cropInputRef}>
                 <Input
