@@ -1,29 +1,20 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import {
-  BarChart,
-  Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   Tooltip,
-  Legend,
   ResponsiveContainer,
-  LineChart,
-  Line,
 } from "recharts";
 import { Sun, CloudRain, Droplets, Thermometer, Wind, Leaf, MapPin } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
-
-const impactData = [
-  { name: 'Water Usage', 'Without Planner': 8000, 'With Smart Planner': 5200 },
-  { name: 'Disease Risk', 'Without Planner': 65, 'With Smart Planner': 30 },
-  { name: 'Manual Work', 'Without Planner': 100, 'With Smart Planner': 40 },
-];
 
 const generateYieldData = (baseYield: number, volatility: number, trend: number) => {
   const data = [];
@@ -47,6 +38,8 @@ const allYieldData = {
   'Wheat': generateYieldData(450, 20, 1),
   'Rice': generateYieldData(300, 30, 1.8),
   'Maize': generateYieldData(250, 40, 2),
+  'Sugarcane': generateYieldData(600, 60, 3),
+  'Cotton': generateYieldData(200, 25, 1.2),
 };
 
 type YieldDataKey = keyof typeof allYieldData;
@@ -71,6 +64,41 @@ export default function DashboardView() {
   const [irrigationTime, setIrrigationTime] = useState<IrrigationTime | null>(null);
   const [selectedYieldCrop, setSelectedYieldCrop] = useState<YieldDataKey>('Overall');
 
+  const [yieldCropInput, setYieldCropInput] = useState<string>('Overall');
+  const [yieldSuggestions, setYieldSuggestions] = useState<string[]>([]);
+  const [showYieldSuggestions, setShowYieldSuggestions] = useState(false);
+  const yieldInputRef = useRef<HTMLDivElement>(null);
+
+
+  const handleYieldInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setYieldCropInput(value);
+    if (value) {
+      const filtered = Object.keys(allYieldData).filter(crop =>
+        crop.toLowerCase().startsWith(value.toLowerCase())
+      );
+      setYieldSuggestions(filtered);
+      setShowYieldSuggestions(true);
+    } else {
+      setShowYieldSuggestions(false);
+    }
+  };
+
+  const handleYieldSuggestionClick = (suggestion: YieldDataKey) => {
+    setYieldCropInput(suggestion);
+    setSelectedYieldCrop(suggestion);
+    setShowYieldSuggestions(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (yieldInputRef.current && !yieldInputRef.current.contains(event.target as Node)) {
+        setShowYieldSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     // Calculate irrigation time on client-side to avoid hydration mismatch
@@ -278,18 +306,30 @@ export default function DashboardView() {
               <CardTitle className="font-headline">Crop Yield Trend</CardTitle>
               <CardDescription>Projected yield consistency improvement.</CardDescription>
             </div>
-             <Select value={selectedYieldCrop} onValueChange={(value) => setSelectedYieldCrop(value as YieldDataKey)}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Select Crop" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.keys(allYieldData).map((crop) => (
-                    <SelectItem key={crop} value={crop}>
-                      {crop}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+             <div className="relative w-40" ref={yieldInputRef}>
+                <Input
+                  placeholder="Search Crop"
+                  value={yieldCropInput}
+                  onChange={handleYieldInputChange}
+                  onFocus={() => setShowYieldSuggestions(true)}
+                  autoComplete="off"
+                />
+                {showYieldSuggestions && yieldSuggestions.length > 0 && (
+                  <div className="absolute z-10 w-full bg-background border border-input rounded-md shadow-lg mt-1">
+                    <ul className="py-1">
+                      {yieldSuggestions.map((suggestion) => (
+                        <li
+                          key={suggestion}
+                          className="px-3 py-2 cursor-pointer hover:bg-accent text-sm"
+                          onClick={() => handleYieldSuggestionClick(suggestion as YieldDataKey)}
+                        >
+                          {suggestion}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+             </div>
           </CardHeader>
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -306,3 +346,4 @@ export default function DashboardView() {
     </div>
   );
 }
+
