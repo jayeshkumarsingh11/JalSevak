@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -39,10 +40,51 @@ interface WeatherData {
   is_day: number;
 }
 
+interface IrrigationTime {
+  time: string;
+  relative: string;
+}
+
 export default function DashboardView() {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loadingWeather, setLoadingWeather] = useState(true);
   const [locationName, setLocationName] = useState<string | null>("Loading location...");
+  const [irrigationTime, setIrrigationTime] = useState<IrrigationTime | null>(null);
+
+
+  useEffect(() => {
+    // Calculate irrigation time on client-side to avoid hydration mismatch
+    const calculateIrrigationTime = () => {
+      const now = new Date();
+      const tomorrow = new Date(now);
+      tomorrow.setDate(now.getDate() + 1);
+      tomorrow.setHours(6, 0, 0, 0); // Set to 6 AM tomorrow
+
+      const diffMs = tomorrow.getTime() - now.getTime();
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+      const diffMinutes = Math.round((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+      let relativeString = '';
+      if (diffHours > 0) {
+        relativeString = `in ${diffHours} hour${diffHours > 1 ? 's' : ''}`;
+      } else if (diffMinutes > 0) {
+        relativeString = `in ${diffMinutes} minute${diffMinutes > 1 ? 's' : ''}`;
+      } else {
+        relativeString = "now";
+      }
+
+      setIrrigationTime({
+        time: "Tomorrow, 6 AM",
+        relative: relativeString,
+      });
+    };
+
+    calculateIrrigationTime();
+    // Update every minute
+    const interval = setInterval(calculateIrrigationTime, 60000); 
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const fetchWeatherAndLocation = async (latitude: number, longitude: number) => {
@@ -120,8 +162,17 @@ export default function DashboardView() {
             <Droplets className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold font-headline">Tomorrow, 6 AM</div>
-            <p className="text-xs text-muted-foreground">in 18 hours</p>
+            {irrigationTime ? (
+              <>
+                <div className="text-2xl font-bold font-headline">{irrigationTime.time}</div>
+                <p className="text-xs text-muted-foreground">{irrigationTime.relative}</p>
+              </>
+            ) : (
+               <>
+                <Skeleton className="h-7 w-40 mb-1" />
+                <Skeleton className="h-3 w-24" />
+              </>
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -137,15 +188,15 @@ export default function DashboardView() {
         <Card className="lg:col-span-2">
           <CardHeader className="flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Weather Overview</CardTitle>
-              {loadingWeather ? (
+             {loadingWeather ? (
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
                   <Skeleton className="h-4 w-24" />
                 </div>
               ) : (
-                <CardDescription className="flex items-center gap-1 text-xs">
-                  <MapPin className="h-3 w-3" />
-                  {locationName}
-                </CardDescription>
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                   <MapPin className="h-3 w-3" />
+                  <span>{locationName}</span>
+                </div>
               )}
           </CardHeader>
           <CardContent className="flex items-center justify-around pt-2">
