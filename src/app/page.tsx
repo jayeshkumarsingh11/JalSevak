@@ -1,7 +1,7 @@
 "use client";
 
-import LandingPage from "@/components/LandingPage";
+import JalSevakApp from "@/components/JalSevakApp";
 
 export default function Home() {
-  return <LandingPage />;
+  return <JalSevakApp />;
 }
