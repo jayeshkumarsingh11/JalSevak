@@ -4,12 +4,13 @@
 import { useState, useEffect, useRef } from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import {
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   Tooltip,
   ResponsiveContainer,
+  Legend,
 } from "recharts";
 import { Sun, CloudRain, Droplets, Thermometer, Wind, Leaf, MapPin, TrendingUp, Info, Landmark, Wheat, CalendarDays } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -30,8 +31,10 @@ const generateMspData = (basePrice: number, volatility: number, trend: number) =
     const name = `${monthName} '${year}`;
     
     // Simplified trend application for mock data
-    let priceValue = basePrice + (11 - i) * trend * (basePrice / 1000) + (Math.random() - 0.5) * volatility;
-    data.push({ name, msp: Math.round(priceValue) });
+    let mspValue = basePrice + (11 - i) * trend * (basePrice / 1000) + (Math.random() - 0.5) * volatility;
+    // Local price is usually a bit higher than MSP, with more volatility
+    let localPriceValue = mspValue * (1 + (Math.random() * 0.2 - 0.05)); // -5% to +15% of MSP
+    data.push({ name, msp: Math.round(mspValue), local: Math.round(localPriceValue) });
   }
   return data;
 };
@@ -484,8 +487,8 @@ export default function DashboardView() {
         <Card className="md:col-span-3">
           <CardHeader className="flex flex-row items-start justify-between gap-4">
             <div className="space-y-1">
-              <CardTitle className="font-headline">Govt. Crop Price Trend (MSP)</CardTitle>
-              <CardDescription>Minimum Support Price (MSP) in ₹ per Quintal for the last 12 months.</CardDescription>
+              <CardTitle className="font-headline">Crop Price Comparison</CardTitle>
+              <CardDescription>Govt. MSP vs. Local Vendor Price (₹ per Quintal).</CardDescription>
             </div>
              <div className="relative w-40" ref={cropInputRef}>
                 <Input
@@ -515,16 +518,28 @@ export default function DashboardView() {
           </CardHeader>
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={allMspData[selectedCrop]}>
+              <AreaChart data={allMspData[selectedCrop]}>
+                <defs>
+                    <linearGradient id="colorMsp" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.1}/>
+                    </linearGradient>
+                    <linearGradient id="colorLocal" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(var(--accent))" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="hsl(var(--accent))" stopOpacity={0.1}/>
+                    </linearGradient>
+                </defs>
                 <XAxis dataKey="name" stroke="#888888" fontSize={10} tickLine={false} axisLine={false} interval={2} />
                 <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} />
                 <Tooltip
                     wrapperClassName="!bg-card !border-border"
                     labelClassName="font-bold"
-                    formatter={(value: number) => [`₹${value.toLocaleString()}`, "MSP"]}
+                    formatter={(value: number, name: string) => [`₹${value.toLocaleString()}`, name === 'msp' ? 'Govt. MSP' : 'Local Vendor']}
                 />
-                <Line type="monotone" dataKey="msp" stroke="hsl(var(--accent))" strokeWidth={2} dot={{ r: 2, fill: "hsl(var(--accent))" }} />
-              </LineChart>
+                <Legend verticalAlign="top" height={36} formatter={(value) => value === 'msp' ? 'Govt. MSP' : 'Local Vendor'} />
+                <Area type="monotone" dataKey="local" stroke="hsl(var(--accent))" fillOpacity={1} fill="url(#colorLocal)" />
+                <Area type="monotone" dataKey="msp" stroke="hsl(var(--primary))" fillOpacity={1} fill="url(#colorMsp)" />
+              </AreaChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
@@ -573,3 +588,4 @@ export default function DashboardView() {
     </div>
   );
 }
+
