@@ -1,6 +1,8 @@
+
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   SidebarProvider,
   Sidebar,
@@ -71,12 +73,12 @@ export default function JalSevakApp() {
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-          <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <div className="bg-primary/10 text-primary p-2 rounded-lg">
               <Leaf className="h-6 w-6" />
             </div>
             <h1 className="text-2xl font-headline font-semibold">JalSevak</h1>
-          </div>
+          </Link>
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
