@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -6,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface HeroPageProps {
-    onNavigate: (page: 'Dashboard' | 'About Us') => void;
+    onNavigate: (page: 'Dashboard' | 'About Us' | 'Contact Us') => void;
 }
 
 export default function HeroPage({ onNavigate }: HeroPageProps) {
