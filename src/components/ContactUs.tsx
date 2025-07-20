@@ -49,37 +49,6 @@ export default function ContactUs() {
         </header>
 
         <div className="grid md:grid-cols-2 gap-12 items-start">
-          <div className="space-y-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-headline">{t('contact_info_title')}</CardTitle>
-                <CardDescription>{t('contact_info_desc')}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <Mail className="w-6 h-6 text-primary" />
-                  <div>
-                    <h3 className="font-semibold">{t('contact_email_title')}</h3>
-                    <a href="mailto:info@jalsevak.com" className="text-muted-foreground hover:text-primary">info@jalsevak.com</a>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <Phone className="w-6 h-6 text-primary" />
-                  <div>
-                    <h3 className="font-semibold">{t('contact_phone_title')}</h3>
-                    <a href="tel:+919876543210" className="text-muted-foreground hover:text-primary">+91 987 654 3210</a>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <MapPin className="w-6 h-6 text-primary" />
-                  <div>
-                    <h3 className="font-semibold">{t('contact_address_title')}</h3>
-                    <p className="text-muted-foreground">{t('contact_address_value')}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
           <div>
             <Card>
               <CardHeader>

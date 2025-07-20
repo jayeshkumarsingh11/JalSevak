@@ -6,35 +6,24 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Target, Eye, Users } from "lucide-react";
+import image1 from "./images/Jayesh.jpg"
+import image2 from "./images/Vidushi.jpeg"
 
 const teamMembers = [
   {
-    nameKey: "team_member_1_name",
-    roleKey: "team_member_1_role",
-    image: "/images/team1.jpg",
-    fallback: "DA",
-    "data-ai-hint": "scientist portrait",
+    nameKey: "Jayesh Kumar Singh",
+    email: "jayeshkumarsingh11@gmail.com",
+    image: image1,
   },
   {
-    nameKey: "team_member_2_name",
-    roleKey: "team_member_2_role",
-    image: "/images/team2.jpg",
-    fallback: "PS",
-    "data-ai-hint": "woman portrait",
+    nameKey: "Vidushi Srivastava",
+    email: "vidushi.official1012@gmail.com",
+    image: image2,
   },
   {
-    nameKey: "team_member_3_name",
-    roleKey: "team_member_3_role",
+    nameKey: "Kritika Singh",
+    email: "kritikasince2005@gmail.com",
     image: "/images/team3.jpg",
-    fallback: "RK",
-    "data-ai-hint": "man engineer",
-  },
-  {
-    nameKey: "team_member_4_name",
-    roleKey: "team_member_4_role",
-    image: "/images/team4.jpg",
-    fallback: "AD",
-    "data-ai-hint": "woman designer",
   },
 ];
 
@@ -97,7 +86,7 @@ export default function AboutPage() {
         <p className="mt-2 text-muted-foreground">
           {t("meet_team_subtitle")}
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
           {teamMembers.map((member, index) => (
             <Card
               key={index}
@@ -106,18 +95,16 @@ export default function AboutPage() {
               <CardContent className="flex flex-col items-center p-6">
                 <Avatar className="w-24 h-24 mb-4 border-4 border-accent">
                   <Image
-                    src={`https://placehold.co/100x100.png`}
+                    src={member.image}
                     alt={t(member.nameKey)}
                     width={100}
                     height={100}
-                    data-ai-hint={member["data-ai-hint"]}
                   />
-                  <AvatarFallback>{member.fallback}</AvatarFallback>
                 </Avatar>
                 <h3 className="text-lg font-semibold font-headline">
                   {t(member.nameKey)}
                 </h3>
-                <p className="text-sm text-primary">{t(member.roleKey)}</p>
+                <p className="text-sm text-primary">{t(member.email)}</p>
               </CardContent>
             </Card>
           ))}
