@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { smartIrrigationSchedule, type SmartIrrigationScheduleInput, type SmartIrrigationScheduleOutput } from "@/ai/flows/smart-irrigation-scheduling";
 import { Loader2, Droplets, Bot, LocateFixed, Clock, Shield, Leaf } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import image from "./images/IrrigationPlanner.webp"
 
 const formSchema = z.object({
   cropType: z.string().min(1, "Crop type is required."),
@@ -300,7 +301,7 @@ export default function IrrigationPlanner() {
         {!result && !loading && (
             <Card className="flex flex-col items-center justify-center h-full p-8 text-center bg-muted/30 border-dashed">
               <Image 
-                src="https://placehold.co/400x300.png"
+                src={image}
                 alt="Illustration of a water droplet"
                 width={400}
                 height={300}

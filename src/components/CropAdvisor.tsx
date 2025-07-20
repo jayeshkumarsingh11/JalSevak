@@ -16,6 +16,7 @@ import { cropSuggestion, type CropSuggestionOutput } from "@/ai/flows/crop-sugge
 import { getSoilType } from "@/ai/flows/get-soil-type";
 import { Loader2, Bot, LocateFixed, Leaf, Droplets, Banknote, CalendarDays, Rss } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import image from "./images/crop.webp";
 
 const formSchema = z.object({
   location: z.string().min(1, "Location is required."),
@@ -283,7 +284,7 @@ export default function CropAdvisor() {
         {!result && !loading && (
           <Card className="flex flex-col items-center justify-center h-full p-8 text-center bg-muted/30 border-dashed">
             <Image 
-              src="https://placehold.co/400x300.png"
+              src={image}
               alt="Illustration of a seedling"
               width={400}
               height={300}

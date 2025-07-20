@@ -17,6 +17,7 @@ import { soilQualityAdvisor, type SoilQualityAdvisorOutput } from "@/ai/flows/so
 import { getSoilType } from "@/ai/flows/get-soil-type";
 import { Loader2, Bot, LocateFixed, TestTube2, Sparkles } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import image from "./images/farmer.avif";
 
 const formSchema = z.object({
   location: z.string().min(1, "Location is required."),
@@ -319,7 +320,7 @@ export default function SoilQualityAdvisor() {
          {!result && !loading && (
           <Card className="flex flex-col items-center justify-center h-full p-8 text-center bg-muted/30 border-dashed">
             <Image 
-              src="https://placehold.co/400x300.png"
+              src={image}
               alt="Illustration of soil layers"
               width={400}
               height={300}
