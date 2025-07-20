@@ -22,12 +22,14 @@ export default function LandingPage() {
         return (
           <>
             <HeroPage onNavigate={handleNavigation} />
-            <div className="bg-background py-12">
-              <AboutPage />
-            </div>
+            <AboutPage />
             <ContactUs />
           </>
         );
+      case 'About Us':
+        return <AboutPage />;
+      case 'Contact Us':
+        return <ContactUs />;
       case 'Dashboard':
       case 'Irrigation Planner':
       case 'Crop Advisor':
@@ -39,12 +41,10 @@ export default function LandingPage() {
     }
   };
 
-  // If we are in the main application, render it directly.
   if (['Dashboard', 'Irrigation Planner', 'Crop Advisor', 'Soil Advisor', 'Govt. Schemes'].includes(activeView)) {
     return renderContent();
   }
 
-  // Otherwise, render the landing/marketing page layout.
   return (
     <div className="flex flex-col min-h-screen bg-background">
         <TopNavBar activeItem={activeView} setActiveItem={handleNavigation} isAppView={false} />

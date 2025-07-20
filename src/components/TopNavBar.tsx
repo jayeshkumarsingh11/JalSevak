@@ -5,13 +5,12 @@ import * as React from "react";
 import { Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { NavItem } from "./JalSevakApp";
-import { ThemeToggle } from "./ThemeToggle";
 import { LanguageToggle } from "./LanguageToggle";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface TopNavBarProps {
-  activeItem: NavItem | "About Us" | "Contact Us";
+  activeItem: NavItem;
   setActiveItem: (item: NavItem) => void;
   isAppView?: boolean;
 }
@@ -34,29 +33,19 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
 
     const handleScroll = (e: React.MouseEvent<HTMLButtonElement>, targetId: string) => {
       e.preventDefault();
-      if (activeItem !== 'Home') {
-        setActiveItem('Home');
-        // Give react time to render the home page before scrolling
-        setTimeout(() => {
-            const element = document.getElementById(targetId);
-            if (element) {
-              element.scrollIntoView({ behavior: 'smooth' });
-            }
-        }, 100);
-      } else {
-         const element = document.getElementById(targetId);
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-          }
+      
+      const element = document.getElementById(targetId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
       }
       setIsMenuOpen(false);
     };
 
     const handleNavClick = (item: NavItem) => {
         if(item === "About Us") {
-            // This is handled by handleScroll
+            handleScroll({} as React.MouseEvent<HTMLButtonElement>, 'about-us');
         } else if (item === "Contact Us") {
-            // This is handled by handleScroll
+            handleScroll({} as React.MouseEvent<HTMLButtonElement>, 'contact-us');
         }
         else {
             setActiveItem(item);
@@ -107,7 +96,6 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
 
             <div className="hidden md:flex items-center gap-2">
                 <LanguageToggle />
-                <ThemeToggle />
                 <Avatar>
                     <AvatarFallback>FP</AvatarFallback>
                 </Avatar>
@@ -152,7 +140,6 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
                      <div className="border-t pt-4 flex items-center justify-between">
                         <div>
                             <LanguageToggle />
-                            <ThemeToggle />
                         </div>
                         <Avatar>
                             <AvatarFallback>FP</AvatarFallback>
