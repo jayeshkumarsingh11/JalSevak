@@ -238,7 +238,7 @@ export default function SchemeFinder() {
         )}
         {error && <p className="text-destructive p-8">{error}</p>}
         {result && (
-          <div>
+          <div className="animate-slide-up-fade">
             <h2 className="text-2xl font-headline mb-4">{t('results_suggested_schemes')}</h2>
             {result.schemes.length > 0 ? (
               <Accordion type="single" collapsible className="w-full">

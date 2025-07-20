@@ -324,7 +324,7 @@ export default function SoilQualityAdvisor() {
         )}
         {error && <p className="text-destructive p-8">{error}</p>}
         {result && (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-slide-up-fade">
              <Card>
                 <CardHeader>
                     <CardTitle className="font-headline flex items-center gap-3">

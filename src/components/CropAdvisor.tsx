@@ -288,7 +288,7 @@ export default function CropAdvisor() {
         )}
         {error && <p className="text-destructive p-8">{error}</p>}
         {result && (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-slide-up-fade">
             <h2 className="text-2xl font-headline mb-4">{t('results_top_recommendations')}</h2>
             {result.suggestions.length > 0 ? (
                 result.suggestions.map((crop, index) => (

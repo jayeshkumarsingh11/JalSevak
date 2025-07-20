@@ -305,7 +305,7 @@ export default function IrrigationPlanner() {
         )}
         {error && <p className="text-destructive p-8">{error}</p>}
         {result && (
-          <Card className="w-full">
+          <Card className="w-full animate-slide-up-fade">
             <CardHeader>
               <CardTitle className="font-headline flex items-center gap-2">
                 <Droplets className="text-primary"/> {t('results_recommended_schedule')}
