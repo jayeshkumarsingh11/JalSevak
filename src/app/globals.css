@@ -40,36 +40,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-@layer utilities {
-  @keyframes shimmer {
-    0% {
-      background-position: -200% 0;
-    }
-    100% {
-      background-position: 200% 0;
-    }
-  }
-
-  .animate-shimmer {
-    background: linear-gradient(90deg, 
-      hsl(var(--muted)) 25%, 
-      hsl(var(--muted) / 0.5) 50%, 
-      hsl(var(--muted)) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-  }
-  
-  @keyframes pulse-bg {
-    0%, 100% {
-      background-color: transparent;
-    }
-    50% {
-      background-color: hsl(var(--accent) / 0.3);
-    }
-  }
-  
-  .animate-pulse-bg {
-    animation: pulse-bg 1s ease-out;
-  }
-}

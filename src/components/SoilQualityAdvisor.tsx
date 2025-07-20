@@ -317,14 +317,14 @@ export default function SoilQualityAdvisor() {
       <div className="md:col-span-2">
         {loading && (
           <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-8">
-            <Bot className="h-16 w-16 text-primary animate-bounce" />
+            <Bot className="h-16 w-16 text-primary" />
             <p className="font-headline text-xl">{t('loading_analyzing_soil')}</p>
             <p className="text-muted-foreground">{t('loading_preparing_soil_recommendations')}</p>
           </div>
         )}
         {error && <p className="text-destructive p-8">{error}</p>}
         {result && (
-          <div className="space-y-6 animate-fade-in-up">
+          <div className="space-y-6">
              <Card>
                 <CardHeader>
                     <CardTitle className="font-headline flex items-center gap-3">
@@ -377,21 +377,6 @@ export default function SoilQualityAdvisor() {
           </div>
         )}
       </div>
-       <style jsx>{`
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in-up {
-          animation: fade-in-up 0.5s ease-out forwards;
-        }
-      `}</style>
     </div>
   );
 }

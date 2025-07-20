@@ -70,7 +70,7 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
         : navItems.filter(item => !item.isAppViewOnly);
     
     return (
-    <header className="bg-background/80 backdrop-blur-sm border-b shadow-sm sticky top-0 z-40">
+    <header className="bg-background border-b shadow-sm sticky top-0 z-40">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
             <div className="flex items-center gap-4">
                 <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick("Home"); }} className="flex items-center gap-2 font-headline text-xl font-semibold text-primary">
@@ -79,7 +79,7 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
                 </a>
             </div>
             
-            <nav className="hidden md:flex items-center gap-1 bg-muted/50 p-1 rounded-lg">
+            <nav className="hidden md:flex items-center gap-2">
                 {filteredNavItems.map((item) => {
                      // Only render Dashboard button if user is logged in
                     if (item.name === 'Dashboard' && !user) {
@@ -88,8 +88,7 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
                     return (
                          <Button 
                             key={item.name}
-                            variant={activeItem === item.name ? "default" : "ghost"} 
-                            className="px-4 py-2 text-sm font-medium transition-colors duration-200"
+                            variant={activeItem === item.name ? "secondary" : "ghost"} 
                             onClick={() => handleNavClick(item.name)}
                         >
                             {t(item.key)}
@@ -153,7 +152,7 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
                         return (
                              <Button 
                                 key={item.name}
-                                variant={activeItem === item.name ? "default" : "ghost"} 
+                                variant={activeItem === item.name ? "secondary" : "ghost"} 
                                 className="w-full justify-start"
                                 onClick={() => handleNavClick(item.name)}
                             >

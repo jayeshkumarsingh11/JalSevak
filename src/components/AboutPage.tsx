@@ -101,7 +101,7 @@ export default function AboutPage() {
           {teamMembers.map((member, index) => (
             <Card
               key={index}
-              className="text-center hover:shadow-xl transition-shadow duration-300"
+              className="text-center"
             >
               <CardContent className="flex flex-col items-center p-6">
                 <Avatar className="w-24 h-24 mb-4 border-4 border-accent">

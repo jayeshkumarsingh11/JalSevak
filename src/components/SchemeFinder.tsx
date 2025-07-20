@@ -231,14 +231,14 @@ export default function SchemeFinder() {
       <div className="md:col-span-2">
         {loading && (
           <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-8">
-            <Bot className="h-16 w-16 text-primary animate-bounce" />
+            <Bot className="h-16 w-16 text-primary" />
             <p className="font-headline text-xl">{t('loading_finding_schemes')}</p>
             <p className="text-muted-foreground">{t('loading_searching_programs')}</p>
           </div>
         )}
         {error && <p className="text-destructive p-8">{error}</p>}
         {result && (
-          <div className="animate-fade-in-up">
+          <div>
             <h2 className="text-2xl font-headline mb-4">{t('results_suggested_schemes')}</h2>
             {result.schemes.length > 0 ? (
               <Accordion type="single" collapsible className="w-full">
@@ -279,21 +279,6 @@ export default function SchemeFinder() {
           </div>
         )}
       </div>
-       <style jsx>{`
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in-up {
-          animation: fade-in-up 0.5s ease-out forwards;
-        }
-      `}</style>
     </div>
   );
 }

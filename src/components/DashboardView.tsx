@@ -130,13 +130,6 @@ export default function DashboardView() {
   
   const [priceInfo, setPriceInfo] = useState<CropPriceInfoOutput | null>(null);
   const [loadingPriceInfo, setLoadingPriceInfo] = useState(false);
-  const [pulse, setPulse] = useState(0);
-
-  useEffect(() => {
-    if (weatherData || irrigationTime) {
-      setPulse(p => p + 1); // Trigger animation on data change
-    }
-  }, [weatherData, irrigationTime]);
 
 
   const handleCropInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -340,10 +333,10 @@ export default function DashboardView() {
           </CardHeader>
           <CardContent>
             {irrigationTime ? (
-              <div key={`irrigation-${pulse}`} className="animate-pulse-bg rounded-md -m-2 p-2">
+              <>
                 <div className="text-2xl font-bold font-headline">{irrigationTime.relative}</div>
                 <p className="text-xs text-muted-foreground">{irrigationTime.time}</p>
-              </div>
+              </>
             ) : (
                <>
                 <Skeleton className="h-7 w-40 mb-1" />
@@ -384,7 +377,7 @@ export default function DashboardView() {
               )}
             </div>
           </CardHeader>
-          <CardContent key={`weather-${pulse}`} className="flex items-center justify-around pt-2 animate-pulse-bg rounded-md -m-2 p-2">
+          <CardContent className="flex items-center justify-around pt-2">
             {loadingWeather ? (
                 <>
                     <Skeleton className="h-12 w-14" />
@@ -532,7 +525,7 @@ export default function DashboardView() {
           </CardHeader>
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={allMspData[selectedCrop]} isAnimationActive={true}>
+              <AreaChart data={allMspData[selectedCrop]}>
                 <defs>
                     <linearGradient id="colorMsp" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
