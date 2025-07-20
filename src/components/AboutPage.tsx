@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Target, Eye, Users } from "lucide-react";
+import image from "./images/indian-farmer-1610471656527.avif"
 
 const teamMembers = [
   {
@@ -54,7 +55,7 @@ export default function AboutPage() {
 
       <div className="relative rounded-xl overflow-hidden shadow-lg">
         <Image
-          src="https://images.yourstory.com/cs/5/f02aced0d86311e98e0865c1f0fe59a2/indian-farmer-1610471656527.png?mode=crop&crop=faces&ar=2%3A1&format=auto&w=1920&q=75"
+          src={image}
           alt="Lush green farm"
           width={1200}
           height={500}

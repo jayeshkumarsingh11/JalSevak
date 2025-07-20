@@ -2,11 +2,11 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { NavItem } from "./JalSevakApp";
 import { LanguageToggle } from "./LanguageToggle";
-import { Avatar, AvatarFallback } from "./ui/avatar";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface TopNavBarProps {
@@ -25,7 +25,6 @@ const navItems: { name: NavItem, key: string, isAppViewOnly?: boolean, isMarketi
     { name: "Soil Advisor", key: "nav_soil_advisor", isAppViewOnly: true },
     { name: "Govt. Schemes", key: "nav_govt_schemes", isAppViewOnly: true },
 ];
-
 
 export default function TopNavBar({ activeItem, setActiveItem, isAppView = false }: TopNavBarProps) {
     const { t } = useLanguage();
@@ -67,13 +66,13 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
             
             <nav className="hidden md:flex items-center gap-1 bg-primary/20 p-1 rounded-lg">
                 {filteredNavItems.map((item) => {
-                    if (item.isMarketingViewOnly) {
+                    if (item.name === "About Us" || item.name === "Contact Us") {
                         return (
                              <Button 
                                 key={item.name}
                                 variant={"ghost"} 
                                 className="px-4 py-2 text-sm font-medium"
-                                onClick={() => handleScroll(item.name.toLowerCase().replace(' ', '-'))}
+                                onClick={() => handleNavClick(item.name)}
                             >
                                 {t(item.key)}
                             </Button>
@@ -94,9 +93,16 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
 
             <div className="hidden md:flex items-center gap-2">
                 <LanguageToggle />
-                <Avatar>
-                    <AvatarFallback>FP</AvatarFallback>
-                </Avatar>
+                {!isAppView && (
+                    <>
+                        <Button variant="ghost" asChild>
+                            <Link href="/login">{t('nav_login')}</Link>
+                        </Button>
+                        <Button asChild>
+                            <Link href="/register">{t('nav_register')}</Link>
+                        </Button>
+                    </>
+                )}
             </div>
 
             <div className="md:hidden">
@@ -111,37 +117,26 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
         {isMenuOpen && (
             <div className="md:hidden bg-background border-t">
                 <nav className="flex flex-col p-4 gap-2">
-                    {filteredNavItems.map((item) => {
-                         if (item.isMarketingViewOnly) {
-                            return (
-                                <Button 
-                                    key={item.name}
-                                    variant={"ghost"}
-                                    className="w-full justify-start"
-                                    onClick={() => handleScroll(item.name.toLowerCase().replace(' ', '-'))}
-                                >
-                                    {t(item.key)}
-                                </Button>
-                            )
-                        }
-                        return (
-                             <Button 
-                                key={item.name}
-                                variant={activeItem === item.name ? "primary" : "ghost"} 
-                                className="w-full justify-start"
-                                onClick={() => handleNavClick(item.name)}
-                            >
-                                {t(item.key)}
-                            </Button>
-                        )
-                    })}
-                     <div className="border-t pt-4 flex items-center justify-between">
-                        <div>
+                    {filteredNavItems.map((item) => (
+                         <Button 
+                            key={item.name}
+                            variant={activeItem === item.name ? "primary" : "ghost"} 
+                            className="w-full justify-start"
+                            onClick={() => handleNavClick(item.name)}
+                        >
+                            {t(item.key)}
+                        </Button>
+                    ))}
+                     <div className="border-t pt-4 mt-2 flex flex-col gap-2">
+                         <Button variant="ghost" asChild>
+                            <Link href="/login" className="w-full justify-start">{t('nav_login')}</Link>
+                        </Button>
+                        <Button asChild>
+                            <Link href="/register" className="w-full justify-start">{t('nav_register')}</Link>
+                        </Button>
+                        <div className="mt-2">
                             <LanguageToggle />
                         </div>
-                        <Avatar>
-                            <AvatarFallback>FP</AvatarFallback>
-                        </Avatar>
                      </div>
                 </nav>
             </div>

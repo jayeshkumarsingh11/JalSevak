@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
+import image from "../components/images/heropageImage.jpeg"
 
 interface HeroPageProps {
     onNavigate: (page: 'Dashboard' | 'About Us' | 'Contact Us') => void;
@@ -14,7 +15,7 @@ export default function HeroPage({ onNavigate }: HeroPageProps) {
   return (
     <div className="relative h-[calc(100vh-64px)] w-full overflow-hidden">
       <Image
-        src="https://khetibuddy.com/wp-content/uploads/2024/06/Crops.jpg"
+        src={image}
         alt="A vibrant corn field at sunset with a dramatic cloudy sky"
         fill
         style={{objectFit: "cover"}}

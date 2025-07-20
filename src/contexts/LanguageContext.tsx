@@ -18,6 +18,8 @@ const defaultTranslations: Translations = {
   nav_govt_schemes: 'Govt. Schemes',
   nav_about_us: 'About Us',
   nav_contact_us: 'Contact Us',
+  nav_login: 'Login',
+  nav_register: 'Register',
   dropdown_overview: 'Overview',
   dropdown_analytics: 'Analytics',
   dropdown_new_schedule: 'New Schedule',
