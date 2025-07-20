@@ -17,14 +17,13 @@ import { Avatar, AvatarFallback } from "./ui/avatar";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface TopNavBarProps {
-  activeItem: NavItem;
+  activeItem: NavItem | "About Us";
   setActiveItem: (item: NavItem) => void;
   isAppView?: boolean;
 }
 
 const navItems: { name: NavItem, key: string }[] = [
     { name: "Home", key: "nav_home" },
-    { name: "About Us", key: "nav_about_us" },
     { name: "Dashboard", key: "nav_dashboard" },
     { name: "Irrigation Planner", key: "nav_irrigation_planner" },
     { name: "Crop Advisor", key: "nav_crop_advisor" },
@@ -38,8 +37,8 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
     const filteredNavItems = isAppView 
-        ? navItems.filter(item => !['Home', 'About Us'].includes(item.name)) 
-        : navItems.filter(item => ['Home', 'About Us', 'Dashboard'].includes(item.name));
+        ? navItems.filter(item => item.name !== 'Home') 
+        : navItems.filter(item => ['Home', 'Dashboard'].includes(item.name));
     
     return (
     <header className="bg-background border-b shadow-sm sticky top-0 z-40">

@@ -18,9 +18,14 @@ export default function LandingPage() {
   const renderContent = () => {
     switch (activeView) {
       case 'Home':
-        return <HeroPage onNavigate={handleNavigation} />;
-      case 'About Us':
-        return <AboutPage />;
+        return (
+          <>
+            <HeroPage onNavigate={handleNavigation} />
+            <div className="bg-background py-12">
+              <AboutPage />
+            </div>
+          </>
+        );
       case 'Dashboard':
       case 'Irrigation Planner':
       case 'Crop Advisor':

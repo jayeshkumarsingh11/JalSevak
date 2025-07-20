@@ -16,7 +16,6 @@ const defaultTranslations: Translations = {
   nav_crop_advisor: 'Crop Advisor',
   nav_soil_advisor: 'Soil Advisor',
   nav_govt_schemes: 'Govt. Schemes',
-  nav_about_us: 'About Us',
   dropdown_overview: 'Overview',
   dropdown_analytics: 'Analytics',
   dropdown_new_schedule: 'New Schedule',
