@@ -85,7 +85,7 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
                 <LanguageToggle />
                 {!isAppView && (
                     <Button asChild>
-                        <Link href="/register">{t('nav_register')}</Link>
+                        <Link href="/login">{t('nav_login')}</Link>
                     </Button>
                 )}
             </div>
@@ -114,7 +114,7 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
                     ))}
                      <div className="border-t pt-4 mt-2 flex flex-col gap-2">
                         <Button asChild>
-                            <Link href="/register" className="w-full justify-start">{t('nav_register')}</Link>
+                            <Link href="/login" className="w-full justify-start">{t('nav_login')}</Link>
                         </Button>
                         <div className="mt-2">
                             <LanguageToggle />
