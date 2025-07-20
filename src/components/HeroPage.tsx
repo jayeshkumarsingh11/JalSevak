@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -6,10 +7,11 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import image from "../components/images/heropageImage.jpeg"
 
 interface HeroPageProps {
-    onNavigate: (page: 'Dashboard' | 'About Us' | 'Contact Us') => void;
+    onNavigate: (page: 'Dashboard') => void;
+    onLearnMoreClick: () => void;
 }
 
-export default function HeroPage({ onNavigate }: HeroPageProps) {
+export default function HeroPage({ onNavigate, onLearnMoreClick }: HeroPageProps) {
   const { t } = useLanguage();
 
   return (
@@ -35,7 +37,7 @@ export default function HeroPage({ onNavigate }: HeroPageProps) {
           <Button size="lg" onClick={() => onNavigate('Dashboard')} className="bg-primary hover:bg-primary/90 text-primary-foreground">
             {t("hero_cta_primary")}
           </Button>
-          <Button size="lg" variant="outline" onClick={() => onNavigate('About Us')} className="bg-transparent border-white text-white hover:bg-white hover:text-primary">
+          <Button size="lg" variant="outline" onClick={onLearnMoreClick} className="bg-transparent border-white text-white hover:bg-white hover:text-primary">
             {t("hero_cta_secondary")}
           </Button>
         </div>

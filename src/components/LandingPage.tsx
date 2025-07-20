@@ -16,12 +16,19 @@ export default function LandingPage() {
     setActiveView(item);
   };
   
+  const handleLearnMoreClick = () => {
+    const aboutSection = document.getElementById('about-us');
+    if (aboutSection) {
+      aboutSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   const renderContent = () => {
     switch (activeView) {
       case 'Home':
         return (
           <>
-            <HeroPage onNavigate={handleNavigation} />
+            <HeroPage onNavigate={handleNavigation} onLearnMoreClick={handleLearnMoreClick} />
             <AboutPage />
             <ContactUs />
           </>
@@ -37,7 +44,7 @@ export default function LandingPage() {
       case 'Govt. Schemes':
         return <JalSevakApp initialView={activeView} onNavigate={handleNavigation} />;
       default:
-        return <HeroPage onNavigate={handleNavigation} />;
+        return <HeroPage onNavigate={handleNavigation} onLearnMoreClick={handleLearnMoreClick} />;
     }
   };
 
