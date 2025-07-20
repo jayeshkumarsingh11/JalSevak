@@ -19,35 +19,39 @@ import { useLanguage } from "@/contexts/LanguageContext";
 interface TopNavBarProps {
   activeItem: NavItem;
   setActiveItem: (item: NavItem) => void;
+  isAppView?: boolean;
 }
 
 const navItems: { name: NavItem, key: string, dropdown?: {key: string}[] }[] = [
+    { name: "Home", key: "nav_home" },
+    { name: "About Us", key: "nav_about_us" },
     { name: "Dashboard", key: "nav_dashboard", dropdown: [{key:"dropdown_overview"}, {key:"dropdown_analytics"}] },
     { name: "Irrigation Planner", key: "nav_irrigation_planner", dropdown: [{key:"dropdown_new_schedule"}, {key:"dropdown_history"}] },
     { name: "Crop Advisor", key: "nav_crop_advisor", dropdown: [{key:"dropdown_get_suggestion"}, {key:"dropdown_my_crops"}] },
     { name: "Soil Advisor", key: "nav_soil_advisor", dropdown: [{key:"dropdown_check_health"}, {key:"dropdown_improvements"}] },
     { name: "Govt. Schemes", key: "nav_govt_schemes", dropdown: [{key:"dropdown_find_schemes"}, {key:"dropdown_my_applications"}] },
-    { name: "About Us", key: "nav_about_us" },
 ];
 
 
-export default function TopNavBar({ activeItem, setActiveItem }: TopNavBarProps) {
+export default function TopNavBar({ activeItem, setActiveItem, isAppView = false }: TopNavBarProps) {
     const { t } = useLanguage();
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
+    const filteredNavItems = isAppView ? navItems.filter(item => !['Home'].includes(item.name)) : navItems.filter(item => ['Home', 'About Us', 'Dashboard'].includes(item.name));
+    
     return (
     <header className="bg-background border-b shadow-sm sticky top-0 z-40">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
             <div className="flex items-center gap-4">
-                <a href="#" className="flex items-center gap-2 font-headline text-xl font-semibold text-primary">
+                <a href="#" onClick={(e) => { e.preventDefault(); setActiveItem("Home"); }} className="flex items-center gap-2 font-headline text-xl font-semibold text-primary">
                     <Leaf className="h-7 w-7" />
                     <span>JalSevak</span>
                 </a>
             </div>
             
             <nav className="hidden md:flex items-center gap-1 bg-primary/20 p-1 rounded-lg">
-                {navItems.map((item) => (
-                    item.dropdown ? (
+                {filteredNavItems.map((item) => (
+                    item.dropdown && isAppView ? (
                         <DropdownMenu key={item.name}>
                         <DropdownMenuTrigger asChild>
                             <Button 
@@ -98,7 +102,7 @@ export default function TopNavBar({ activeItem, setActiveItem }: TopNavBarProps)
         {isMenuOpen && (
             <div className="md:hidden bg-background border-t">
                 <nav className="flex flex-col p-4 gap-2">
-                    {navItems.map((item) => (
+                    {filteredNavItems.map((item) => (
                          <Button 
                             key={item.name}
                             variant={activeItem === item.name ? "primary" : "ghost"} 

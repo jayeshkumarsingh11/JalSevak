@@ -11,10 +11,24 @@ import SchemeFinder from "@/components/SchemeFinder"
 import TopNavBar from './TopNavBar'
 import AboutPage from './AboutPage'
 
-export type NavItem = "Dashboard" | "Irrigation Planner" | "Crop Advisor" | "Soil Advisor" | "Govt. Schemes" | "About Us";
+export type NavItem = "Dashboard" | "Irrigation Planner" | "Crop Advisor" | "Soil Advisor" | "Govt. Schemes" | "About Us" | "Home";
 
-export default function JalSevakApp() {
-  const [activeView, setActiveView] = useState<NavItem>("Dashboard");
+interface JalSevakAppProps {
+  initialView?: NavItem;
+  onNavigate: (item: NavItem) => void;
+}
+
+
+export default function JalSevakApp({ initialView = "Dashboard", onNavigate }: JalSevakAppProps) {
+  const [activeView, setActiveView] = useState<NavItem>(initialView);
+
+  const handleNavigation = (item: NavItem) => {
+    if (["Home", "About Us"].includes(item)) {
+      onNavigate(item);
+    } else {
+      setActiveView(item);
+    }
+  };
 
   const renderContent = () => {
     switch (activeView) {
@@ -28,8 +42,6 @@ export default function JalSevakApp() {
         return <SoilQualityAdvisor />;
       case "Govt. Schemes":
         return <SchemeFinder />;
-      case "About Us":
-        return <AboutPage />;
       default:
         return <DashboardView />;
     }
@@ -37,7 +49,7 @@ export default function JalSevakApp() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <TopNavBar activeItem={activeView} setActiveItem={setActiveView} />
+      <TopNavBar activeItem={activeView} setActiveItem={handleNavigation} isAppView={true} />
       <main className="flex-1 p-4 lg:p-6">
         {renderContent()}
       </main>

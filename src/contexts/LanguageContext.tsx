@@ -10,6 +10,7 @@ type Translations = { [key: string]: string };
 // Define the default English translations
 const defaultTranslations: Translations = {
   // Nav Bar
+  nav_home: 'Home',
   nav_dashboard: 'Dashboard',
   nav_irrigation_planner: 'Irrigation Planner',
   nav_crop_advisor: 'Crop Advisor',
@@ -26,6 +27,12 @@ const defaultTranslations: Translations = {
   dropdown_improvements: 'Improvements',
   dropdown_find_schemes: 'Find Schemes',
   dropdown_my_applications: 'My Applications',
+
+  // Hero Page
+  hero_title: 'Revolutionizing Agriculture with AI',
+  hero_subtitle: 'JalSevak provides data-driven insights to help Indian farmers optimize irrigation, improve crop yield, and increase profitability. Sustainable farming starts here.',
+  hero_cta_primary: 'Go to Dashboard',
+  hero_cta_secondary: 'Learn More',
 
   // About Page
   about_title: 'About JalSevak',
