@@ -2,40 +2,29 @@
 "use client"
 
 import { useState, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import JalSevakApp from './JalSevakApp';
 import TopNavBar from './TopNavBar';
 import AboutPage from './AboutPage';
 import HeroPage from './HeroPage';
 import ContactUs from './ContactUs';
 import type { NavItem } from './JalSevakApp';
-import { useAuth } from '@/contexts/AuthContext';
 
 export default function LandingPage() {
-  const { user } = useAuth();
   const searchParams = useSearchParams();
-  const router = useRouter();
   const [activeView, setActiveView] = useState<NavItem>('Home');
 
   useEffect(() => {
     const viewFromUrl = searchParams.get('view') as NavItem;
-    if (viewFromUrl && user) {
+    if (viewFromUrl) {
         setActiveView(viewFromUrl);
-    } else if (user) {
-        // If user is logged in but no view specified, default to Dashboard
-        setActiveView('Dashboard');
     } else {
-        // If user is logged out, default to Home
-        setActiveView('Home');
+        setActiveView('Dashboard');
     }
-  }, [searchParams, user]);
+  }, [searchParams]);
 
 
   const handleNavigation = (item: NavItem) => {
-    if (!user && item === 'Dashboard') {
-        router.push('/login');
-        return;
-    }
     setActiveView(item);
   };
   
@@ -47,7 +36,6 @@ export default function LandingPage() {
   };
 
   const renderContent = () => {
-    if (user) {
       switch (activeView) {
         case 'Dashboard':
         case 'Irrigation Planner':
@@ -55,21 +43,36 @@ export default function LandingPage() {
         case 'Soil Advisor':
         case 'Govt. Schemes':
           return <JalSevakApp initialView={activeView} onNavigate={handleNavigation} />;
+        case 'Home':
+             return (
+              <>
+                <HeroPage onNavigate={handleNavigation} onLearnMoreClick={handleLearnMoreClick} />
+                <AboutPage />
+                <ContactUs />
+              </>
+            );
+        case 'About Us':
+             return (
+              <>
+                <HeroPage onNavigate={handleNavigation} onLearnMoreClick={handleLearnMoreClick} />
+                <AboutPage />
+                <ContactUs />
+              </>
+            );
+        case 'Contact Us':
+            return (
+              <>
+                <HeroPage onNavigate={handleNavigation} onLearnMoreClick={handleLearnMoreClick} />
+                <AboutPage />
+                <ContactUs />
+              </>
+            );
         default:
           return <JalSevakApp initialView={'Dashboard'} onNavigate={handleNavigation} />;
       }
-    } else {
-        return (
-          <>
-            <HeroPage onNavigate={handleNavigation} onLearnMoreClick={handleLearnMoreClick} />
-            <AboutPage />
-            <ContactUs />
-          </>
-        );
-    }
   };
   
-  const isAppView = user && ['Dashboard', 'Irrigation Planner', 'Crop Advisor', 'Soil Advisor', 'Govt. Schemes'].includes(activeView);
+  const isAppView = ['Dashboard', 'Irrigation Planner', 'Crop Advisor', 'Soil Advisor', 'Govt. Schemes'].includes(activeView);
 
   if (isAppView) {
     return renderContent();
