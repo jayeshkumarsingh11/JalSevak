@@ -16,11 +16,11 @@ export default function HeroPage({ onNavigate }: HeroPageProps) {
     <div className="relative h-[calc(100vh-64px)] w-full overflow-hidden">
       <Image
         src="https://placehold.co/1920x1080.png"
-        alt="Lush green paddy field under a clear blue sky"
+        alt="A vibrant corn field at sunset with a dramatic cloudy sky"
         layout="fill"
         objectFit="cover"
         className="z-0"
-        data-ai-hint="paddy field sunrise"
+        data-ai-hint="corn field"
         priority
       />
       <div className="absolute inset-0 bg-black/50 z-10"></div>
