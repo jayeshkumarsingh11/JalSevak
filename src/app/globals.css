@@ -48,6 +48,10 @@
     --sidebar-accent-foreground: 222.2 47.4% 11.2%;
     --sidebar-border: 214.3 31.8% 91.4%;
     --sidebar-ring: 160 52% 50%;
+
+    --jalvaani-green: #2C541D;
+    --jalvaani-light-green: #E8EFE4;
+    --jalvaani-yellow: #FFC107;
   }
  
   .dark {
@@ -93,6 +97,10 @@
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 217.2 32.6% 17.5%;
     --sidebar-ring: 160 52% 70%;
+    
+    --jalvaani-green: #2C541D;
+    --jalvaani-light-green: #1a2d14;
+    --jalvaani-yellow: #FFC107;
   }
 }
  
@@ -103,4 +111,10 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.hero-bg {
+    background-image: url('https://placehold.co/1920x1080/e8efe4/a7a7a7?text=');
+    background-size: cover;
+    background-position: center;
 }
