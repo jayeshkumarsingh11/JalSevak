@@ -2,13 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { ChevronDown, Leaf } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { NavItem } from "./JalSevakApp";
 import { ThemeToggle } from "./ThemeToggle";
@@ -17,18 +11,20 @@ import { Avatar, AvatarFallback } from "./ui/avatar";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface TopNavBarProps {
-  activeItem: NavItem | "About Us";
+  activeItem: NavItem | "About Us" | "Contact Us";
   setActiveItem: (item: NavItem) => void;
   isAppView?: boolean;
 }
 
-const navItems: { name: NavItem, key: string }[] = [
+const navItems: { name: NavItem, key: string, isAppViewOnly?: boolean, isMarketingViewOnly?: boolean }[] = [
     { name: "Home", key: "nav_home" },
     { name: "Dashboard", key: "nav_dashboard" },
-    { name: "Irrigation Planner", key: "nav_irrigation_planner" },
-    { name: "Crop Advisor", key: "nav_crop_advisor" },
-    { name: "Soil Advisor", key: "nav_soil_advisor" },
-    { name: "Govt. Schemes", key: "nav_govt_schemes" },
+    { name: "About Us", key: "nav_about_us", isMarketingViewOnly: true },
+    { name: "Contact Us", key: "nav_contact_us", isMarketingViewOnly: true },
+    { name: "Irrigation Planner", key: "nav_irrigation_planner", isAppViewOnly: true },
+    { name: "Crop Advisor", key: "nav_crop_advisor", isAppViewOnly: true },
+    { name: "Soil Advisor", key: "nav_soil_advisor", isAppViewOnly: true },
+    { name: "Govt. Schemes", key: "nav_govt_schemes", isAppViewOnly: true },
 ];
 
 
@@ -36,9 +32,41 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
     const { t } = useLanguage();
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
+    const handleScroll = (e: React.MouseEvent<HTMLButtonElement>, targetId: string) => {
+      e.preventDefault();
+      if (activeItem !== 'Home') {
+        setActiveItem('Home');
+        // Give react time to render the home page before scrolling
+        setTimeout(() => {
+            const element = document.getElementById(targetId);
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }, 100);
+      } else {
+         const element = document.getElementById(targetId);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+      }
+      setIsMenuOpen(false);
+    };
+
+    const handleNavClick = (item: NavItem) => {
+        if(item === "About Us") {
+            // This is handled by handleScroll
+        } else if (item === "Contact Us") {
+            // This is handled by handleScroll
+        }
+        else {
+            setActiveItem(item);
+        }
+        setIsMenuOpen(false);
+    }
+
     const filteredNavItems = isAppView 
-        ? navItems.filter(item => item.name !== 'Home') 
-        : navItems.filter(item => ['Home', 'Dashboard'].includes(item.name));
+        ? navItems.filter(item => item.name !== 'Home' && !item.isMarketingViewOnly) 
+        : navItems.filter(item => !item.isAppViewOnly);
     
     return (
     <header className="bg-background border-b shadow-sm sticky top-0 z-40">
@@ -51,16 +79,30 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
             </div>
             
             <nav className="hidden md:flex items-center gap-1 bg-primary/20 p-1 rounded-lg">
-                {filteredNavItems.map((item) => (
-                    <Button 
-                        key={item.name}
-                        variant={activeItem === item.name ? "primary" : "ghost"} 
-                        className="px-4 py-2 text-sm font-medium"
-                        onClick={() => setActiveItem(item.name)}
-                    >
-                        {t(item.key)}
-                    </Button>
-                ))}
+                {filteredNavItems.map((item) => {
+                    if (item.isMarketingViewOnly) {
+                        return (
+                             <Button 
+                                key={item.name}
+                                variant={"ghost"} 
+                                className="px-4 py-2 text-sm font-medium"
+                                onClick={(e) => handleScroll(e, item.name.toLowerCase().replace(' ', '-'))}
+                            >
+                                {t(item.key)}
+                            </Button>
+                        )
+                    }
+                    return (
+                         <Button 
+                            key={item.name}
+                            variant={activeItem === item.name ? "primary" : "ghost"} 
+                            className="px-4 py-2 text-sm font-medium"
+                            onClick={() => handleNavClick(item.name)}
+                        >
+                            {t(item.key)}
+                        </Button>
+                    )
+                })}
             </nav>
 
             <div className="hidden md:flex items-center gap-2">
@@ -83,19 +125,30 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
         {isMenuOpen && (
             <div className="md:hidden bg-background border-t">
                 <nav className="flex flex-col p-4 gap-2">
-                    {filteredNavItems.map((item) => (
-                         <Button 
-                            key={item.name}
-                            variant={activeItem === item.name ? "primary" : "ghost"} 
-                            className="w-full justify-start"
-                            onClick={() => {
-                                setActiveItem(item.name);
-                                setIsMenuOpen(false);
-                            }}
-                        >
-                            {t(item.key)}
-                        </Button>
-                    ))}
+                    {filteredNavItems.map((item) => {
+                         if (item.isMarketingViewOnly) {
+                            return (
+                                <Button 
+                                    key={item.name}
+                                    variant={"ghost"}
+                                    className="w-full justify-start"
+                                    onClick={(e) => handleScroll(e, item.name.toLowerCase().replace(' ', '-'))}
+                                >
+                                    {t(item.key)}
+                                </Button>
+                            )
+                        }
+                        return (
+                             <Button 
+                                key={item.name}
+                                variant={activeItem === item.name ? "primary" : "ghost"} 
+                                className="w-full justify-start"
+                                onClick={() => handleNavClick(item.name)}
+                            >
+                                {t(item.key)}
+                            </Button>
+                        )
+                    })}
                      <div className="border-t pt-4 flex items-center justify-between">
                         <div>
                             <LanguageToggle />

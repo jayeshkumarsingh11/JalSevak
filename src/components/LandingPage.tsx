@@ -6,6 +6,7 @@ import JalSevakApp from './JalSevakApp';
 import TopNavBar from './TopNavBar';
 import AboutPage from './AboutPage';
 import HeroPage from './HeroPage';
+import ContactUs from './ContactUs';
 import type { NavItem } from './JalSevakApp';
 
 export default function LandingPage() {
@@ -24,6 +25,7 @@ export default function LandingPage() {
             <div className="bg-background py-12">
               <AboutPage />
             </div>
+            <ContactUs />
           </>
         );
       case 'Dashboard':

@@ -42,7 +42,7 @@ export default function AboutPage() {
   const { t } = useLanguage();
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-12">
+    <div id="about-us" className="container mx-auto px-4 py-12 space-y-12 scroll-mt-20">
       <header className="text-center">
         <h1 className="text-4xl font-headline text-primary">
           {t("about_title")}

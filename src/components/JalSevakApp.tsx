@@ -11,7 +11,7 @@ import SchemeFinder from "@/components/SchemeFinder"
 import TopNavBar from './TopNavBar'
 import AboutPage from './AboutPage'
 
-export type NavItem = "Dashboard" | "Irrigation Planner" | "Crop Advisor" | "Soil Advisor" | "Govt. Schemes" | "Home";
+export type NavItem = "Dashboard" | "Irrigation Planner" | "Crop Advisor" | "Soil Advisor" | "Govt. Schemes" | "Home" | "About Us" | "Contact Us";
 
 interface JalSevakAppProps {
   initialView?: NavItem;
