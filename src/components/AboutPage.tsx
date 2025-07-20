@@ -54,7 +54,7 @@ export default function AboutPage() {
 
       <div className="relative rounded-xl overflow-hidden shadow-lg">
         <Image
-          src="https://placehold.co/1200x500.png"
+          src="https://images.yourstory.com/cs/5/f02aced0d86311e98e0865c1f0fe59a2/indian-farmer-1610471656527.png?mode=crop&crop=faces&ar=2%3A1&format=auto&w=1920&q=75"
           alt="Lush green farm"
           width={1200}
           height={500}

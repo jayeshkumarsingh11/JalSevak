@@ -21,6 +21,12 @@ const nextConfig: NextConfig = {
         hostname: 'khetibuddy.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.yourstory.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
