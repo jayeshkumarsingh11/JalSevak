@@ -42,12 +42,12 @@ const prompt = ai.definePrompt({
   output: {schema: GovernmentSchemeSuggestionsOutputSchema},
   prompt: `You are an expert in Indian agricultural government schemes.
 
-  {{#if location}}
-  Based on the farmer's location, crop type, and land area, suggest relevant government subsidies.
+  {{#if location_provided}}
+  Based on the farmer's details, suggest relevant government subsidies. If a field is not provided, make reasonable assumptions or focus on the provided information.
 
-  Location: {{{location}}}
-  Crop Type: {{{cropType}}}
-  Land Area: {{{landArea}}} acres
+  Location: {{location}}
+  Crop Type: {{cropType}}
+  Land Area: {{landArea}} acres
 
   Suggest government schemes that are most relevant to the farmer based on these specific inputs.
   {{else}}
@@ -65,7 +65,10 @@ const governmentSchemeSuggestionsFlow = ai.defineFlow(
     outputSchema: GovernmentSchemeSuggestionsOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    // Determine if any personalized data was provided to guide the prompt.
+    const location_provided = !!(input.location || input.cropType || input.landArea);
+    
+    const {output} = await prompt({...input, location_provided});
     return output!;
   }
 );
