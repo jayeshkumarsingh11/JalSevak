@@ -19,7 +19,7 @@ export default function LandingPage() {
     if (viewFromUrl) {
         setActiveView(viewFromUrl);
     } else {
-        setActiveView('Dashboard');
+        setActiveView('Home');
     }
   }, [searchParams]);
 
