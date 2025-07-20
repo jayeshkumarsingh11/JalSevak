@@ -13,8 +13,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 47.4% 11.2%;
  
-    --primary: 160 52% 60%;
-    --primary-foreground: 160 50% 15%;
+    --primary: 160 52% 40%;
+    --primary-foreground: 160 50% 98%;
  
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 210 40% 9.8%;
@@ -22,8 +22,8 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 210 40% 45.1%;
  
-    --accent: 34 44% 64%;
-    --accent-foreground: 34 44% 15%;
+    --accent: 44 98% 60%;
+    --accent-foreground: 44 44% 15%;
  
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
@@ -34,20 +34,11 @@
 
     --radius: 0.5rem;
     
-    --chart-1: 160 52% 60%; /* primary */
-    --chart-2: 34 44% 64%; /* accent */
+    --chart-1: 160 52% 40%; /* primary */
+    --chart-2: 44 98% 60%; /* accent */
     --chart-3: 210 40% 50%; 
     --chart-4: 180 50% 45%;
     --chart-5: 40 60% 55%;
-
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 222.2 47.4% 11.2%;
-    --sidebar-primary: 160 52% 60%;
-    --sidebar-primary-foreground: 160 50% 15%;
-    --sidebar-accent: 150 67% 97%;
-    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
-    --sidebar-border: 214.3 31.8% 91.4%;
-    --sidebar-ring: 160 52% 50%;
   }
  
   .dark {
@@ -60,7 +51,7 @@
     --popover: 222.2 47.4% 11.2%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 160 52% 60%;
+    --primary: 160 52% 50%;
     --primary-foreground: 160 50% 15%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -69,8 +60,8 @@
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 34 44% 64%;
-    --accent-foreground: 34 44% 15%;
+    --accent: 44 98% 60%;
+    --accent-foreground: 44 44% 15%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
@@ -79,20 +70,11 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 160 52% 70%;
     
-    --chart-1: 160 52% 60%; /* primary */
-    --chart-2: 34 44% 64%; /* accent */
+    --chart-1: 160 52% 50%; /* primary */
+    --chart-2: 44 98% 60%; /* accent */
     --chart-3: 210 40% 50%; 
     --chart-4: 180 50% 45%;
     --chart-5: 40 60% 55%;
-
-    --sidebar-background: 222.2 47.4% 11.2%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 160 52% 60%;
-    --sidebar-primary-foreground: 160 50% 15%;
-    --sidebar-accent: 217.2 32.6% 17.5%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217.2 32.6% 17.5%;
-    --sidebar-ring: 160 52% 70%;
   }
 }
  
