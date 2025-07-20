@@ -1,16 +1,30 @@
 
 "use client"
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import JalSevakApp from './JalSevakApp';
 import TopNavBar from './TopNavBar';
 import AboutPage from './AboutPage';
 import HeroPage from './HeroPage';
 import ContactUs from './ContactUs';
 import type { NavItem } from './JalSevakApp';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LandingPage() {
+  const { user } = useAuth();
+  const searchParams = useSearchParams();
   const [activeView, setActiveView] = useState<NavItem>('Home');
+
+  useEffect(() => {
+    const viewFromUrl = searchParams.get('view') as NavItem;
+    if (viewFromUrl && user) {
+        setActiveView(viewFromUrl);
+    } else if (!user) {
+        setActiveView('Home');
+    }
+  }, [searchParams, user]);
+
 
   const handleNavigation = (item: NavItem) => {
     setActiveView(item);
@@ -24,8 +38,18 @@ export default function LandingPage() {
   };
 
   const renderContent = () => {
-    switch (activeView) {
-      case 'Home':
+    if (user) {
+      switch (activeView) {
+        case 'Dashboard':
+        case 'Irrigation Planner':
+        case 'Crop Advisor':
+        case 'Soil Advisor':
+        case 'Govt. Schemes':
+          return <JalSevakApp initialView={activeView} onNavigate={handleNavigation} />;
+        default:
+          return <JalSevakApp initialView={'Dashboard'} onNavigate={handleNavigation} />;
+      }
+    } else {
         return (
           <>
             <HeroPage onNavigate={handleNavigation} onLearnMoreClick={handleLearnMoreClick} />
@@ -33,22 +57,12 @@ export default function LandingPage() {
             <ContactUs />
           </>
         );
-      case 'About Us':
-        return <AboutPage />;
-      case 'Contact Us':
-        return <ContactUs />;
-      case 'Dashboard':
-      case 'Irrigation Planner':
-      case 'Crop Advisor':
-      case 'Soil Advisor':
-      case 'Govt. Schemes':
-        return <JalSevakApp initialView={activeView} onNavigate={handleNavigation} />;
-      default:
-        return <HeroPage onNavigate={handleNavigation} onLearnMoreClick={handleLearnMoreClick} />;
     }
   };
+  
+  const isAppView = user && ['Dashboard', 'Irrigation Planner', 'Crop Advisor', 'Soil Advisor', 'Govt. Schemes'].includes(activeView);
 
-  if (['Dashboard', 'Irrigation Planner', 'Crop Advisor', 'Soil Advisor', 'Govt. Schemes'].includes(activeView)) {
+  if (isAppView) {
     return renderContent();
   }
 

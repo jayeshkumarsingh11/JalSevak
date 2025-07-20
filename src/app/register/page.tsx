@@ -16,6 +16,8 @@ import Link from "next/link";
 import TopNavBar from "@/components/TopNavBar";
 import { useRouter } from "next/navigation";
 import type { NavItem } from "@/components/JalSevakApp";
+import { auth } from "@/lib/firebase";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
 
 export default function RegisterPage() {
@@ -28,6 +30,16 @@ export default function RegisterPage() {
       router.push('/');
     } else {
       router.push(`/#${item.toLowerCase().replace(' ', '-')}`);
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      router.push('/?view=Dashboard'); // Redirect to dashboard after signup
+    } catch (error) {
+      console.error("Error during Google sign up:", error);
     }
   };
 
@@ -70,7 +82,7 @@ export default function RegisterPage() {
               <Button type="submit" className="w-full">
                 Create an account
               </Button>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full" onClick={handleGoogleSignUp}>
                 Sign up with Google
               </Button>
             </div>

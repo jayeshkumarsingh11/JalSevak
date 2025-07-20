@@ -10,6 +10,8 @@ import Link from "next/link";
 import TopNavBar from "@/components/TopNavBar";
 import { useRouter } from "next/navigation";
 import type { NavItem } from "@/components/JalSevakApp";
+import { auth } from "@/lib/firebase";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
 export default function LoginPage() {
   const [activeView, setActiveView] = useState<NavItem>('Home');
@@ -21,6 +23,16 @@ export default function LoginPage() {
       router.push('/');
     } else {
       router.push(`/#${item.toLowerCase().replace(' ', '-')}`);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      router.push('/?view=Dashboard'); // Redirect to dashboard after login
+    } catch (error) {
+      console.error("Error during Google login:", error);
     }
   };
 
@@ -58,7 +70,7 @@ export default function LoginPage() {
               <Button type="submit" className="w-full">
                 Login
               </Button>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full" onClick={handleGoogleLogin}>
                 Login with Google
               </Button>
             </div>
