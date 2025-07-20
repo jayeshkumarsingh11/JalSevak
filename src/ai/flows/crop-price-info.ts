@@ -17,9 +17,10 @@ const CropPriceInfoInputSchema = z.object({
 export type CropPriceInfoInput = z.infer<typeof CropPriceInfoInputSchema>;
 
 const CropPriceInfoOutputSchema = z.object({
-  analysis: z.string().describe('A brief analysis of the price trend for the specified crop.'),
+  analysis: z.string().describe('A brief analysis of the price trend for the specified crop, considering both MSP and local vendor prices.'),
   currentMsp: z.number().describe('The current Minimum Support Price (MSP) in rupees per quintal.'),
   lastYearMsp: z.number().describe('The Minimum Support Price (MSP) from the previous year in rupees per quintal.'),
+  currentLocalPrice: z.number().describe('The current local vendor price in rupees per quintal.'),
 });
 export type CropPriceInfoOutput = z.infer<typeof CropPriceInfoOutputSchema>;
 
@@ -33,15 +34,16 @@ const prompt = ai.definePrompt({
   input: {schema: CropPriceInfoInputSchema},
   output: {schema: CropPriceInfoOutputSchema},
   prompt: `You are an agricultural economist specializing in Indian crop prices.
-  Analyze the provided crop name and generate a brief analysis of its Minimum Support Price (MSP) trend.
-  Assume the current year is the latest data point. Provide a mock current MSP and last year's MSP for the crop.
+  Analyze the provided crop name and generate a brief analysis of its Minimum Support Price (MSP) and local vendor price trends.
+  Assume the current year is the latest data point. Provide a mock current MSP, last year's MSP, and a mock current local vendor price for the crop.
+  The local vendor price is typically slightly higher than the MSP, but can be more volatile.
   The price should be in rupees per quintal.
 
   Crop Name: {{{cropName}}}
 
-  Based on this, provide a short analysis, the current MSP, and last year's MSP.
-  For example, if the crop is Wheat, the current MSP might be 2275 and last year's 2125.
-  The analysis could be: "The MSP for Wheat has shown a steady increase, reflecting rising input costs and ensuring profitability for farmers."
+  Based on this, provide a short analysis, the current MSP, last year's MSP, and the current local vendor price.
+  For example, if the crop is Wheat, the current MSP might be 2275, last year's 2125, and the current local price 2350.
+  The analysis could be: "The MSP for Wheat has shown a steady increase. The local market price is currently trading at a premium to the MSP, indicating strong demand."
   
   Return the response in the specified JSON format.
 `,

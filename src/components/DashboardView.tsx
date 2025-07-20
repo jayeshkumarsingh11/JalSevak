@@ -12,7 +12,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { Sun, CloudRain, Droplets, Thermometer, Wind, Leaf, MapPin, TrendingUp, Info, Landmark, Wheat, CalendarDays } from "lucide-react";
+import { Sun, CloudRain, Droplets, Thermometer, Wind, Leaf, MapPin, TrendingUp, Info, Landmark, Wheat, CalendarDays, BarChartHorizontal } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { cropPriceInfo, type CropPriceInfoOutput } from "@/ai/flows/crop-price-info";
@@ -96,6 +96,7 @@ interface WeatherData {
   relative_humidity: number;
   wind_speed: number;
   is_day: number;
+  weathercode: number;
 }
 
 interface ForecastDay {
@@ -248,7 +249,7 @@ export default function DashboardView() {
       setLoadingWeather(true);
       try {
         const weatherResponse = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation_probability,is_day,wind_speed_10m&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=5`
+          `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation_probability,is_day,wind_speed_10m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=5`
         );
         const weatherData = await weatherResponse.json();
         if (weatherData && weatherData.current) {
@@ -258,6 +259,7 @@ export default function DashboardView() {
             relative_humidity: weatherData.current.relative_humidity_2m,
             wind_speed: Math.round(weatherData.current.wind_speed_10m),
             is_day: weatherData.current.is_day,
+            weathercode: weatherData.current.weathercode,
           });
         }
         if (weatherData && weatherData.daily) {
@@ -384,10 +386,10 @@ export default function DashboardView() {
             ) : weatherData ? (
               <>
                 <div className="flex flex-col items-center gap-1">
-                  <Sun className="h-6 w-6 text-accent" />
+                  <WeatherIcon code={weatherData.weathercode} className="h-6 w-6 text-accent" />
                   <span className="font-bold text-lg">{weatherData.temperature}°C</span>
                   <span className="text-xs text-muted-foreground">
-                    {weatherData.is_day ? "Sunny" : "Clear"}
+                    Temperature
                   </span>
                 </div>
                 <div className="flex flex-col items-center gap-1">
@@ -560,23 +562,27 @@ export default function DashboardView() {
                     <div className="space-y-4">
                         <Skeleton className="h-4 w-3/4" />
                         <Skeleton className="h-4 w-1/2" />
-                        <div className="flex justify-between items-center pt-2">
-                           <Skeleton className="h-8 w-20" />
-                           <Skeleton className="h-8 w-20" />
+                        <div className="flex justify-around items-center pt-2">
+                           <Skeleton className="h-12 w-20" />
+                           <Skeleton className="h-12 w-20" />
                         </div>
                     </div>
                 ) : priceInfo ? (
-                    <div className="space-y-2">
+                    <div className="space-y-4">
                         <p className="text-sm text-muted-foreground">{priceInfo.analysis}</p>
-                        <div className="flex justify-between items-center pt-2">
-                            <div className="text-center">
-                                <div className="text-xs text-muted-foreground">Last Year</div>
+                        <div className="flex justify-around items-end pt-2 text-center">
+                            <div>
+                                <div className="text-xs text-muted-foreground">Last Year MSP</div>
                                 <div className="font-bold text-lg">₹{priceInfo.lastYearMsp}</div>
                             </div>
-                            <TrendingUp className="h-6 w-6 text-green-500" />
-                             <div className="text-center">
-                                <div className="text-xs text-muted-foreground">Current</div>
-                                <div className="font-bold text-lg">₹{priceInfo.currentMsp}</div>
+                            <TrendingUp className="h-6 w-6 text-green-500 mb-2" />
+                             <div>
+                                <div className="text-xs text-muted-foreground">Current MSP</div>
+                                <div className="font-bold text-lg text-primary">₹{priceInfo.currentMsp}</div>
+                            </div>
+                             <div>
+                                <div className="text-xs text-muted-foreground">Local Price</div>
+                                <div className="font-bold text-lg text-accent">₹{priceInfo.currentLocalPrice}</div>
                             </div>
                         </div>
                     </div>
