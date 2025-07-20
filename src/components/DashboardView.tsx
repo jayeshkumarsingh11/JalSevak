@@ -81,11 +81,11 @@ const allMspData = {
 };
 
 const latestPrices = [
-    { name: 'Wheat', price: 2275, change: 150 },
-    { name: 'Rice', price: 2183, change: 100 },
-    { name: 'Cotton', price: 6620, change: 580 },
-    { name: 'Mustard', price: 5650, change: 200 },
-    { name: 'Gram', price: 5440, change: 105 },
+    { name: 'Wheat', msp: 2275, local: 2310, change: 150 },
+    { name: 'Rice', msp: 2183, local: 2250, change: 100 },
+    { name: 'Cotton', msp: 6620, local: 7100, change: 580 },
+    { name: 'Mustard', msp: 5650, local: 5700, change: 200 },
+    { name: 'Gram', msp: 5440, local: 5500, change: 105 },
 ];
 
 type MspDataKey = keyof typeof allMspData;
@@ -459,7 +459,7 @@ export default function DashboardView() {
                     <Wheat className="h-5 w-5" />
                     Latest Prices
                 </CardTitle>
-                <CardDescription>Quick view of current MSP.</CardDescription>
+                <CardDescription>Govt. MSP vs. Local Vendor Price.</CardDescription>
             </CardHeader>
             <CardContent>
                 <ul className="space-y-3">
@@ -467,12 +467,15 @@ export default function DashboardView() {
                         <li key={crop.name}>
                             <div className="flex justify-between items-center text-sm">
                                 <span className="font-medium">{crop.name}</span>
-                                <div className="flex items-center gap-2">
-                                    <span className="font-semibold">₹{crop.price}</span>
-                                    <span className={`text-xs flex items-center gap-1 ${crop.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                        <TrendingUp className="h-3 w-3" />
-                                        {crop.change}
-                                    </span>
+                                <div className="flex items-center gap-4">
+                                     <div className="text-right">
+                                        <p className="text-xs text-muted-foreground">MSP</p>
+                                        <p className="font-semibold">₹{crop.msp}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-xs text-muted-foreground">Local</p>
+                                        <p className="font-semibold">₹{crop.local}</p>
+                                    </div>
                                 </div>
                             </div>
                             {index < latestPrices.length - 1 && <Separator className="mt-3" />}
@@ -588,4 +591,3 @@ export default function DashboardView() {
     </div>
   );
 }
-
