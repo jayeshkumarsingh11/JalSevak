@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import Image from "next/image";
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -296,6 +297,20 @@ export default function IrrigationPlanner() {
       </Card>
 
       <div className="flex items-center justify-center h-full">
+        {!result && !loading && (
+            <Card className="flex flex-col items-center justify-center h-full p-8 text-center bg-muted/30 border-dashed">
+              <Image 
+                src="https://placehold.co/400x300.png"
+                alt="Illustration of a water droplet"
+                width={400}
+                height={300}
+                className="mb-4 rounded-lg opacity-80"
+                data-ai-hint="stylized water droplet"
+              />
+              <h3 className="text-xl font-headline text-muted-foreground">{t('irrigation_planner_initial_prompt')}</h3>
+              <p className="text-muted-foreground">{t('irrigation_planner_initial_prompt_desc')}</p>
+            </Card>
+        )}
         {loading && (
           <div className="flex flex-col items-center gap-4 text-center p-8">
             <Bot className="h-16 w-16 text-primary" />

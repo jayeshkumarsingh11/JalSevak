@@ -6,6 +6,7 @@ import { Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { NavItem } from "./JalSevakApp";
 import { LanguageToggle } from "./LanguageToggle";
+import { ThemeToggle } from "./ThemeToggle";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface TopNavBarProps {
@@ -51,7 +52,7 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
         : navItems.filter(item => !item.isAppViewOnly);
     
     return (
-    <header className="bg-background border-b shadow-sm sticky top-0 z-40">
+    <header className="bg-background/80 backdrop-blur-sm border-b shadow-sm sticky top-0 z-40">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
             <div className="flex items-center gap-4">
                 <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick("Home"); }} className="flex items-center gap-2 font-headline text-xl font-semibold text-primary">
@@ -73,6 +74,7 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
             </nav>
 
             <div className="hidden md:flex items-center gap-2">
+                <ThemeToggle />
                 <LanguageToggle />
             </div>
 
@@ -98,10 +100,9 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
                             {t(item.key)}
                         </Button>
                     ))}
-                     <div className="border-t pt-4 mt-2 flex flex-col gap-2">
-                        <div className="mt-2">
-                            <LanguageToggle />
-                        </div>
+                     <div className="border-t pt-4 mt-2 flex items-center gap-2">
+                        <ThemeToggle />
+                        <LanguageToggle />
                      </div>
                 </nav>
             </div>

@@ -156,6 +156,8 @@ const defaultTranslations: Translations = {
   // Crop Advisor
   crop_advisor_title: 'Crop Advisor',
   crop_advisor_description: 'Get AI-powered crop recommendations tailored to your farm.',
+  crop_advisor_initial_prompt: 'Discover the perfect crops for your land',
+  crop_advisor_initial_prompt_desc: 'Fill in your farm details to get personalized, AI-driven suggestions.',
   form_location: 'Your Location',
   form_location_placeholder: 'e.g., Village, State',
   get_current_location_label: 'Get current location',
@@ -200,6 +202,8 @@ const defaultTranslations: Translations = {
   // Soil Advisor
   soil_advisor_title: 'Soil Quality Advisor',
   soil_advisor_description: "Get AI advice on improving your soil's health based on its history.",
+  soil_advisor_initial_prompt: 'Unlock your soil\'s potential',
+  soil_advisor_initial_prompt_desc: 'Provide your farm\'s history to receive tailored advice for better soil health.',
   form_soil_type_determining: 'Determining soil type...',
   form_past_crops: 'Past Crop History',
   form_past_crops_placeholder: 'Selected crops appear here',
@@ -224,6 +228,8 @@ const defaultTranslations: Translations = {
   // Irrigation Planner
   irrigation_planner_title: 'Plan Your Irrigation',
   irrigation_planner_description: 'Enter your farm\'s details to get a smart, dynamic irrigation schedule.',
+  irrigation_planner_initial_prompt: 'Create your smart irrigation plan',
+  irrigation_planner_initial_prompt_desc: 'Fill out the form to get a personalized, water-saving schedule.',
   form_crop_type: 'Crop Type',
   form_crop_type_placeholder: 'e.g., Wheat, Rice',
   form_water_source: 'Water Source',
@@ -248,6 +254,8 @@ const defaultTranslations: Translations = {
   // Scheme Finder
   scheme_finder_title: 'Find Government Schemes',
   scheme_finder_description: 'Discover subsidies and schemes you are eligible for.',
+  scheme_finder_initial_prompt: 'Find relevant government schemes',
+  scheme_finder_initial_prompt_desc: 'Enter your details to discover subsidies and programs you may qualify for.',
   form_primary_crop: 'Primary Crop',
   form_land_area: 'Land Area (acres)',
   find_schemes_button: 'Find Schemes',
