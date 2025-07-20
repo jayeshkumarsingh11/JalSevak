@@ -4,31 +4,31 @@
 
 @layer base {
   :root {
-    --background: 168 33% 85%;
-    --foreground: 32 94% 6%;
-    --card: 168 33% 85%;
-    --card-foreground: 32 94% 6%;
-    --popover: 168 33% 85%;
-    --popover-foreground: 32 94% 6%;
-    --primary: 31 82% 20%;
-    --primary-foreground: 48 43% 92%;
-    --secondary: 40 89% 37%;
-    --secondary-foreground: 32 94% 6%;
+    --background: 168 33% 95%;
+    --foreground: 224 71% 4%;
+    --card: 168 33% 95%;
+    --card-foreground: 224 71% 4%;
+    --popover: 168 33% 95%;
+    --popover-foreground: 224 71% 4%;
+    --primary: 160 51% 48%;
+    --primary-foreground: 168 33% 95%;
+    --secondary: 35 92% 63%;
+    --secondary-foreground: 224 71% 4%;
     --muted: 168 20% 90%;
-    --muted-foreground: 32 30% 30%;
-    --accent: 40 89% 37%;
-    --accent-foreground: 32 94% 6%;
+    --muted-foreground: 224 71% 15%;
+    --accent: 35 85% 70%;
+    --accent-foreground: 224 71% 4%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 168 20% 75%;
-    --input: 168 20% 75%;
-    --ring: 31 82% 20%;
+    --border: 168 20% 80%;
+    --input: 168 20% 85%;
+    --ring: 160 51% 48%;
     --radius: 0.5rem;
-    --chart-1: 31 82% 20%;
-    --chart-2: 40 89% 37%;
-    --chart-3: 168 33% 70%;
-    --chart-4: 31 50% 30%;
-    --chart-5: 40 50% 45%;
+    --chart-1: 160 51% 48%;
+    --chart-2: 35 92% 63%;
+    --chart-3: 160 30% 65%;
+    --chart-4: 35 70% 50%;
+    --chart-5: 160 20% 40%;
   }
 }
  
@@ -38,5 +38,38 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(90deg, 
+      hsl(var(--muted)) 25%, 
+      hsl(var(--muted) / 0.5) 50%, 
+      hsl(var(--muted)) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  
+  @keyframes pulse-bg {
+    0%, 100% {
+      background-color: transparent;
+    }
+    50% {
+      background-color: hsl(var(--accent) / 0.3);
+    }
+  }
+  
+  .animate-pulse-bg {
+    animation: pulse-bg 1s ease-out;
   }
 }
