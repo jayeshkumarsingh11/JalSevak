@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -323,7 +324,7 @@ export default function SoilQualityAdvisor() {
         )}
         {error && <p className="text-destructive p-8">{error}</p>}
         {result && (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fade-in-up">
              <Card>
                 <CardHeader>
                     <CardTitle className="font-headline flex items-center gap-3">
@@ -376,6 +377,21 @@ export default function SoilQualityAdvisor() {
           </div>
         )}
       </div>
+       <style jsx>{`
+        @keyframes fade-in-up {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-in-up {
+          animation: fade-in-up 0.5s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 }

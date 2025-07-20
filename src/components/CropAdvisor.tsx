@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -287,7 +288,7 @@ export default function CropAdvisor() {
         )}
         {error && <p className="text-destructive p-8">{error}</p>}
         {result && (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fade-in-up">
             <h2 className="text-2xl font-headline mb-4">{t('results_top_recommendations')}</h2>
             {result.suggestions.length > 0 ? (
                 result.suggestions.map((crop, index) => (
@@ -346,6 +347,21 @@ export default function CropAdvisor() {
           </div>
         )}
       </div>
+      <style jsx>{`
+        @keyframes fade-in-up {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-in-up {
+          animation: fade-in-up 0.5s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 }
