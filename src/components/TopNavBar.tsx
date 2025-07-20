@@ -48,19 +48,14 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
-      setIsMenuOpen(false);
     };
 
     const handleNavClick = (item: NavItem) => {
+        setActiveItem(item);
         if(item === "About Us") {
-            setActiveItem('Home');
             setTimeout(() => handleScroll('about-us'), 0);
         } else if (item === "Contact Us") {
-            setActiveItem('Home');
             setTimeout(() => handleScroll('contact-us'), 0);
-        }
-        else {
-            setActiveItem(item);
         }
         setIsMenuOpen(false);
     }
@@ -78,7 +73,7 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
     <header className="bg-background/80 backdrop-blur-sm border-b shadow-sm sticky top-0 z-40">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
             <div className="flex items-center gap-4">
-                <a href="#" onClick={(e) => { e.preventDefault(); setActiveItem("Home"); }} className="flex items-center gap-2 font-headline text-xl font-semibold text-primary">
+                <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick("Home"); }} className="flex items-center gap-2 font-headline text-xl font-semibold text-primary">
                     <Leaf className="h-7 w-7" />
                     <span>JalSevak</span>
                 </a>
@@ -86,10 +81,14 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
             
             <nav className="hidden md:flex items-center gap-1 bg-muted/50 p-1 rounded-lg">
                 {filteredNavItems.map((item) => {
+                     // Only render Dashboard button if user is logged in
+                    if (item.name === 'Dashboard' && !user) {
+                        return null;
+                    }
                     return (
                          <Button 
                             key={item.name}
-                            variant={activeItem === item.name ? "primary" : "ghost"} 
+                            variant={activeItem === item.name ? "default" : "ghost"} 
                             className="px-4 py-2 text-sm font-medium transition-colors duration-200"
                             onClick={() => handleNavClick(item.name)}
                         >
@@ -146,16 +145,22 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
         {isMenuOpen && (
             <div className="md:hidden bg-background border-t">
                 <nav className="flex flex-col p-4 gap-2">
-                    {filteredNavItems.map((item) => (
-                         <Button 
-                            key={item.name}
-                            variant={activeItem === item.name ? "primary" : "ghost"} 
-                            className="w-full justify-start"
-                            onClick={() => handleNavClick(item.name)}
-                        >
-                            {t(item.key)}
-                        </Button>
-                    ))}
+                    {filteredNavItems.map((item) => {
+                        // Only render Dashboard button if user is logged in
+                        if (item.name === 'Dashboard' && !user) {
+                            return null;
+                        }
+                        return (
+                             <Button 
+                                key={item.name}
+                                variant={activeItem === item.name ? "default" : "ghost"} 
+                                className="w-full justify-start"
+                                onClick={() => handleNavClick(item.name)}
+                            >
+                                {t(item.key)}
+                            </Button>
+                        )
+                    })}
                      <div className="border-t pt-4 mt-2 flex flex-col gap-2">
                         {user ? (
                            <Button onClick={handleLogout} className="w-full justify-start">
