@@ -51,6 +51,10 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
     };
 
     const handleNavClick = (item: NavItem) => {
+        if (!user && item === 'Dashboard') {
+            window.location.href = '/login';
+            return;
+        }
         setActiveItem(item);
         if(item === "About Us") {
             setTimeout(() => handleScroll('about-us'), 0);
@@ -80,21 +84,15 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
             </div>
             
             <nav className="hidden md:flex items-center gap-2">
-                {filteredNavItems.map((item) => {
-                     // Only render Dashboard button if user is logged in
-                    if (item.name === 'Dashboard' && !user) {
-                        return null;
-                    }
-                    return (
-                         <Button 
-                            key={item.name}
-                            variant={activeItem === item.name ? "secondary" : "ghost"} 
-                            onClick={() => handleNavClick(item.name)}
-                        >
-                            {t(item.key)}
-                        </Button>
-                    )
-                })}
+                {filteredNavItems.map((item) => (
+                    <Button 
+                        key={item.name}
+                        variant={activeItem === item.name ? "secondary" : "ghost"} 
+                        onClick={() => handleNavClick(item.name)}
+                    >
+                        {t(item.key)}
+                    </Button>
+                ))}
             </nav>
 
             <div className="hidden md:flex items-center gap-2">
@@ -144,22 +142,16 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
         {isMenuOpen && (
             <div className="md:hidden bg-background border-t">
                 <nav className="flex flex-col p-4 gap-2">
-                    {filteredNavItems.map((item) => {
-                        // Only render Dashboard button if user is logged in
-                        if (item.name === 'Dashboard' && !user) {
-                            return null;
-                        }
-                        return (
-                             <Button 
-                                key={item.name}
-                                variant={activeItem === item.name ? "secondary" : "ghost"} 
-                                className="w-full justify-start"
-                                onClick={() => handleNavClick(item.name)}
-                            >
-                                {t(item.key)}
-                            </Button>
-                        )
-                    })}
+                    {filteredNavItems.map((item) => (
+                         <Button 
+                            key={item.name}
+                            variant={activeItem === item.name ? "secondary" : "ghost"} 
+                            className="w-full justify-start"
+                            onClick={() => handleNavClick(item.name)}
+                        >
+                            {t(item.key)}
+                        </Button>
+                    ))}
                      <div className="border-t pt-4 mt-2 flex flex-col gap-2">
                         {user ? (
                            <Button onClick={handleLogout} className="w-full justify-start">

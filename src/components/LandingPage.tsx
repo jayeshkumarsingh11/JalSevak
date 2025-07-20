@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import JalSevakApp from './JalSevakApp';
 import TopNavBar from './TopNavBar';
 import AboutPage from './AboutPage';
@@ -14,19 +14,28 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function LandingPage() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [activeView, setActiveView] = useState<NavItem>('Home');
 
   useEffect(() => {
     const viewFromUrl = searchParams.get('view') as NavItem;
     if (viewFromUrl && user) {
         setActiveView(viewFromUrl);
-    } else if (!user) {
+    } else if (user) {
+        // If user is logged in but no view specified, default to Dashboard
+        setActiveView('Dashboard');
+    } else {
+        // If user is logged out, default to Home
         setActiveView('Home');
     }
   }, [searchParams, user]);
 
 
   const handleNavigation = (item: NavItem) => {
+    if (!user && item === 'Dashboard') {
+        router.push('/login');
+        return;
+    }
     setActiveView(item);
   };
   
