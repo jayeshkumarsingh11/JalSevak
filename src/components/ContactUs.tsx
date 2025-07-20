@@ -48,7 +48,7 @@ export default function ContactUs() {
           </p>
         </header>
 
-        <div className="grid md:grid-cols-2 gap-12 items-start">
+        <div className="max-w-2xl mx-auto">
           <div>
             <Card>
               <CardHeader>
