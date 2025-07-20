@@ -38,7 +38,7 @@ export async function governmentSchemeSuggestions(input: GovernmentSchemeSuggest
 
 const prompt = ai.definePrompt({
   name: 'governmentSchemeSuggestionsPrompt',
-  input: {schema: GovernmentSchemeSuggestionsInputSchema},
+  input: {schema: GovernmentSchemeSuggestionsInputSchema.extend({ location_provided: z.boolean() })},
   output: {schema: GovernmentSchemeSuggestionsOutputSchema},
   prompt: `You are an expert in Indian agricultural government schemes.
 
@@ -68,7 +68,8 @@ const governmentSchemeSuggestionsFlow = ai.defineFlow(
     // Determine if any personalized data was provided to guide the prompt.
     const location_provided = !!(input.location || input.cropType || input.landArea);
     
-    const {output} = await prompt({...input, location_provided});
+    const promptInput = { ...input, location_provided };
+    const {output} = await prompt(promptInput);
     return output!;
   }
 );
