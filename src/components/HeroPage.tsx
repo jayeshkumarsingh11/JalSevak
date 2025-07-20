@@ -14,7 +14,7 @@ export default function HeroPage({ onNavigate }: HeroPageProps) {
   return (
     <div className="relative h-[calc(100vh-64px)] w-full overflow-hidden">
       <Image
-        src="https://placehold.co/1200x800.png"
+        src="https://khetibuddy.com/wp-content/uploads/2024/06/Crops.jpg"
         alt="A vibrant corn field at sunset with a dramatic cloudy sky"
         fill
         style={{objectFit: "cover"}}
