@@ -31,9 +31,7 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
     const { t } = useLanguage();
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
-    const handleScroll = (e: React.MouseEvent<HTMLButtonElement>, targetId: string) => {
-      e.preventDefault();
-      
+    const handleScroll = (targetId: string) => {
       const element = document.getElementById(targetId);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
@@ -43,9 +41,9 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
 
     const handleNavClick = (item: NavItem) => {
         if(item === "About Us") {
-            handleScroll({} as React.MouseEvent<HTMLButtonElement>, 'about-us');
+            handleScroll('about-us');
         } else if (item === "Contact Us") {
-            handleScroll({} as React.MouseEvent<HTMLButtonElement>, 'contact-us');
+            handleScroll('contact-us');
         }
         else {
             setActiveItem(item);
@@ -75,7 +73,7 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
                                 key={item.name}
                                 variant={"ghost"} 
                                 className="px-4 py-2 text-sm font-medium"
-                                onClick={(e) => handleScroll(e, item.name.toLowerCase().replace(' ', '-'))}
+                                onClick={() => handleScroll(item.name.toLowerCase().replace(' ', '-'))}
                             >
                                 {t(item.key)}
                             </Button>
@@ -120,7 +118,7 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
                                     key={item.name}
                                     variant={"ghost"}
                                     className="w-full justify-start"
-                                    onClick={(e) => handleScroll(e, item.name.toLowerCase().replace(' ', '-'))}
+                                    onClick={() => handleScroll(item.name.toLowerCase().replace(' ', '-'))}
                                 >
                                     {t(item.key)}
                                 </Button>
