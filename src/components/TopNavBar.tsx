@@ -22,14 +22,14 @@ interface TopNavBarProps {
   isAppView?: boolean;
 }
 
-const navItems: { name: NavItem, key: string, dropdown?: {key: string}[] }[] = [
+const navItems: { name: NavItem, key: string }[] = [
     { name: "Home", key: "nav_home" },
     { name: "About Us", key: "nav_about_us" },
-    { name: "Dashboard", key: "nav_dashboard", dropdown: [{key:"dropdown_overview"}, {key:"dropdown_analytics"}] },
-    { name: "Irrigation Planner", key: "nav_irrigation_planner", dropdown: [{key:"dropdown_new_schedule"}, {key:"dropdown_history"}] },
-    { name: "Crop Advisor", key: "nav_crop_advisor", dropdown: [{key:"dropdown_get_suggestion"}, {key:"dropdown_my_crops"}] },
-    { name: "Soil Advisor", key: "nav_soil_advisor", dropdown: [{key:"dropdown_check_health"}, {key:"dropdown_improvements"}] },
-    { name: "Govt. Schemes", key: "nav_govt_schemes", dropdown: [{key:"dropdown_find_schemes"}, {key:"dropdown_my_applications"}] },
+    { name: "Dashboard", key: "nav_dashboard" },
+    { name: "Irrigation Planner", key: "nav_irrigation_planner" },
+    { name: "Crop Advisor", key: "nav_crop_advisor" },
+    { name: "Soil Advisor", key: "nav_soil_advisor" },
+    { name: "Govt. Schemes", key: "nav_govt_schemes" },
 ];
 
 
@@ -37,7 +37,9 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
     const { t } = useLanguage();
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
-    const filteredNavItems = isAppView ? navItems.filter(item => !['Home'].includes(item.name)) : navItems.filter(item => ['Home', 'About Us', 'Dashboard'].includes(item.name));
+    const filteredNavItems = isAppView 
+        ? navItems.filter(item => !['Home', 'About Us'].includes(item.name)) 
+        : navItems.filter(item => ['Home', 'About Us', 'Dashboard'].includes(item.name));
     
     return (
     <header className="bg-background border-b shadow-sm sticky top-0 z-40">
@@ -51,34 +53,14 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
             
             <nav className="hidden md:flex items-center gap-1 bg-primary/20 p-1 rounded-lg">
                 {filteredNavItems.map((item) => (
-                    item.dropdown && isAppView ? (
-                        <DropdownMenu key={item.name}>
-                        <DropdownMenuTrigger asChild>
-                            <Button 
-                                variant={activeItem === item.name ? "primary" : "ghost"} 
-                                className="px-4 py-2 text-sm font-medium"
-                                onClick={() => setActiveItem(item.name)}
-                            >
-                                {t(item.key)}
-                                <ChevronDown className="ml-1 h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            {item.dropdown.map(subItem => (
-                                <DropdownMenuItem key={subItem.key}>{t(subItem.key)}</DropdownMenuItem>
-                            ))}
-                        </DropdownMenuContent>
-                        </DropdownMenu>
-                    ) : (
-                        <Button 
-                            key={item.name}
-                            variant={activeItem === item.name ? "primary" : "ghost"} 
-                            className="px-4 py-2 text-sm font-medium"
-                            onClick={() => setActiveItem(item.name)}
-                        >
-                            {t(item.key)}
-                        </Button>
-                    )
+                    <Button 
+                        key={item.name}
+                        variant={activeItem === item.name ? "primary" : "ghost"} 
+                        className="px-4 py-2 text-sm font-medium"
+                        onClick={() => setActiveItem(item.name)}
+                    >
+                        {t(item.key)}
+                    </Button>
                 ))}
             </nav>
 

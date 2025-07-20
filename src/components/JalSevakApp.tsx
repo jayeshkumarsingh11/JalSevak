@@ -9,7 +9,7 @@ import CropAdvisor from "@/components/CropAdvisor"
 import SoilQualityAdvisor from "@/components/SoilQualityAdvisor"
 import SchemeFinder from "@/components/SchemeFinder"
 import TopNavBar from './TopNavBar'
-import AboutPage from './AboutPage'
+import type { NavItem } from './JalSevakApp';
 
 export type NavItem = "Dashboard" | "Irrigation Planner" | "Crop Advisor" | "Soil Advisor" | "Govt. Schemes" | "About Us" | "Home";
 
@@ -23,7 +23,7 @@ export default function JalSevakApp({ initialView = "Dashboard", onNavigate }: J
   const [activeView, setActiveView] = useState<NavItem>(initialView);
 
   const handleNavigation = (item: NavItem) => {
-    if (["Home", "About Us"].includes(item)) {
+    if (item === "Home" || item === "About Us") {
       onNavigate(item);
     } else {
       setActiveView(item);

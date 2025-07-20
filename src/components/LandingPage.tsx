@@ -20,14 +20,7 @@ export default function LandingPage() {
       case 'Home':
         return <HeroPage onNavigate={handleNavigation} />;
       case 'About Us':
-        return (
-            <>
-                <TopNavBar activeItem={activeView} setActiveItem={handleNavigation} />
-                <main className="flex-1">
-                    <AboutPage />
-                </main>
-            </>
-        );
+        return <AboutPage />;
       case 'Dashboard':
       case 'Irrigation Planner':
       case 'Crop Advisor':
@@ -39,16 +32,18 @@ export default function LandingPage() {
     }
   };
 
-  if (['Home'].includes(activeView)) {
-      return (
-        <div className="flex flex-col min-h-screen bg-background">
-            <TopNavBar activeItem={activeView} setActiveItem={handleNavigation} />
-            <main className="flex-1">
-                {renderContent()}
-            </main>
-        </div>
-      )
+  // If we are in the main application, render it directly.
+  if (['Dashboard', 'Irrigation Planner', 'Crop Advisor', 'Soil Advisor', 'Govt. Schemes'].includes(activeView)) {
+    return renderContent();
   }
 
-  return renderContent();
+  // Otherwise, render the landing/marketing page layout.
+  return (
+    <div className="flex flex-col min-h-screen bg-background">
+        <TopNavBar activeItem={activeView} setActiveItem={handleNavigation} isAppView={false} />
+        <main className="flex-1">
+            {renderContent()}
+        </main>
+    </div>
+  )
 }
