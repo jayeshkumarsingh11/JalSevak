@@ -40,9 +40,11 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
 
     const handleNavClick = (item: NavItem) => {
         if(item === "About Us") {
-            handleScroll('about-us');
+            setActiveItem('Home');
+            setTimeout(() => handleScroll('about-us'), 0);
         } else if (item === "Contact Us") {
-            handleScroll('contact-us');
+            setActiveItem('Home');
+            setTimeout(() => handleScroll('contact-us'), 0);
         }
         else {
             setActiveItem(item);
@@ -66,18 +68,6 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
             
             <nav className="hidden md:flex items-center gap-1 bg-primary/20 p-1 rounded-lg">
                 {filteredNavItems.map((item) => {
-                    if (item.name === "About Us" || item.name === "Contact Us") {
-                        return (
-                             <Button 
-                                key={item.name}
-                                variant={"ghost"} 
-                                className="px-4 py-2 text-sm font-medium"
-                                onClick={() => handleNavClick(item.name)}
-                            >
-                                {t(item.key)}
-                            </Button>
-                        )
-                    }
                     return (
                          <Button 
                             key={item.name}
@@ -94,14 +84,9 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
             <div className="hidden md:flex items-center gap-2">
                 <LanguageToggle />
                 {!isAppView && (
-                    <>
-                        <Button variant="ghost" asChild>
-                            <Link href="/login">{t('nav_login')}</Link>
-                        </Button>
-                        <Button asChild>
-                            <Link href="/register">{t('nav_register')}</Link>
-                        </Button>
-                    </>
+                    <Button asChild>
+                        <Link href="/register">{t('nav_register')}</Link>
+                    </Button>
                 )}
             </div>
 
@@ -128,9 +113,6 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
                         </Button>
                     ))}
                      <div className="border-t pt-4 mt-2 flex flex-col gap-2">
-                         <Button variant="ghost" asChild>
-                            <Link href="/login" className="w-full justify-start">{t('nav_login')}</Link>
-                        </Button>
                         <Button asChild>
                             <Link href="/register" className="w-full justify-start">{t('nav_register')}</Link>
                         </Button>
