@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Target, Eye, Users } from "lucide-react";
+import { Target, Eye, Users, Linkedin } from "lucide-react";
 import image1 from "./images/Jayesh.jpg"
 import image2 from "./images/Vidushi.jpeg"
 
@@ -14,16 +14,19 @@ const teamMembers = [
     nameKey: "Jayesh Kumar Singh",
     email: "jayeshkumarsingh11@gmail.com",
     image: image1,
+    linkedin: "https://www.linkedin.com/in/jayesh-kumar-singh-35b233257/",
   },
   {
     nameKey: "Vidushi Srivastava",
     email: "vidushi.official1012@gmail.com",
     image: image2,
+    linkedin: "https://www.linkedin.com/in/vidushi-srivastava-334707251/",
   },
   {
     nameKey: "Kritika Singh",
     email: "kritikasince2005@gmail.com",
     image: "/images/team3.jpg",
+    linkedin: "https://www.linkedin.com/in/kritika-singh-458b68288/",
   },
 ];
 
@@ -88,25 +91,27 @@ export default function AboutPage() {
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
           {teamMembers.map((member, index) => (
-            <Card
-              key={index}
-              className="text-center"
-            >
-              <CardContent className="flex flex-col items-center p-6">
-                <Avatar className="w-24 h-24 mb-4 border-4 border-accent">
-                  <Image
-                    src={member.image}
-                    alt={t(member.nameKey)}
-                    width={100}
-                    height={100}
-                  />
-                </Avatar>
-                <h3 className="text-lg font-semibold font-headline">
-                  {t(member.nameKey)}
-                </h3>
-                <p className="text-sm text-primary">{t(member.email)}</p>
-              </CardContent>
-            </Card>
+            <a key={index} href={member.linkedin} target="_blank" rel="noopener noreferrer" className="group">
+              <Card className="text-center h-full transition-all duration-300 group-hover:shadow-xl group-hover:border-primary">
+                <CardContent className="flex flex-col items-center p-6">
+                  <Avatar className="w-24 h-24 mb-4 border-4 border-accent transition-transform duration-300 group-hover:scale-105">
+                    <Image
+                      src={member.image}
+                      alt={t(member.nameKey)}
+                      width={100}
+                      height={100}
+                    />
+                  </Avatar>
+                  <h3 className="text-lg font-semibold font-headline">
+                    {t(member.nameKey)}
+                  </h3>
+                  <div className="flex items-center gap-2 text-sm text-primary">
+                    <Linkedin className="h-4 w-4" />
+                    <p>{t(member.email)}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </a>
           ))}
         </div>
       </section>
