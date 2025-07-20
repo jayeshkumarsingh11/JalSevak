@@ -226,6 +226,22 @@ interface LanguageContextType {
 // Create the context
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+// Helper function to chunk an object into smaller objects
+function chunkObject<T extends {}>(obj: T, size: number): Partial<T>[] {
+  const keys = Object.keys(obj) as (keyof T)[];
+  const chunks: Partial<T>[] = [];
+  for (let i = 0; i < keys.length; i += size) {
+    const chunkKeys = keys.slice(i, i + size);
+    const chunk: Partial<T> = {};
+    for (const key of chunkKeys) {
+      chunk[key] = obj[key];
+    }
+    chunks.push(chunk);
+  }
+  return chunks;
+}
+
+
 // Create the provider component
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguageState] = useState('English');
@@ -241,8 +257,21 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     setLanguageState(lang);
     try {
-      const translatedTexts = await translateUi({ texts: defaultTranslations, language: lang });
-      setTranslations(translatedTexts);
+      // Chunk the translations object into smaller pieces
+      const translationChunks = chunkObject(defaultTranslations, 50);
+      
+      const promises = translationChunks.map(chunk => 
+        translateUi({ texts: chunk as Translations, language: lang })
+      );
+
+      const results = await Promise.all(promises);
+      
+      // Merge the results from all chunks
+      const finalTranslations = results.reduce((acc, current) => {
+        return { ...acc, ...current };
+      }, {});
+
+      setTranslations(finalTranslations);
     } catch (error) {
       console.error('Translation failed:', error);
       // Fallback to default if translation fails
@@ -273,3 +302,5 @@ export const useLanguage = (): LanguageContextType => {
   }
   return context;
 };
+
+    
