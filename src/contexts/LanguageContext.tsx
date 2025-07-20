@@ -15,6 +15,7 @@ const defaultTranslations: Translations = {
   nav_crop_advisor: 'Crop Advisor',
   nav_soil_advisor: 'Soil Advisor',
   nav_govt_schemes: 'Govt. Schemes',
+  nav_about_us: 'About Us',
   dropdown_overview: 'Overview',
   dropdown_analytics: 'Analytics',
   dropdown_new_schedule: 'New Schedule',
@@ -25,6 +26,24 @@ const defaultTranslations: Translations = {
   dropdown_improvements: 'Improvements',
   dropdown_find_schemes: 'Find Schemes',
   dropdown_my_applications: 'My Applications',
+
+  // About Page
+  about_title: 'About JalSevak',
+  about_subtitle: 'Empowering Indian farmers with data-driven insights for a sustainable future.',
+  our_mission_title: 'Our Mission',
+  our_mission_desc: 'To revolutionize agriculture in India by providing accessible, AI-powered tools that optimize resource usage, improve crop yields, and enhance the livelihoods of farmers.',
+  our_vision_title: 'Our Vision',
+  our_vision_desc: 'We envision a future where every farmer in India has the power of data and technology at their fingertips, leading to a prosperous, sustainable, and food-secure nation.',
+  meet_team_title: 'Meet the Team',
+  meet_team_subtitle: 'The passionate minds behind JalSevak.',
+  team_member_1_name: 'Dr. Aris',
+  team_member_1_role: 'Lead Agronomist',
+  team_member_2_name: 'Priya Singh',
+  team_member_2_role: 'AI & Data Scientist',
+  team_member_3_name: 'Rohan Kumar',
+  team_member_3_role: 'Lead Engineer',
+  team_member_4_name: 'Anjali Desai',
+  team_member_4_role: 'UX/UI Designer',
 
   // Dashboard
   next_irrigation: 'Next Irrigation',
@@ -302,5 +321,3 @@ export const useLanguage = (): LanguageContextType => {
   }
   return context;
 };
-
-    

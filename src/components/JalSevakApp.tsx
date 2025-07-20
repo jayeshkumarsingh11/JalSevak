@@ -9,8 +9,9 @@ import CropAdvisor from "@/components/CropAdvisor"
 import SoilQualityAdvisor from "@/components/SoilQualityAdvisor"
 import SchemeFinder from "@/components/SchemeFinder"
 import TopNavBar from './TopNavBar'
+import AboutPage from './AboutPage'
 
-export type NavItem = "Dashboard" | "Irrigation Planner" | "Crop Advisor" | "Soil Advisor" | "Govt. Schemes";
+export type NavItem = "Dashboard" | "Irrigation Planner" | "Crop Advisor" | "Soil Advisor" | "Govt. Schemes" | "About Us";
 
 export default function JalSevakApp() {
   const [activeView, setActiveView] = useState<NavItem>("Dashboard");
@@ -27,6 +28,8 @@ export default function JalSevakApp() {
         return <SoilQualityAdvisor />;
       case "Govt. Schemes":
         return <SchemeFinder />;
+      case "About Us":
+        return <AboutPage />;
       default:
         return <DashboardView />;
     }

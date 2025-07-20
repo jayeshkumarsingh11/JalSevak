@@ -21,12 +21,13 @@ interface TopNavBarProps {
   setActiveItem: (item: NavItem) => void;
 }
 
-const navItems: { name: NavItem, key: string, dropdown: {key: string}[] }[] = [
+const navItems: { name: NavItem, key: string, dropdown?: {key: string}[] }[] = [
     { name: "Dashboard", key: "nav_dashboard", dropdown: [{key:"dropdown_overview"}, {key:"dropdown_analytics"}] },
     { name: "Irrigation Planner", key: "nav_irrigation_planner", dropdown: [{key:"dropdown_new_schedule"}, {key:"dropdown_history"}] },
     { name: "Crop Advisor", key: "nav_crop_advisor", dropdown: [{key:"dropdown_get_suggestion"}, {key:"dropdown_my_crops"}] },
     { name: "Soil Advisor", key: "nav_soil_advisor", dropdown: [{key:"dropdown_check_health"}, {key:"dropdown_improvements"}] },
     { name: "Govt. Schemes", key: "nav_govt_schemes", dropdown: [{key:"dropdown_find_schemes"}, {key:"dropdown_my_applications"}] },
+    { name: "About Us", key: "nav_about_us" },
 ];
 
 
@@ -46,23 +47,34 @@ export default function TopNavBar({ activeItem, setActiveItem }: TopNavBarProps)
             
             <nav className="hidden md:flex items-center gap-1 bg-primary/20 p-1 rounded-lg">
                 {navItems.map((item) => (
-                    <DropdownMenu key={item.name}>
-                    <DropdownMenuTrigger asChild>
+                    item.dropdown ? (
+                        <DropdownMenu key={item.name}>
+                        <DropdownMenuTrigger asChild>
+                            <Button 
+                                variant={activeItem === item.name ? "primary" : "ghost"} 
+                                className="px-4 py-2 text-sm font-medium"
+                                onClick={() => setActiveItem(item.name)}
+                            >
+                                {t(item.key)}
+                                <ChevronDown className="ml-1 h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            {item.dropdown.map(subItem => (
+                                <DropdownMenuItem key={subItem.key}>{t(subItem.key)}</DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                        </DropdownMenu>
+                    ) : (
                         <Button 
+                            key={item.name}
                             variant={activeItem === item.name ? "primary" : "ghost"} 
                             className="px-4 py-2 text-sm font-medium"
                             onClick={() => setActiveItem(item.name)}
                         >
                             {t(item.key)}
-                            <ChevronDown className="ml-1 h-4 w-4" />
                         </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        {item.dropdown.map(subItem => (
-                            <DropdownMenuItem key={subItem.key}>{t(subItem.key)}</DropdownMenuItem>
-                        ))}
-                    </DropdownMenuContent>
-                    </DropdownMenu>
+                    )
                 ))}
             </nav>
 
