@@ -19,6 +19,7 @@ import { cropPriceInfo, type CropPriceInfoOutput } from "@/ai/flows/crop-price-i
 import { Separator } from "@/components/ui/separator";
 import WeatherIcon from "./WeatherIcon";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { cn } from "@/lib/utils";
 
 
 const generateMspData = (basePrice: number, volatility: number, trend: number) => {
@@ -130,6 +131,7 @@ export default function DashboardView() {
   
   const [priceInfo, setPriceInfo] = useState<CropPriceInfoOutput | null>(null);
   const [loadingPriceInfo, setLoadingPriceInfo] = useState(false);
+  const [animateWeather, setAnimateWeather] = useState(false);
 
 
   const handleCropInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -263,6 +265,8 @@ export default function DashboardView() {
             is_day: weatherData.current.is_day,
             weathercode: weatherData.current.weathercode,
           });
+           setAnimateWeather(true);
+          setTimeout(() => setAnimateWeather(false), 500);
         }
         if (weatherData && weatherData.daily) {
           const forecast: ForecastDay[] = weatherData.daily.time.map((date: string, index: number) => ({
@@ -377,7 +381,7 @@ export default function DashboardView() {
               )}
             </div>
           </CardHeader>
-          <CardContent className="flex items-center justify-around pt-2">
+          <CardContent className={cn("flex items-center justify-around pt-2", animateWeather && "animate-pulse-once")}>
             {loadingWeather ? (
                 <>
                     <Skeleton className="h-12 w-14" />
@@ -525,7 +529,7 @@ export default function DashboardView() {
           </CardHeader>
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={allMspData[selectedCrop]}>
+              <AreaChart data={allMspData[selectedCrop]} isAnimationActive={true}>
                 <defs>
                     <linearGradient id="colorMsp" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>

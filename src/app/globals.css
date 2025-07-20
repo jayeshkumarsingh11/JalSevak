@@ -40,3 +40,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .animate-pulse-once {
+    animation: pulse 0.5s ease-in-out;
+  }
+}
