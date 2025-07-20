@@ -25,22 +25,6 @@ export async function translateUi(input: TranslateUiInput): Promise<TranslateUiO
   return translateUiFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'translateUiPrompt',
-  input: {schema: TranslateUiInputSchema},
-  output: {schema: TranslateUiOutputSchema},
-  prompt: `You are an expert translator specializing in Indian languages.
-  Translate the values of the following JSON object from English to {{{language}}}.
-  It is critical that you ONLY translate the string values and preserve the JSON keys exactly as they are.
-  Your response must be a valid JSON object.
-
-  JSON to translate:
-  {{{json texts}}}
-
-  Return only the translated JSON object.
-`,
-});
-
 const translateUiFlow = ai.defineFlow(
   {
     name: 'translateUiFlow',
@@ -48,6 +32,30 @@ const translateUiFlow = ai.defineFlow(
     outputSchema: TranslateUiOutputSchema,
   },
   async (input) => {
+    // Dynamically create the Zod schema for the output based on the keys of the input texts.
+    // This is required because the model needs an explicit schema for the JSON object it should generate.
+    const dynamicOutputSchema = z.object(
+      Object.fromEntries(
+        Object.keys(input.texts).map(key => [key, z.string()])
+      )
+    );
+
+    const prompt = ai.definePrompt({
+        name: 'translateUiPrompt',
+        input: {schema: TranslateUiInputSchema},
+        output: {schema: dynamicOutputSchema},
+        prompt: `You are an expert translator specializing in Indian languages.
+        Translate the values of the following JSON object from English to {{{language}}}.
+        It is critical that you ONLY translate the string values and preserve the JSON keys exactly as they are.
+        Your response must be a valid JSON object.
+
+        JSON to translate:
+        {{{json texts}}}
+
+        Return only the translated JSON object.
+      `,
+    });
+
     const {output} = await prompt(input);
     return output!;
   }
