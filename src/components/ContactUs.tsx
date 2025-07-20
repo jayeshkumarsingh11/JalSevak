@@ -10,7 +10,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -21,6 +23,8 @@ const formSchema = z.object({
 
 export default function ContactUs() {
   const { t } = useLanguage();
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -32,10 +36,31 @@ export default function ContactUs() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Here you would handle form submission, e.g., send an email or save to a database
-    console.log(values);
-    // You can use the `toast` function here to show a success message
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true);
+    try {
+      // **Simulated Action**: In a real application, you would send this data to a serverless function
+      // or an API route that uses a service like Resend or Nodemailer to send an email.
+      // For now, we will just simulate a delay.
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      console.log("Form values:", values);
+
+      toast({
+        title: "Message Sent!",
+        description: "Thank you for contacting us. We will get back to you shortly.",
+      });
+
+      form.reset();
+    } catch (error) {
+       toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem sending your message. Please try again.",
+      });
+    } finally {
+        setIsSubmitting(false);
+    }
   }
 
   return (
@@ -49,75 +74,78 @@ export default function ContactUs() {
         </header>
 
         <div className="max-w-2xl mx-auto">
-          <div>
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-headline">{t('contact_form_title')}</CardTitle>
-                <CardDescription>{t('contact_form_desc')}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('form_name')}</FormLabel>
-                          <FormControl>
-                            <Input placeholder={t('form_name_placeholder')} {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                     <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('form_email')}</FormLabel>
-                          <FormControl>
-                            <Input placeholder={t('form_email_placeholder')} {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                     <FormField
-                      control={form.control}
-                      name="subject"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('form_subject')}</FormLabel>
-                          <FormControl>
-                            <Input placeholder={t('form_subject_placeholder')} {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="message"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t('form_message')}</FormLabel>
-                          <FormControl>
-                            <Textarea placeholder={t('form_message_placeholder')} className="min-h-[120px]" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button type="submit" className="w-full">
-                       <Send className="mr-2 h-4 w-4" /> {t('send_message_button')}
-                    </Button>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-headline">{t('contact_form_title')}</CardTitle>
+              <CardDescription>{t('contact_form_desc')}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('form_name')}</FormLabel>
+                        <FormControl>
+                          <Input placeholder={t('form_name_placeholder')} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('form_email')}</FormLabel>
+                        <FormControl>
+                          <Input placeholder={t('form_email_placeholder')} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
+                    control={form.control}
+                    name="subject"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('form_subject')}</FormLabel>
+                        <FormControl>
+                          <Input placeholder={t('form_subject_placeholder')} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="message"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('form_message')}</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder={t('form_message_placeholder')} className="min-h-[120px]" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                     {isSubmitting ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                     ) : (
+                       <Send className="mr-2 h-4 w-4" />
+                     )}
+                     {isSubmitting ? 'Sending...' : t('send_message_button')}
+                  </Button>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
