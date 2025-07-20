@@ -19,6 +19,7 @@ export default function LandingPage() {
     if (viewFromUrl) {
         setActiveView(viewFromUrl);
     } else {
+        // Default to home, which doesn't prerender the heavy app components
         setActiveView('Home');
     }
   }, [searchParams]);
@@ -68,7 +69,14 @@ export default function LandingPage() {
               </>
             );
         default:
-          return <JalSevakApp initialView={'Dashboard'} onNavigate={handleNavigation} />;
+           // Fallback to home to prevent build errors
+           return (
+            <>
+              <HeroPage onNavigate={handleNavigation} onLearnMoreClick={handleLearnMoreClick} />
+              <AboutPage />
+              <ContactUs />
+            </>
+          );
       }
   };
   
