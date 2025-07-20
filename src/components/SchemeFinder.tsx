@@ -32,10 +32,11 @@ const CROP_SUGGESTIONS = [
 
 export default function SchemeFinder() {
   const { t } = useLanguage();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [result, setResult] = useState<GovernmentSchemeSuggestionsOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fetchingLocation, setFetchingLocation] = useState(false);
+  const [isPersonalizedSearch, setIsPersonalizedSearch] = useState(false);
 
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -114,6 +115,22 @@ export default function SchemeFinder() {
   };
 
   useEffect(() => {
+    // Fetch general schemes on initial load
+    const fetchGeneralSchemes = async () => {
+      setLoading(true);
+      setError(null);
+      setIsPersonalizedSearch(false);
+      try {
+        const res = await governmentSchemeSuggestions({});
+        setResult(res);
+      } catch (e: any) {
+        setError(e.message || t('error_unexpected'));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGeneralSchemes();
     getLocation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -122,6 +139,7 @@ export default function SchemeFinder() {
     setLoading(true);
     setResult(null);
     setError(null);
+    setIsPersonalizedSearch(true);
     try {
       const res = await governmentSchemeSuggestions(values);
       setResult(res);
@@ -230,20 +248,6 @@ export default function SchemeFinder() {
       </Card>
 
       <div className="md:col-span-2">
-        {!result && !loading && (
-          <Card className="flex flex-col items-center justify-center h-full p-8 text-center bg-muted/30 border-dashed">
-            <Image 
-              src="https://placehold.co/400x300.png"
-              alt="Illustration of a government building"
-              width={400}
-              height={300}
-              className="mb-4 rounded-lg opacity-80"
-              data-ai-hint="government building illustration"
-            />
-            <h3 className="text-xl font-headline text-muted-foreground">{t('scheme_finder_initial_prompt')}</h3>
-            <p className="text-muted-foreground">{t('scheme_finder_initial_prompt_desc')}</p>
-          </Card>
-        )}
         {loading && (
           <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-8">
             <Bot className="h-16 w-16 text-primary" />
@@ -252,11 +256,13 @@ export default function SchemeFinder() {
           </div>
         )}
         {error && <p className="text-destructive p-8">{error}</p>}
-        {result && (
+        {result && !loading && (
           <div className="animate-slide-up-fade">
-            <h2 className="text-2xl font-headline mb-4">{t('results_suggested_schemes')}</h2>
+            <h2 className="text-2xl font-headline mb-4">
+              {isPersonalizedSearch ? t('results_suggested_schemes') : t('latest_schemes')}
+            </h2>
             {result.schemes.length > 0 ? (
-              <Accordion type="single" collapsible className="w-full">
+              <Accordion type="single" collapsible className="w-full" defaultValue="item-0">
                 {result.schemes.map((scheme, index) => (
                   <AccordionItem value={`item-${index}`} key={index}>
                     <AccordionTrigger className="font-headline text-lg text-left">{scheme.name}</AccordionTrigger>

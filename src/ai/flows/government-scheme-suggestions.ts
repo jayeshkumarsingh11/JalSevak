@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -12,9 +13,9 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const GovernmentSchemeSuggestionsInputSchema = z.object({
-  location: z.string().describe('The location of the farm (e.g., village, district).'),
-  cropType: z.string().describe('The type of crop being cultivated.'),
-  landArea: z.number().describe('The size of the farm land in acres.'),
+  location: z.string().optional().describe('The location of the farm (e.g., village, district).'),
+  cropType: z.string().optional().describe('The type of crop being cultivated.'),
+  landArea: z.number().optional().describe('The size of the farm land in acres.'),
 });
 export type GovernmentSchemeSuggestionsInput = z.infer<typeof GovernmentSchemeSuggestionsInputSchema>;
 
@@ -40,14 +41,20 @@ const prompt = ai.definePrompt({
   input: {schema: GovernmentSchemeSuggestionsInputSchema},
   output: {schema: GovernmentSchemeSuggestionsOutputSchema},
   prompt: `You are an expert in Indian agricultural government schemes.
+
+  {{#if location}}
   Based on the farmer's location, crop type, and land area, suggest relevant government subsidies.
 
   Location: {{{location}}}
   Crop Type: {{{cropType}}}
   Land Area: {{{landArea}}} acres
 
-  Suggest government schemes that are relevant to the farmer.
-  Provide the name, description, eligibility criteria, benefits, and application procedure for each scheme. Return it in the specified JSON format.
+  Suggest government schemes that are most relevant to the farmer based on these specific inputs.
+  {{else}}
+  The user has not provided specific details. Provide a list of 3-5 of the most popular, high-impact, and currently active national-level government schemes for farmers in India.
+  {{/if}}
+  
+  For each scheme, provide the name, a brief description, general eligibility criteria, key benefits, and the typical application procedure. Return the list in the specified JSON format.
 `,
 });
 
