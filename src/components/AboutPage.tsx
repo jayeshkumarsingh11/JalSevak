@@ -14,19 +14,19 @@ const teamMembers = [
     nameKey: "Jayesh Kumar Singh",
     email: "jayeshkumarsingh11@gmail.com",
     image: image1,
-    linkedin: "https://www.linkedin.com/in/jayesh-kumar-singh-35b233257/",
+    linkedin: "https://www.linkedin.com/in/jayesh-singh-510953304/",
   },
   {
     nameKey: "Vidushi Srivastava",
     email: "vidushi.official1012@gmail.com",
     image: image2,
-    linkedin: "https://www.linkedin.com/in/vidushi-srivastava-334707251/",
+    linkedin: "https://www.linkedin.com/in/srivastava-vidushi/",
   },
   {
     nameKey: "Kritika Singh",
     email: "kritikasince2005@gmail.com",
-    image: "/images/team3.jpg",
-    linkedin: "https://www.linkedin.com/in/kritika-singh-458b68288/",
+    image: "https://placehold.co/100x100.png",
+    linkedin: "https://www.linkedin.com/in/kritika-singh/",
   },
 ];
 
@@ -106,9 +106,9 @@ export default function AboutPage() {
                     {t(member.nameKey)}
                   </h3>
                   <div className="flex items-center gap-2 text-sm text-primary">
-                    <Linkedin className="h-4 w-4" />
                     <p>{t(member.email)}</p>
                   </div>
+                  <Linkedin className="h-4 w-4" />
                 </CardContent>
               </Card>
             </a>
