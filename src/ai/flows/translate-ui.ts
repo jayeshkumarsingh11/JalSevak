@@ -19,7 +19,7 @@ const TranslateUIInputSchema = z.object({
 export type TranslateUIInput = z.infer<typeof TranslateUIInputSchema>;
 
 const TranslateUIOutputSchema = z.object({
-    translations: z.record(z.string()).describe('A JSON object where keys are the original stable identifiers and values are the translated texts.'),
+    translations: z.record(z.string(), z.string()).describe('A JSON object where keys are the original stable identifiers and values are the translated texts.'),
 });
 export type TranslateUIOutput = z.infer<typeof TranslateUIOutputSchema>;
 
