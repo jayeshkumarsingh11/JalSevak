@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -29,7 +30,7 @@ export async function translateUI(input: TranslateUIInput): Promise<TranslateUIO
 
 const prompt = ai.definePrompt({
   name: 'translateUIPrompt',
-  input: {schema: TranslateUIInputSchema},
+  input: {schema: z.object({ language: z.string(), textsJson: z.string() }) },
   output: {schema: TranslateUIOutputSchema},
   prompt: `You are a translation expert. Translate the JSON values from the 'texts' object into the specified 'language'.
   The user wants to translate their web application's UI.
@@ -37,7 +38,7 @@ const prompt = ai.definePrompt({
   Do not translate keys that look like code identifiers (e.g., 'Jayesh Kumar Singh').
   The target language is: {{language}}
   The texts to translate are:
-  {{{JSON.stringify texts}}}
+  {{{textsJson}}}
   
   Provide only the final JSON object in the 'translations' field.
 `,
@@ -50,7 +51,8 @@ const translateUIFlow = ai.defineFlow(
     outputSchema: TranslateUIOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt(input);
+    const textsJson = JSON.stringify(input.texts);
+    const {output} = await prompt({ language: input.language, textsJson });
     return output!;
   }
 );
