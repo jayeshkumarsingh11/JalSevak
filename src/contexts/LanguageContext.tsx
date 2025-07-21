@@ -3,8 +3,8 @@
 
 import React, { createContext, useState, useContext, ReactNode, useCallback, useRef } from 'react';
 import LanguageTransitionOverlay from '@/components/LanguageTransitionOverlay';
-import { translateUI } from '@/ai/flows/translate-ui';
 import { useToast } from "@/hooks/use-toast";
+import { translateTexts } from '@/actions/translate';
 
 type Translations = { [key: string]: string };
 
@@ -242,7 +242,7 @@ const englishTranslations: Translations = {
 interface LanguageContextType {
   language: string;
   translations: Translations;
-  setLanguage: (language: string) => void;
+  setLanguage: (language: string, code: string) => void;
   t: (key: string) => string;
   loading: boolean;
 }
@@ -253,50 +253,39 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguageState] = useState('English');
   const [currentTranslations, setCurrentTranslations] = useState<Translations>(englishTranslations);
   const [loading, setLoading] = useState(false);
-  const translationCache = useRef<Record<string, Translations>>({ 'English': englishTranslations });
+  const translationCache = useRef<Record<string, Translations>>({ 'en': englishTranslations });
   const { toast } = useToast();
 
-  const setLanguage = useCallback(async (lang: string) => {
-    if (lang === language || loading) return;
+  const setLanguage = useCallback(async (langName: string, langCode: string) => {
+    if (langCode === 'en') {
+      setCurrentTranslations(englishTranslations);
+      setLanguageState('English');
+      return;
+    }
+    
+    if (loading) return;
 
-    setLoading(true);
-
-    if (translationCache.current[lang]) {
-      setCurrentTranslations(translationCache.current[lang]);
-      setLanguageState(lang);
-      setLoading(false);
+    if (translationCache.current[langCode]) {
+      setCurrentTranslations(translationCache.current[langCode]);
+      setLanguageState(langName);
       return;
     }
 
+    setLoading(true);
+
     try {
-      // Prepare the data for the AI by creating a key-value pair of the English text
-      const textsToTranslate = Object.fromEntries(
-        Object.keys(englishTranslations).map(key => [key, englishTranslations[key]])
-      );
-
-      const result = await translateUI({ language: lang, texts: textsToTranslate });
+      const textsToTranslate = Object.values(englishTranslations);
+      const translatedTexts = await translateTexts(textsToTranslate, langCode);
       
-      if (result && result.translations) {
-        // The AI returns a dictionary where keys are the english text, not the keys.
-        // We need to map it back.
-        const originalKeys = Object.keys(englishTranslations);
-        const translatedValues = Object.values(result.translations);
+      const newTranslations: Translations = {};
+      Object.keys(englishTranslations).forEach((key, index) => {
+          newTranslations[key] = translatedTexts[index];
+      });
 
-        if(originalKeys.length !== translatedValues.length) {
-            console.error("Translation mismatch: original and translated key counts differ.");
-            throw new Error("Translation failed due to mismatched key counts.");
-        }
-
-        const newTranslations = Object.fromEntries(
-            originalKeys.map((key, index) => [key, translatedValues[index]])
-        );
-
-        translationCache.current[lang] = newTranslations;
-        setCurrentTranslations(newTranslations);
-        setLanguageState(lang);
-      } else {
-        throw new Error("Translation result is empty or invalid.");
-      }
+      translationCache.current[langCode] = newTranslations;
+      setCurrentTranslations(newTranslations);
+      setLanguageState(langName);
+      
     } catch (error) {
       console.error("Failed to translate UI:", error);
       toast({
@@ -310,7 +299,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [language, loading, toast]);
+  }, [loading, toast]);
 
   const t = useCallback((key: string): string => {
     return currentTranslations[key] || englishTranslations[key] || key;

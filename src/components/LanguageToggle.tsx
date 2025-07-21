@@ -42,7 +42,7 @@ export function LanguageToggle() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {LANGUAGES.map((lang) => (
-          <DropdownMenuItem key={lang.code} onClick={() => setLanguage(lang.name)}>
+          <DropdownMenuItem key={lang.code} onClick={() => setLanguage(lang.name, lang.code)}>
             {lang.name}
           </DropdownMenuItem>
         ))}
