@@ -19,7 +19,7 @@ const TranslateUIInputSchema = z.object({
 export type TranslateUIInput = z.infer<typeof TranslateUIInputSchema>;
 
 const TranslateUIOutputSchema = z.object({
-    translations: z.record(z.string(), z.string()).describe('A JSON object where keys are the original stable identifiers and values are the translated texts.'),
+    translations: z.record(z.string()).describe('A JSON object where keys are the original stable identifiers and values are the translated texts.'),
 });
 export type TranslateUIOutput = z.infer<typeof TranslateUIOutputSchema>;
 
@@ -29,7 +29,7 @@ export async function translateUI(input: TranslateUIInput): Promise<TranslateUIO
 
 const prompt = ai.definePrompt({
   name: 'translateUIPrompt',
-  input: {schema: TranslateUIInputSchema },
+  input: {schema: z.object({ language: z.string(), texts: z.string() }) },
   output: {schema: TranslateUIOutputSchema},
   prompt: `You are an expert translator. Translate the values of the following JSON object into the specified target language: {{language}}.
 
