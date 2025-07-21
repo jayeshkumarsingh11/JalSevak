@@ -277,6 +277,18 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
       const textsToTranslate = Object.values(englishTranslations);
       const translatedTexts = await translateTexts(textsToTranslate, langCode);
       
+      // Check if the translation failed (i.e., returned the original English texts)
+      if (translatedTexts[0] === textsToTranslate[0]) {
+         toast({
+            variant: "destructive",
+            title: "Translation Failed",
+            description: "Could not switch language. Please ensure your TRANSLATE_API_KEY is set correctly.",
+          });
+         // Do not update state if translation failed, remain on the current language
+         setLoading(false);
+         return;
+      }
+      
       const newTranslations: Translations = {};
       Object.keys(englishTranslations).forEach((key, index) => {
           newTranslations[key] = translatedTexts[index];
@@ -290,10 +302,10 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
       console.error("Failed to translate UI:", error);
       toast({
         variant: "destructive",
-        title: "Translation Failed",
-        description: "Could not switch language. Please try again later.",
+        title: "Translation API Error",
+        description: "An error occurred while communicating with the translation service.",
       });
-      // Revert to English if translation fails
+      // Revert to English if translation fails to prevent a broken state
       setCurrentTranslations(englishTranslations);
       setLanguageState('English');
     } finally {
@@ -311,7 +323,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     <LanguageContext.Provider value={value}>
       <LanguageTransitionOverlay loading={loading} />
       {children}
-    </Language-context-provider>
+    </LanguageContext.Provider>
   );
 };
 
