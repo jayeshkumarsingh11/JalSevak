@@ -3,6 +3,7 @@
 
 import React, { createContext, useState, useContext, ReactNode, useCallback, useEffect } from 'react';
 import { translateUi } from '@/ai/flows/translate-ui';
+import LanguageTransitionOverlay from '@/components/LanguageTransitionOverlay';
 
 // Define the structure of your translations
 type Translations = { [key: string]: string };
@@ -352,6 +353,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <LanguageContext.Provider value={value}>
+      <LanguageTransitionOverlay loading={loading} />
       {children}
     </LanguageContext.Provider>
   );
