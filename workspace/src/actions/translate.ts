@@ -1,3 +1,4 @@
+
 'use server';
 
 import {Translate} from '@google-cloud/translate/build/src/v2';
