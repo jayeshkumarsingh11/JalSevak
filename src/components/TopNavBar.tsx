@@ -8,6 +8,7 @@ import type { NavItem } from "./SamriddhKhetiApp";
 import { LanguageToggle } from "./LanguageToggle";
 import { ThemeToggle } from "./ThemeToggle";
 import { useLanguage } from "@/contexts/LanguageContext";
+import image from "@/components/images/logo.png"
 
 interface TopNavBarProps {
   activeItem: NavItem;
@@ -56,7 +57,18 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
             <div className="flex items-center gap-4">
                 <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick("Home"); }} className="flex items-center gap-2 font-headline text-xl font-semibold text-primary">
-                    <span>Samriddh Kheti</span>
+                <Image
+                    src={image}
+                    alt="A vibrant corn field at sunset with a dramatic cloudy sky"
+                    style={{
+                        width: "50px",
+                        height: "50px"
+                    }}
+                    className="z-0"
+                    data-ai-hint="corn field"
+                    priority
+                />
+                <span>Samriddh Kheti</span>
                 </a>
             </div>
             

@@ -13,7 +13,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cropSuggestion, type CropSuggestionOutput } from "@/ai/flows/crop-suggestion";
-import { getSoilType } from "@/ai/flows/get-soil-type";
 import { Loader2, Bot, LocateFixed, Leaf, Droplets, Banknote, CalendarDays, Rss } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import image from "./images/crop.webp";
@@ -35,7 +34,6 @@ export default function CropAdvisor() {
   const [result, setResult] = useState<CropSuggestionOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fetchingLocation, setFetchingLocation] = useState(false);
-  const [fetchingSoil, setFetchingSoil] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -48,21 +46,6 @@ export default function CropAdvisor() {
       personalConsumption: "Local Market",
     },
   });
-
-  const fetchSoilType = async (location: string) => {
-    if (!location) return;
-    setFetchingSoil(true);
-    try {
-      const { soilType } = await getSoilType({ location });
-      if (soilType) {
-        form.setValue("soilType", soilType, { shouldValidate: true });
-      }
-    } catch (error) {
-      console.error("Error fetching soil type:", error);
-    } finally {
-      setFetchingSoil(false);
-    }
-  };
 
   const getLocation = () => {
     if (navigator.geolocation) {
@@ -85,7 +68,6 @@ export default function CropAdvisor() {
               .join(", ");
             const finalLocation = locationString || data.display_name;
             form.setValue("location", finalLocation);
-            await fetchSoilType(finalLocation);
           } catch (error) {
             console.error("Error fetching location name:", error);
           } finally {
@@ -141,7 +123,6 @@ export default function CropAdvisor() {
                           placeholder={t('form_location_placeholder')}
                           {...field}
                           className="pr-10"
-                          onBlur={(e) => fetchSoilType(e.target.value)}
                         />
                       </FormControl>
                        <Button
@@ -182,17 +163,10 @@ export default function CropAdvisor() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t('form_soil_type')}</FormLabel>
-                         <Select onValueChange={field.onChange} value={field.value} disabled={fetchingSoil}>
+                         <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                                <SelectTrigger>
-                                {fetchingSoil ? (
-                                  <div className="flex items-center gap-2 text-muted-foreground">
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                    <span>...</span>
-                                  </div>
-                                ) : (
                                   <SelectValue placeholder={t('form_soil_type_placeholder')} />
-                                )}
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
