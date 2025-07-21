@@ -6,8 +6,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Target, Eye, Users, Linkedin } from "lucide-react";
-import image1 from "./images/Jayesh.jpg"
-import image2 from "./images/Vidushi.jpeg"
+import image1 from "@/components/images/Jayesh.jpg"
+import image2 from "@/components/images/Vidushi.jpeg"
 
 const teamMembers = [
   {
