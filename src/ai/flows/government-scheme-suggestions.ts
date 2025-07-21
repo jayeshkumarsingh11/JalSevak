@@ -16,6 +16,7 @@ const GovernmentSchemeSuggestionsInputSchema = z.object({
   location: z.string().optional().describe('The location of the farm (e.g., village, district).'),
   cropType: z.string().optional().describe('The type of crop being cultivated.'),
   landArea: z.number().optional().describe('The size of the farm land in acres.'),
+  language: z.string().optional().describe('The language to generate the response in (e.g., "Hindi", "Tamil"). Defaults to English if not provided.'),
 });
 export type GovernmentSchemeSuggestionsInput = z.infer<typeof GovernmentSchemeSuggestionsInputSchema>;
 
@@ -41,6 +42,7 @@ const prompt = ai.definePrompt({
   input: {schema: GovernmentSchemeSuggestionsInputSchema.extend({ location_provided: z.boolean() })},
   output: {schema: GovernmentSchemeSuggestionsOutputSchema},
   prompt: `You are an expert in Indian agricultural government schemes.
+  The user is requesting information in {{language}}. You MUST provide the entire response (name, description, eligibility, benefits, application procedure) for each scheme in {{language}}.
 
   {{#if location_provided}}
   Based on the farmer's details, suggest relevant government subsidies. If a field is not provided, make reasonable assumptions or focus on the provided information.
@@ -54,7 +56,8 @@ const prompt = ai.definePrompt({
   The user has not provided specific details. Provide a list of 3-5 of the most popular, high-impact, and currently active national-level government schemes for farmers in India.
   {{/if}}
   
-  For each scheme, provide the name, a brief description, general eligibility criteria, key benefits, and the typical application procedure. Return the list in the specified JSON format.
+  For each scheme, provide the name, a brief description, general eligibility criteria, key benefits, and the typical application procedure. All text must be in {{language}}.
+  Return the list in the specified JSON format.
 `,
 });
 
@@ -68,7 +71,7 @@ const governmentSchemeSuggestionsFlow = ai.defineFlow(
     // Determine if any personalized data was provided to guide the prompt.
     const location_provided = !!(input.location || input.cropType || input.landArea);
     
-    const promptInput = { ...input, location_provided };
+    const promptInput = { ...input, language: input.language || 'English', location_provided };
     const {output} = await prompt(promptInput);
     return output!;
   }

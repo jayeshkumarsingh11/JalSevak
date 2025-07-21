@@ -31,7 +31,7 @@ const CROP_SUGGESTIONS = [
 ];
 
 export default function SchemeFinder() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState<GovernmentSchemeSuggestionsOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -121,7 +121,7 @@ export default function SchemeFinder() {
       setError(null);
       setIsPersonalizedSearch(false);
       try {
-        const res = await governmentSchemeSuggestions({});
+        const res = await governmentSchemeSuggestions({ language });
         setResult(res);
       } catch (e: any) {
         setError(e.message || t('error_unexpected'));
@@ -133,7 +133,7 @@ export default function SchemeFinder() {
     fetchGeneralSchemes();
     getLocation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [language]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
@@ -141,7 +141,7 @@ export default function SchemeFinder() {
     setError(null);
     setIsPersonalizedSearch(true);
     try {
-      const res = await governmentSchemeSuggestions(values);
+      const res = await governmentSchemeSuggestions({...values, language});
       setResult(res);
     } catch (e: any) {
       setError(e.message || t('error_unexpected'));
