@@ -92,6 +92,9 @@ export default function LandingPage() {
         <main className="flex-1">
             {renderContent()}
         </main>
+        <footer className="py-4 text-center text-sm text-muted-foreground bg-muted/40 border-t">
+            COPYRIGHTS RESERVED TO TEAM SeedSorrower
+        </footer>
     </div>
   )
 }

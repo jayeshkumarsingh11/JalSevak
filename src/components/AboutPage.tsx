@@ -25,8 +25,8 @@ const teamMembers = [
   {
     nameKey: "Kritika Singh",
     email: "kritikasince2005@gmail.com",
-    image: "https://placehold.co/100x100.png",
-    linkedin: "https://www.linkedin.com/in/kritika-singh/",
+    image: "/images/team3.jpg",
+    linkedin: "",
   },
 ];
 
@@ -108,7 +108,6 @@ export default function AboutPage() {
                   <div className="flex items-center gap-2 text-sm text-primary">
                     <p>{t(member.email)}</p>
                   </div>
-                  <Linkedin className="h-4 w-4" />
                 </CardContent>
               </Card>
             </a>
