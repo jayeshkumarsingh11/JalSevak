@@ -49,7 +49,7 @@ export default function JalSevakApp({ initialView = "Dashboard", onNavigate }: J
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <TopNavBar activeItem={activeView} setActiveItem={handleNavigation} isAppView={true} />
-      <main className="flex-1 p-4 lg:p-6">
+      <main className="flex-1 p-4 lg:p-6 animate-slide-up-fade">
         {renderContent()}
       </main>
       <footer className="py-4 text-center text-sm text-muted-foreground bg-muted/40 border-t">
