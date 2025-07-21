@@ -93,7 +93,7 @@ export default function LandingPage() {
             {renderContent()}
         </main>
         <footer className="py-4 text-center text-sm text-muted-foreground bg-muted/40 border-t">
-            © Team SeedSorrower
+            © 2025 Team SeedSorrower
         </footer>
     </div>
   )

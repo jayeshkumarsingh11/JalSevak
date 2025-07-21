@@ -53,7 +53,7 @@ export default function JalSevakApp({ initialView = "Dashboard", onNavigate }: J
         {renderContent()}
       </main>
       <footer className="py-4 text-center text-sm text-muted-foreground bg-muted/40 border-t">
-        © Team SeedSorrower
+        © 2025 Team SeedSorrower
       </footer>
     </div>
   )
