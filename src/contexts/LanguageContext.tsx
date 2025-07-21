@@ -257,13 +257,13 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
 
   const setLanguage = useCallback(async (langName: string, langCode: string) => {
+    if (loading) return; // Prevent multiple requests
+
     if (langCode === 'en') {
       setCurrentTranslations(englishTranslations);
       setLanguageState('English');
       return;
     }
-    
-    if (loading) return;
 
     if (translationCache.current[langCode]) {
       setCurrentTranslations(translationCache.current[langCode]);
@@ -283,7 +283,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
         toast({
             variant: "destructive",
             title: "Translation Failed",
-            description: "Could not switch language. The translation service may be unavailable. Please try again later.",
+            description: "Could not switch language. The translation service may be unavailable.",
         });
         setLoading(false);
         return;
@@ -298,7 +298,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
       toast({
         variant: "destructive",
         title: "Translation Service Error",
-        description: "An error occurred while communicating with the translation service. Please try again later.",
+        description: "An error occurred while communicating with the translation service.",
       });
       // Revert to English if translation fails to prevent a broken state
       setCurrentTranslations(englishTranslations);
