@@ -52,9 +52,6 @@ export default function JalSevakApp({ initialView = "Dashboard", onNavigate }: J
       <main className="flex-1 p-4 lg:p-6 animate-slide-up-fade">
         {renderContent()}
       </main>
-      <footer className="py-4 text-center text-sm text-muted-foreground bg-muted/40 border-t">
-        © 2025 Team SeedSorrower
-      </footer>
     </div>
   )
 }

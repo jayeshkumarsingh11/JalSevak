@@ -152,7 +152,6 @@ const defaultTranslations: Translations = {
   guava: 'Guava',
   papaya: 'Papaya',
 
-
   // Crop Advisor
   crop_advisor_title: 'Crop Advisor',
   crop_advisor_description: 'Get AI-powered crop recommendations tailored to your farm.',
@@ -268,6 +267,13 @@ const defaultTranslations: Translations = {
   results_how_to_apply: 'How to Apply',
   results_no_schemes_title: 'No Schemes Found',
   results_no_schemes_description: "We couldn't find any specific government schemes based on the information you provided. Please try adjusting your search criteria.",
+
+  // Footer
+  footer_quick_links: "Quick Links",
+  footer_tools: "Tools",
+  footer_newsletter: "Subscribe to our Newsletter",
+  footer_newsletter_desc: "Get the latest updates on agricultural tech and government schemes.",
+  footer_subscribe: "Subscribe",
 };
 
 

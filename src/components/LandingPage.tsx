@@ -92,9 +92,6 @@ export default function LandingPage() {
         <main className="flex-1 animate-slide-up-fade">
             {renderContent()}
         </main>
-        <footer className="py-4 text-center text-sm text-muted-foreground bg-muted/40 border-t">
-            © 2025 Team SeedSorrower
-        </footer>
     </div>
   )
 }
