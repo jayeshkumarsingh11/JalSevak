@@ -9,7 +9,7 @@
  * - TranslateUIOutput - The return type for the translateUI function.
  */
 
-import {ai} from '@/ai/genkit';
+import {ai, fastModel} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const TranslateUIInputSchema = z.object({
@@ -31,6 +31,7 @@ const prompt = ai.definePrompt({
   name: 'translateUIPrompt',
   input: {schema: z.object({ language: z.string(), texts: z.string() }) },
   output: {schema: TranslateUIOutputSchema},
+  model: fastModel, // Use the faster model for this task
   prompt: `You are an expert translator. Translate the values of the following JSON object into the specified target language: {{language}}.
 
 Return a JSON object where the keys are the same as the input object, but the values are the translated texts.
