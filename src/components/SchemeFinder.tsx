@@ -234,7 +234,7 @@ export default function SchemeFinder() {
                   </FormItem>
                 )}
               />
-              <div className="flex space-x-2">
+              <div className="flex flex-col space-y-2">
                 <Button type="submit" disabled={loading} className="w-full">
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {t('find_schemes_button')}
