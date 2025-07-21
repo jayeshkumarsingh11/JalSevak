@@ -16,6 +16,7 @@ import { smartIrrigationSchedule, type SmartIrrigationScheduleInput, type SmartI
 import { Loader2, Droplets, Bot, LocateFixed, Clock, Shield, Leaf } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import image from "./images/IrrigationPlanner.webp"
+import { CROP_KEYS } from "./SoilQualityAdvisor";
 
 const formSchema = z.object({
   cropType: z.string().min(1, "Crop type is required."),
@@ -25,14 +26,6 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
-
-const CROP_SUGGESTIONS = [
-  "Apple", "Bajra", "Banana", "Barley", "Brinjal", "Cabbage", "Capsicum", "Cauliflower",
-  "Chilli", "Coffee", "Cotton", "Ginger", "Gram", "Grapes", "Groundnut", "Guava",
-  "Jute", "Lentil", "Maize", "Mango", "Millet", "Mustard", "Okra", "Onion", "Papaya",
-  "Pomegranate", "Potato", "Pulses", "Rice", "Sorghum", "Soybean", "Sugarcane",
-  "Tea", "Tomato", "Turmeric", "Wheat"
-];
 
 export default function IrrigationPlanner() {
   const { t, language } = useLanguage();
@@ -45,6 +38,7 @@ export default function IrrigationPlanner() {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const cropInputRef = useRef<HTMLDivElement>(null);
+  const [cropSearch, setCropSearch] = useState("");
 
 
   const form = useForm<FormValues>({
@@ -59,10 +53,10 @@ export default function IrrigationPlanner() {
   
   const handleCropInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    form.setValue("cropType", value);
+    setCropSearch(value);
     if (value) {
-      const filtered = CROP_SUGGESTIONS.filter(crop =>
-        crop.toLowerCase().startsWith(value.toLowerCase())
+      const filtered = CROP_KEYS.filter(key =>
+        t(key).toLowerCase().startsWith(value.toLowerCase())
       );
       setSuggestions(filtered);
       setShowSuggestions(true);
@@ -71,8 +65,9 @@ export default function IrrigationPlanner() {
     }
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    form.setValue("cropType", suggestion);
+  const handleSuggestionClick = (key: string) => {
+    form.setValue("cropType", key, { shouldValidate: true });
+    setCropSearch(t(key));
     setShowSuggestions(false);
   };
 
@@ -196,21 +191,22 @@ export default function IrrigationPlanner() {
                       <FormControl>
                         <Input
                           placeholder={t('form_crop_type_placeholder')}
-                          {...field}
+                          value={cropSearch}
                           onChange={handleCropInputChange}
+                          onFocus={() => setShowSuggestions(true)}
                           autoComplete="off"
                         />
                       </FormControl>
                       {showSuggestions && suggestions.length > 0 && (
                         <div className="absolute z-10 w-full bg-background border border-input rounded-md shadow-lg mt-1">
-                          <ul className="py-1">
-                            {suggestions.map((suggestion) => (
+                          <ul className="py-1 max-h-60 overflow-y-auto">
+                            {suggestions.map((key) => (
                               <li
-                                key={suggestion}
-                                className="px-3 py-2 cursor-pointer hover:bg-accent"
-                                onClick={() => handleSuggestionClick(suggestion)}
+                                key={key}
+                                className="px-3 py-2 cursor-pointer hover:bg-accent text-sm"
+                                onMouseDown={() => handleSuggestionClick(key)}
                               >
-                                {suggestion}
+                                {t(key)}
                               </li>
                             ))}
                           </ul>
@@ -356,3 +352,5 @@ export default function IrrigationPlanner() {
     </div>
   );
 }
+
+    

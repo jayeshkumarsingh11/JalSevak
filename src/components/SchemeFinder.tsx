@@ -15,20 +15,13 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { governmentSchemeSuggestions, type GovernmentSchemeSuggestionsOutput } from "@/ai/flows/government-scheme-suggestions";
 import { Loader2, Bot, LocateFixed } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { CROP_KEYS } from "./SoilQualityAdvisor";
 
 const formSchema = z.object({
   location: z.string().min(1, "Location is required."),
   cropType: z.string().min(1, "Crop type is required."),
   landArea: z.coerce.number().min(0.1, "Land area must be positive."),
 });
-
-const CROP_SUGGESTIONS = [
-  "Apple", "Bajra", "Banana", "Barley", "Brinjal", "Cabbage", "Capsicum", "Cauliflower",
-  "Chilli", "Coffee", "Cotton", "Ginger", "Gram", "Grapes", "Groundnut", "Guava",
-  "Jute", "Lentil", "Maize", "Mango", "Millet", "Mustard", "Okra", "Onion", "Papaya",
-  "Pomegranate", "Potato", "Pulses", "Rice", "Sorghum", "Soybean", "Sugarcane",
-  "Tea", "Tomato", "Turmeric", "Wheat"
-];
 
 export default function SchemeFinder() {
   const { t, language } = useLanguage();
@@ -41,6 +34,7 @@ export default function SchemeFinder() {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const cropInputRef = useRef<HTMLDivElement>(null);
+  const [cropSearch, setCropSearch] = useState("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,10 +47,10 @@ export default function SchemeFinder() {
   
   const handleCropInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    form.setValue("cropType", value);
+    setCropSearch(value);
     if (value) {
-      const filtered = CROP_SUGGESTIONS.filter(crop =>
-        crop.toLowerCase().startsWith(value.toLowerCase())
+      const filtered = CROP_KEYS.filter(key =>
+        t(key).toLowerCase().startsWith(value.toLowerCase())
       );
       setSuggestions(filtered);
       setShowSuggestions(true);
@@ -65,8 +59,9 @@ export default function SchemeFinder() {
     }
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    form.setValue("cropType", suggestion);
+  const handleSuggestionClick = (key: string) => {
+    form.setValue("cropType", key, { shouldValidate: true });
+    setCropSearch(t(key));
     setShowSuggestions(false);
   };
   
@@ -203,21 +198,22 @@ export default function SchemeFinder() {
                     <FormControl>
                       <Input
                         placeholder={t('form_crop_type_placeholder')}
-                        {...field}
+                        value={cropSearch}
                         onChange={handleCropInputChange}
+                        onFocus={() => setShowSuggestions(true)}
                         autoComplete="off"
                       />
                     </FormControl>
                      {showSuggestions && suggestions.length > 0 && (
                       <div className="absolute z-10 w-full bg-background border border-input rounded-md shadow-lg mt-1">
-                        <ul className="py-1">
-                          {suggestions.map((suggestion) => (
+                        <ul className="py-1 max-h-60 overflow-y-auto">
+                          {suggestions.map((key) => (
                             <li
-                              key={suggestion}
-                              className="px-3 py-2 cursor-pointer hover:bg-accent"
-                              onClick={() => handleSuggestionClick(suggestion)}
+                              key={key}
+                              className="px-3 py-2 cursor-pointer hover:bg-accent text-sm"
+                              onMouseDown={() => handleSuggestionClick(key)}
                             >
-                              {suggestion}
+                              {t(key)}
                             </li>
                           ))}
                         </ul>
@@ -303,3 +299,5 @@ export default function SchemeFinder() {
     </div>
   );
 }
+
+    

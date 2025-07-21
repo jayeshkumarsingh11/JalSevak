@@ -28,7 +28,7 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-const CROP_KEYS = [
+export const CROP_KEYS = [
   "apple", "bajra", "banana", "barley", "brinjal", "cabbage", "capsicum", "cauliflower",
   "chilli", "coffee", "cotton", "ginger", "gram", "grapes", "groundnut", "guava",
   "jute", "lentil", "maize", "mango", "millet", "mustard", "okra", "onion", "papaya",
@@ -66,7 +66,7 @@ export default function SoilQualityAdvisor() {
     if (value) {
       const existingCrops = form.getValues('pastCrops').split(',').map(c => c.trim().toLowerCase());
       const filtered = CROP_KEYS.filter(key =>
-        t(key).toLowerCase().startsWith(value.toLowerCase()) && !existingCrops.includes(t(key).toLowerCase())
+        t(key).toLowerCase().startsWith(value.toLowerCase()) && !existingCrops.includes(key)
       );
       setSuggestions(filtered);
       setShowSuggestions(true);
@@ -76,9 +76,7 @@ export default function SoilQualityAdvisor() {
   };
 
   const handleSuggestionClick = (key: string) => {
-    const translatedCrop = t(key);
     const currentCrops = form.getValues('pastCrops');
-    // Use the English key for the flow, display translated name
     const newCropsValue = currentCrops ? `${currentCrops}, ${key}` : key;
     form.setValue("pastCrops", newCropsValue, { shouldValidate: true });
     setCropSearch('');
@@ -405,3 +403,5 @@ export default function SoilQualityAdvisor() {
     </div>
   );
 }
+
+    
