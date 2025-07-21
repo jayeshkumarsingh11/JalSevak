@@ -81,8 +81,9 @@ export default {
           to: {height: '0', opacity: '0'},
         },
         shimmer: {
-          '0%': { backgroundPosition: '-200% 0' },
-          '100%': { backgroundPosition: '200% 0' },
+          '100%': {
+            transform: 'translateX(100%)',
+          },
         },
         'slide-up-and-fade': {
           from: { opacity: '0', transform: 'translateY(10px)' },
@@ -92,7 +93,7 @@ export default {
       animation: {
         'accordion-down': 'accordion-down 0.3s ease-out',
         'accordion-up': 'accordion-up 0.3s ease-out',
-        shimmer: 'shimmer 2s ease-in-out infinite',
+        shimmer: 'shimmer 2s infinite',
         'slide-up-fade': 'slide-up-and-fade 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both',
       },
     },

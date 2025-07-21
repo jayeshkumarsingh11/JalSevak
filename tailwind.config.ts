@@ -81,14 +81,15 @@ export default {
           to: {height: '0', opacity: '0'},
         },
         shimmer: {
-          '0%, 100%': { backgroundPosition: '-100% 0' },
-          '50%': { backgroundPosition: '100% 0' },
-        }
+          '100%': {
+            transform: 'translateX(100%)',
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.3s ease-out',
         'accordion-up': 'accordion-up 0.3s ease-out',
-        shimmer: 'shimmer 2s infinite linear',
+        shimmer: 'shimmer 2s infinite',
       },
     },
   },
