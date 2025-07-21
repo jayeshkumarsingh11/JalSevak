@@ -311,7 +311,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     <LanguageContext.Provider value={value}>
       <LanguageTransitionOverlay loading={loading} />
       {children}
-    </Language-Context.Provider>
+    </LanguageContext.Provider>
   );
 };
 
