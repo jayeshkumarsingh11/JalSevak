@@ -111,12 +111,19 @@ export default function SchemeFinder() {
     }
   };
 
-  const fetchInitialSchemes = async () => {
+  const fetchSchemes = async (values?: FormValues) => {
     setLoading(true);
-    setIsPersonalizedSearch(false);
+    setResult(null);
+    setError(null);
+    setIsPersonalizedSearch(!!(values?.location || values?.cropType || values?.landArea));
+    
     try {
-      const res = await governmentSchemeSuggestions({ language });
+      const res = await governmentSchemeSuggestions({...(values || {}), language});
       setResult(res);
+      if (values) {
+         form.reset({ location: "", cropType: "", landArea: undefined });
+         setCropSearch("");
+      }
     } catch (e: any) {
       setError(e.message || t('error_unexpected'));
     } finally {
@@ -124,27 +131,9 @@ export default function SchemeFinder() {
     }
   };
 
-  useEffect(() => {
-    fetchInitialSchemes();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [language]);
-
 
   async function onSubmit(values: FormValues) {
-    setLoading(true);
-    setResult(null);
-    setError(null);
-    setIsPersonalizedSearch(!!(values.location || values.cropType || values.landArea));
-    try {
-      const res = await governmentSchemeSuggestions({...values, language});
-      setResult(res);
-      form.reset({ location: "", cropType: "", landArea: undefined });
-      setCropSearch("");
-    } catch (e: any) {
-      setError(e.message || t('error_unexpected'));
-    } finally {
-      setLoading(false);
-    }
+    fetchSchemes(values);
   }
 
   return (
@@ -160,7 +149,7 @@ export default function SchemeFinder() {
               <FormField
                 control={form.control}
                 name="location"
-                render={({ field }) => (
+                render= {({ field }) => (
                   <FormItem>
                     <FormLabel>{t('form_location')}</FormLabel>
                     <div className="relative">
@@ -250,7 +239,7 @@ export default function SchemeFinder() {
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {t('find_schemes_button')}
                 </Button>
-                <Button type="button" variant="outline" onClick={fetchInitialSchemes} disabled={loading} className="w-full">
+                <Button type="button" variant="outline" onClick={() => fetchSchemes()} disabled={loading} className="w-full">
                   {t('results_popular_schemes')}
                 </Button>
               </div>
@@ -260,6 +249,12 @@ export default function SchemeFinder() {
       </Card>
 
       <div className="md:col-span-2">
+        {!result && !loading && (
+           <Card className="flex flex-col items-center justify-center h-full p-8 text-center bg-muted/30 border-dashed">
+             <h3 className="text-xl font-headline text-muted-foreground">{t('scheme_finder_initial_prompt')}</h3>
+             <p className="text-muted-foreground">{t('scheme_finder_initial_prompt_desc')}</p>
+           </Card>
+        )}
         {loading && (
           <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-8">
             <Bot className="h-16 w-16 text-primary" />
