@@ -24,7 +24,7 @@ export default function HeroPage({ onNavigate, onLearnMoreClick }: HeroPageProps
         data-ai-hint="corn field"
         priority
       />
-      <div className="absolute inset-0 bg-black/50 z-10"></div>
+      <div className="absolute inset-0 bg-black/60 z-10"></div>
       <div className="relative z-20 flex flex-col items-center justify-center h-full text-center text-white px-4">
         <h1 className="text-4xl md:text-6xl font-headline font-bold mb-4 animate-slide-up-fade" style={{ animationDelay: '0.3s' }}>
           {t("hero_title")}
@@ -36,7 +36,7 @@ export default function HeroPage({ onNavigate, onLearnMoreClick }: HeroPageProps
           <Button size="lg" onClick={() => onNavigate('Dashboard')} className="bg-primary hover:bg-primary/90 text-primary-foreground">
             {t("hero_cta_primary")}
           </Button>
-          <Button size="lg" variant="outline" onClick={onLearnMoreClick} className="bg-transparent border-white text-white hover:bg-white hover:text-primary">
+          <Button size="lg" variant="outline" onClick={onLearnMoreClick} className="bg-transparent border-white text-white hover:bg-white hover:text-black">
             {t("hero_cta_secondary")}
           </Button>
         </div>
