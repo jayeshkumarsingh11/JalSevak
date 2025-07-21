@@ -28,13 +28,14 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-const CROP_SUGGESTIONS = [
-  "Apple", "Bajra", "Banana", "Barley", "Brinjal", "Cabbage", "Capsicum", "Cauliflower",
-  "Chilli", "Coffee", "Cotton", "Ginger", "Gram", "Grapes", "Groundnut", "Guava",
-  "Jute", "Lentil", "Maize", "Mango", "Millet", "Mustard", "Okra", "Onion", "Papaya",
-  "Pomegranate", "Potato", "Pulses", "Rice", "Sorghum", "Soybean", "Sugarcane",
-  "Tea", "Tomato", "Turmeric", "Wheat"
+const CROP_KEYS = [
+  "apple", "bajra", "banana", "barley", "brinjal", "cabbage", "capsicum", "cauliflower",
+  "chilli", "coffee", "cotton", "ginger", "gram", "grapes", "groundnut", "guava",
+  "jute", "lentil", "maize", "mango", "millet", "mustard", "okra", "onion", "papaya",
+  "pomegranate", "potato", "pulses", "rice", "sorghum", "soybean", "sugarcane",
+  "tea", "tomato", "turmeric", "wheat"
 ];
+
 
 export default function SoilQualityAdvisor() {
   const { t, language } = useLanguage();
@@ -64,8 +65,8 @@ export default function SoilQualityAdvisor() {
     setCropSearch(value);
     if (value) {
       const existingCrops = form.getValues('pastCrops').split(',').map(c => c.trim().toLowerCase());
-      const filtered = CROP_SUGGESTIONS.filter(crop =>
-        crop.toLowerCase().startsWith(value.toLowerCase()) && !existingCrops.includes(crop.toLowerCase())
+      const filtered = CROP_KEYS.filter(key =>
+        t(key).toLowerCase().startsWith(value.toLowerCase()) && !existingCrops.includes(t(key).toLowerCase())
       );
       setSuggestions(filtered);
       setShowSuggestions(true);
@@ -74,14 +75,22 @@ export default function SoilQualityAdvisor() {
     }
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
+  const handleSuggestionClick = (key: string) => {
+    const translatedCrop = t(key);
     const currentCrops = form.getValues('pastCrops');
-    const newCrops = currentCrops ? `${currentCrops}, ${suggestion}` : suggestion;
-    form.setValue("pastCrops", newCrops, { shouldValidate: true });
+    // Use the English key for the flow, display translated name
+    const newCropsValue = currentCrops ? `${currentCrops}, ${key}` : key;
+    form.setValue("pastCrops", newCropsValue, { shouldValidate: true });
     setCropSearch('');
     setShowSuggestions(false);
   };
   
+  const displayPastCrops = form.getValues('pastCrops')
+    .split(',')
+    .filter(c => c.trim())
+    .map(key => t(key.trim().toLowerCase()))
+    .join(', ');
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (cropInputRef.current && !cropInputRef.current.contains(event.target as Node)) {
@@ -248,7 +257,7 @@ export default function SoilQualityAdvisor() {
                     <FormControl>
                       <Input
                         placeholder={t('form_past_crops_placeholder')}
-                        {...field}
+                        value={displayPastCrops}
                         readOnly
                         className="bg-muted"
                       />
@@ -265,13 +274,13 @@ export default function SoilQualityAdvisor() {
                         <div className="relative z-10">
                           <div className="absolute w-full bg-background border border-input rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
                             <ul className="py-1">
-                              {suggestions.map((suggestion) => (
+                              {suggestions.map((key) => (
                                 <li
-                                  key={suggestion}
+                                  key={key}
                                   className="px-3 py-2 cursor-pointer hover:bg-accent text-sm"
-                                  onMouseDown={() => handleSuggestionClick(suggestion)}
+                                  onMouseDown={() => handleSuggestionClick(key)}
                                 >
-                                  {suggestion}
+                                  {t(key)}
                                 </li>
                               ))}
                             </ul>

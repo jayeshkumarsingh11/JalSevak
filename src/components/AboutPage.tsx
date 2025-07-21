@@ -8,6 +8,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Target, Eye, Users, Linkedin } from "lucide-react";
 import image1 from "@/components/images/Jayesh.jpg";
 import image2 from "@/components/images/Vidushi.jpeg";
+import image3 from "@/components/images/Kritika.jpeg";
 
 const teamMembers = [
   {
@@ -25,7 +26,7 @@ const teamMembers = [
   {
     nameKey: "Kritika Singh",
     email: "kritikasince2005@gmail.com",
-    image: "https://placehold.co/100x100.png",
+    image: image3,
     linkedin: "",
   },
 ];
@@ -98,6 +99,8 @@ export default function AboutPage() {
                     <AvatarImage
                       src={typeof member.image === 'string' ? member.image : member.image.src}
                       alt={t(member.nameKey)}
+                      width={100}
+                      height={100}
                       data-ai-hint="person"
                     />
                     <AvatarFallback>{member.nameKey.substring(0, 2)}</AvatarFallback>
