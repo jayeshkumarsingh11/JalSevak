@@ -3,12 +3,12 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import JalSevakApp from './JalSevakApp';
+import SamriddhKhetiApp from './SamriddhKhetiApp';
 import TopNavBar from './TopNavBar';
 import AboutPage from './AboutPage';
 import HeroPage from './HeroPage';
 import ContactUs from './ContactUs';
-import type { NavItem } from './JalSevakApp';
+import type { NavItem } from './SamriddhKhetiApp';
 
 export default function LandingPage() {
   const searchParams = useSearchParams();
@@ -43,7 +43,7 @@ export default function LandingPage() {
         case 'Crop Advisor':
         case 'Soil Advisor':
         case 'Govt. Schemes':
-          return <JalSevakApp initialView={activeView} onNavigate={handleNavigation} />;
+          return <SamriddhKhetiApp initialView={activeView} onNavigate={handleNavigation} />;
         case 'Home':
              return (
               <>

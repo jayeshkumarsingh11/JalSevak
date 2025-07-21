@@ -4,11 +4,10 @@
 import Image from "next/image";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import type { NavItem } from "./JalSevakApp";
+import type { NavItem } from "./SamriddhKhetiApp";
 import { LanguageToggle } from "./LanguageToggle";
 import { ThemeToggle } from "./ThemeToggle";
 import { useLanguage } from "@/contexts/LanguageContext";
-import image from "./images/logo.png";
 
 interface TopNavBarProps {
   activeItem: NavItem;
@@ -45,7 +44,7 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
         } else if (item === "Contact Us") {
             setTimeout(() => handleScroll('contact-us'), 0);
         }
-        setIsMenuOpen(false);
+        setIsMenuОpen(false);
     }
 
     const filteredNavItems = isAppView 
@@ -57,19 +56,7 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
             <div className="flex items-center gap-4">
                 <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick("Home"); }} className="flex items-center gap-2 font-headline text-xl font-semibold text-primary">
-                <Image
-                    src={image}
-                    alt="A vibrant corn field at sunset with a dramatic cloudy sky"
-                    style={{
-                            width: "50px",
-                            height: "50px",
-                            borderRadius: "50%",
-                    }}
-                    className="z-0"
-                    data-ai-hint=""
-                    priority
-                    />
-                    <span>JalSevak</span>
+                    <span>Samriddh Kheti</span>
                 </a>
             </div>
             

@@ -33,19 +33,19 @@ const defaultTranslations: Translations = {
 
   // Hero Page
   hero_title: 'Revolutionizing Agriculture with AI',
-  hero_subtitle: 'JalSevak provides data-driven insights to help Indian farmers optimize irrigation, improve crop yield, and increase profitability. Sustainable farming starts here.',
+  hero_subtitle: 'Samriddh Kheti provides data-driven insights to help Indian farmers optimize irrigation, improve crop yield, and increase profitability. Sustainable farming starts here.',
   hero_cta_primary: 'Go to Dashboard',
   hero_cta_secondary: 'Learn More',
 
   // About Page
-  about_title: 'About JalSevak',
+  about_title: 'About Samriddh Kheti',
   about_subtitle: 'Empowering Indian farmers with data-driven insights for a sustainable future.',
   our_mission_title: 'Our Mission',
   our_mission_desc: 'To revolutionize agriculture in India by providing accessible, AI-powered tools that optimize resource usage, improve crop yields, and enhance the livelihoods of farmers.',
   our_vision_title: 'Our Vision',
   our_vision_desc: 'We envision a future where every farmer in India has the power of data and technology at their fingertips, leading to a prosperous, sustainable, and food-secure nation.',
   meet_team_title: 'Meet the Team',
-  meet_team_subtitle: 'The passionate minds behind JalSevak.',
+  meet_team_subtitle: 'The passionate minds behind Samriddh Kheti.',
   team_member_1_name: 'Dr. Aris',
   team_member_1_role: 'Lead Agronomist',
   team_member_2_name: 'Priya Singh',

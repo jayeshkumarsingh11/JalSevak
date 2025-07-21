@@ -7,9 +7,9 @@ import Footer from "@/components/Footer";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "JalSevak: Smart Irrigation Planner",
+  title: "Samriddh Kheti: Smart Farming Assistant",
   description:
-    "JalSevak is a smart irrigation planner designed to revolutionize agricultural practices in India, empowering farmers with data-driven insights.",
+    "Samriddh Kheti is a smart farming assistant designed to revolutionize agricultural practices in India, empowering farmers with data-driven insights.",
 };
 
 export default function RootLayout({

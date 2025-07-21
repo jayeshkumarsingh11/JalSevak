@@ -5,7 +5,6 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/contexts/LanguageContext";
-import logo from "./images/logo.png";
 
 export default function Footer() {
     const { t } = useLanguage();
@@ -31,16 +30,7 @@ export default function Footer() {
                     {/* About Section */}
                     <div className="md:col-span-1 space-y-4">
                         <div className="flex items-center gap-2">
-                             <Image
-                                src={logo}
-                                alt="JalSevak Logo"
-                                width={40}
-                                height={40}
-                                className="rounded-full"
-                                data-ai-hint="logo"
-                                priority
-                            />
-                            <span className="text-xl font-headline font-semibold text-primary">JalSevak</span>
+                            <span className="text-xl font-headline font-semibold text-primary">Samriddh Kheti</span>
                         </div>
                         <p className="text-sm text-muted-foreground">
                             {t('hero_subtitle')}

@@ -12,13 +12,13 @@ import TopNavBar from './TopNavBar'
 
 export type NavItem = "Dashboard" | "Irrigation Planner" | "Crop Advisor" | "Soil Advisor" | "Govt. Schemes" | "Home" | "About Us" | "Contact Us";
 
-interface JalSevakAppProps {
+interface SamriddhKhetiAppProps {
   initialView?: NavItem;
   onNavigate: (item: NavItem) => void;
 }
 
 
-export default function JalSevakApp({ initialView = "Dashboard", onNavigate }: JalSevakAppProps) {
+export default function SamriddhKhetiApp({ initialView = "Dashboard", onNavigate }: SamriddhKhetiAppProps) {
   const [activeView, setActiveView] = useState<NavItem>(initialView);
 
   const handleNavigation = (item: NavItem) => {
