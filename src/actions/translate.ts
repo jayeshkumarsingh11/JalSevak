@@ -1,6 +1,6 @@
 'use server';
 
-import {Translate} from '@google-cloud/translate/v2';
+import {Translate} from '@google-cloud/translate/build/src/v2';
 
 // This is safe to run on the server, as API keys are not exposed to the client.
 const translate = new Translate({
