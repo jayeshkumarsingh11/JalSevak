@@ -9,7 +9,7 @@
  * - TranslateUiOutput - The return type for the translateUi function.
  */
 
-import {ai, fastModel} from '@/ai/genkit';
+import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const TranslateUiInputSchema = z.object({
@@ -42,7 +42,6 @@ const translateUiFlow = ai.defineFlow(
 
     const prompt = ai.definePrompt({
         name: 'translateUiPrompt',
-        model: fastModel,
         input: {schema: TranslateUiInputSchema},
         output: {schema: dynamicOutputSchema},
         prompt: `You are an expert translator specializing in Indian languages.
