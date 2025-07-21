@@ -111,20 +111,20 @@ export default function SchemeFinder() {
     }
   };
 
+  const fetchInitialSchemes = async () => {
+    setLoading(true);
+    setIsPersonalizedSearch(false);
+    try {
+      const res = await governmentSchemeSuggestions({ language });
+      setResult(res);
+    } catch (e: any) {
+      setError(e.message || t('error_unexpected'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    // Fetch initial popular schemes on component mount
-    const fetchInitialSchemes = async () => {
-      setLoading(true);
-      setIsPersonalizedSearch(false);
-      try {
-        const res = await governmentSchemeSuggestions({ language });
-        setResult(res);
-      } catch (e: any) {
-        setError(e.message || t('error_unexpected'));
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchInitialSchemes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language]);
@@ -138,6 +138,8 @@ export default function SchemeFinder() {
     try {
       const res = await governmentSchemeSuggestions({...values, language});
       setResult(res);
+      form.reset({ location: "", cropType: "", landArea: undefined });
+      setCropSearch("");
     } catch (e: any) {
       setError(e.message || t('error_unexpected'));
     } finally {
@@ -243,10 +245,15 @@ export default function SchemeFinder() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={loading} className="w-full">
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('find_schemes_button')}
-              </Button>
+              <div className="flex space-x-2">
+                <Button type="submit" disabled={loading} className="w-full">
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {t('find_schemes_button')}
+                </Button>
+                <Button type="button" variant="outline" onClick={fetchInitialSchemes} disabled={loading} className="w-full">
+                  {t('results_popular_schemes')}
+                </Button>
+              </div>
             </form>
           </Form>
         </CardContent>

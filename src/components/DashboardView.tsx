@@ -12,7 +12,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { Sun, CloudRain, Droplets, Thermometer, Wind, Leaf, MapPin, TrendingUp, Info, Landmark, Wheat, CalendarDays, BarChartHorizontal } from "lucide-react";
+import { Sun, CloudRain, Droplets, Thermometer, Wind, Leaf, MapPin, TrendingUp, Info, Landmark, Wheat, CalendarDays, BarChartHorizontal, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { cropPriceInfo, type CropPriceInfoOutput } from "@/ai/flows/crop-price-info";
@@ -202,12 +202,7 @@ export default function DashboardView() {
   };
 
   useEffect(() => {
-    if (selectedCrop !== 'Overall') {
-        fetchPriceInfo();
-    } else {
-        setPriceInfo(null);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    setPriceInfo(null);
   }, [selectedCrop]);
 
 
