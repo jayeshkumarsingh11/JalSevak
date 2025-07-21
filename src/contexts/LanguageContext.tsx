@@ -4,7 +4,7 @@
 import React, { createContext, useState, useContext, ReactNode, useCallback, useRef } from 'react';
 import LanguageTransitionOverlay from '@/components/LanguageTransitionOverlay';
 import { useToast } from "@/hooks/use-toast";
-import { translateTexts } from '@/actions/translate';
+import { translateUI } from '@/ai/flows/translate-ui';
 
 type Translations = { [key: string]: string };
 
@@ -274,26 +274,14 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
 
     try {
-      const textsToTranslate = Object.values(englishTranslations);
-      const translatedTexts = await translateTexts(textsToTranslate, langCode);
+      const result = await translateUI({ texts: englishTranslations, language: langName });
       
-      // Check if the translation failed (i.e., returned the original English texts)
-      if (translatedTexts[0] === textsToTranslate[0]) {
-         toast({
-            variant: "destructive",
-            title: "Translation Failed",
-            description: "Could not switch language. Please ensure your TRANSLATE_API_KEY is set correctly.",
-          });
-         // Do not update state if translation failed, remain on the current language
-         setLoading(false);
-         return;
+      if (!result || !result.translations) {
+        throw new Error("Invalid response from translation AI.");
       }
-      
-      const newTranslations: Translations = {};
-      Object.keys(englishTranslations).forEach((key, index) => {
-          newTranslations[key] = translatedTexts[index];
-      });
 
+      const newTranslations = result.translations;
+      
       translationCache.current[langCode] = newTranslations;
       setCurrentTranslations(newTranslations);
       setLanguageState(langName);
@@ -302,8 +290,8 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
       console.error("Failed to translate UI:", error);
       toast({
         variant: "destructive",
-        title: "Translation API Error",
-        description: "An error occurred while communicating with the translation service.",
+        title: "Translation AI Error",
+        description: "An error occurred while communicating with the translation service. Please try again later.",
       });
       // Revert to English if translation fails to prevent a broken state
       setCurrentTranslations(englishTranslations);
@@ -323,7 +311,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     <LanguageContext.Provider value={value}>
       <LanguageTransitionOverlay loading={loading} />
       {children}
-    </LanguageContext.Provider>
+    </Language-Context.Provider>
   );
 };
 
