@@ -5,7 +5,6 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Twitter, Linkedin, Facebook } from "lucide-react";
 import logo from "./images/logo.png";
 
 export default function Footer() {
@@ -84,11 +83,7 @@ export default function Footer() {
                             <Input type="email" placeholder={t('form_email_placeholder')} />
                             <Button type="submit">{t('footer_subscribe')}</Button>
                         </div>
-                        <div className="flex space-x-4 pt-4">
-                            <a href="#" className="text-muted-foreground hover:text-primary"><Twitter /></a>
-                            <a href="#" className="text-muted-foreground hover:text-primary"><Linkedin /></a>
-                            <a href="#" className="text-muted-foreground hover:text-primary"><Facebook /></a>
-                        </div>
+                        
                     </div>
                 </div>
 

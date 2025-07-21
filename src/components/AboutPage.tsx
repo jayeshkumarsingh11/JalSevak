@@ -5,10 +5,10 @@ import Image from "next/image";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Target, Eye, Users, Linkedin } from "lucide-react";
+import { Target, Eye, Users, Linkedin, Twitter } from "lucide-react";
 import image1 from "@/components/images/Jayesh.jpg";
 import image2 from "@/components/images/Vidushi.jpeg";
-import image3 from "@/components/images/Kritika.jpeg";
+
 
 const teamMembers = [
   {
@@ -16,18 +16,21 @@ const teamMembers = [
     email: "jayeshkumarsingh11@gmail.com",
     image: image1,
     linkedin: "https://www.linkedin.com/in/jayesh-singh-510953304/",
+    x : "https://x.com/Jayeshs74820705",
   },
   {
     nameKey: "Vidushi Srivastava",
     email: "vidushi.official1012@gmail.com",
     image: image2,
     linkedin: "https://www.linkedin.com/in/srivastava-vidushi/",
+    x:"",
   },
   {
     nameKey: "Kritika Singh",
     email: "kritikasince2005@gmail.com",
-    image: image3,
+    image: "https://placehold.co/100x100.png",
     linkedin: "",
+    x: "",
   },
 ];
 
@@ -92,7 +95,7 @@ export default function AboutPage() {
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
           {teamMembers.map((member, index) => (
-            <a key={index} href={member.linkedin} target="_blank" rel="noopener noreferrer" className="group">
+            <div key={index} className="group">
               <Card className="text-center h-full transition-all duration-300 group-hover:shadow-xl group-hover:border-primary">
                 <CardContent className="flex flex-col items-center p-6">
                   <Avatar className="w-24 h-24 mb-4 border-4 border-accent transition-transform duration-300 group-hover:scale-105">
@@ -111,9 +114,13 @@ export default function AboutPage() {
                   <div className="flex items-center gap-2 text-sm text-primary">
                     <p>{t(member.email)}</p>
                   </div>
+                  <div className="flex space-x-4 pt-4">
+                  <a href={member.x} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary"><Twitter /></a>
+                  <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary"><Linkedin /></a>
+                  </div>
                 </CardContent>
               </Card>
-            </a>
+            </div>
           ))}
         </div>
       </section>
