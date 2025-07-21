@@ -2,7 +2,6 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import type { NavItem } from "./JalSevakApp";
 import { LanguageToggle } from "./LanguageToggle";
@@ -56,7 +55,6 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
             <div className="flex items-center gap-4">
                 <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick("Home"); }} className="flex items-center gap-2 font-headline text-xl font-semibold text-primary">
-                    <Image src="/images/logo.png" alt="JalSevak Logo" width={32} height={32} />
                     <span>JalSevak</span>
                 </a>
             </div>
