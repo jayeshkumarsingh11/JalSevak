@@ -291,9 +291,9 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
       toast({
         variant: "destructive",
         title: "Translation Failed",
-        description: "Could not switch language. Please try again later.",
+        description: "Could not switch language. Please check your API key and try again.",
       });
-      // Revert to English if translation fails
+      // Revert to English if translation fails to prevent a broken state
       setCurrentTranslations(englishTranslations);
       setLanguageState('English');
     } finally {

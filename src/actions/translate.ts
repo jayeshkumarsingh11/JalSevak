@@ -19,9 +19,9 @@ export async function translateTexts(texts: string[], targetLanguageCode: string
     }
 
     if (!process.env.TRANSLATE_API_KEY) {
-        console.error('TRANSLATE_API_KEY is not set. Translation will be skipped.');
-        // Return original texts if API key is not available to prevent errors.
-        return texts;
+        console.error('TRANSLATE_API_KEY is not set. Translation cannot proceed.');
+        // Throw an error to be caught by the calling function, which can then notify the user.
+        throw new Error('TRANSLATE_API_KEY is not set.');
     }
 
     try {
@@ -30,7 +30,7 @@ export async function translateTexts(texts: string[], targetLanguageCode: string
         return Array.isArray(translations) ? translations : [translations];
     } catch (error) {
         console.error('ERROR in Google Cloud Translation API:', error);
-        // In case of an error, return the original texts to prevent the UI from breaking.
-        return texts;
+        // Re-throw the error to be handled by the caller so the UI can be notified.
+        throw new Error('Failed to translate texts due to an API error.');
     }
 }
