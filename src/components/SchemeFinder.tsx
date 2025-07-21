@@ -112,9 +112,23 @@ export default function SchemeFinder() {
   };
 
   useEffect(() => {
-    getLocation();
+    // Fetch initial popular schemes on component mount
+    const fetchInitialSchemes = async () => {
+      setLoading(true);
+      setIsPersonalizedSearch(false);
+      try {
+        const res = await governmentSchemeSuggestions({ language });
+        setResult(res);
+      } catch (e: any) {
+        setError(e.message || t('error_unexpected'));
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInitialSchemes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [language]);
+
 
   async function onSubmit(values: FormValues) {
     setLoading(true);
@@ -215,7 +229,16 @@ export default function SchemeFinder() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('form_land_area')}</FormLabel>
-                    <FormControl><Input type="number" placeholder="e.g., 5" step="0.1" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : +e.target.value)} /></FormControl>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        placeholder="e.g., 5" 
+                        step="0.1" 
+                        {...field} 
+                        onChange={e => field.onChange(e.target.value === '' ? undefined : +e.target.value)} 
+                        value={field.value ?? ''}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -230,12 +253,6 @@ export default function SchemeFinder() {
       </Card>
 
       <div className="md:col-span-2">
-        {!result && !loading && (
-             <Card className="flex flex-col items-center justify-center h-full p-8 text-center bg-muted/30 border-dashed">
-                <h3 className="text-xl font-headline text-muted-foreground">{t('scheme_finder_initial_prompt')}</h3>
-                <p className="text-muted-foreground">{t('scheme_finder_initial_prompt_desc')}</p>
-             </Card>
-        )}
         {loading && (
           <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-8">
             <Bot className="h-16 w-16 text-primary" />
