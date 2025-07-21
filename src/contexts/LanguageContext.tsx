@@ -4,7 +4,7 @@
 import React, { createContext, useState, useContext, ReactNode, useCallback, useRef } from 'react';
 import LanguageTransitionOverlay from '@/components/LanguageTransitionOverlay';
 import { useToast } from "@/hooks/use-toast";
-import { translateUI } from '@/ai/flows/translate-ui';
+import { translate } from '@/actions/translate';
 
 type Translations = { [key: string]: string };
 
@@ -274,23 +274,30 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
 
     try {
-      const result = await translateUI({ texts: englishTranslations, language: langName });
+      const result = await translate(englishTranslations, langCode);
       
-      if (!result || !result.translations) {
-        throw new Error("Invalid response from translation AI.");
+      const firstOriginalText = Object.values(englishTranslations)[0];
+      const firstTranslatedText = Object.values(result)[0];
+
+      if (!result || firstOriginalText === firstTranslatedText) {
+        toast({
+            variant: "destructive",
+            title: "Translation Failed",
+            description: "Could not switch language. The translation service may be unavailable. Please try again later.",
+        });
+        setLoading(false);
+        return;
       }
 
-      const newTranslations = result.translations;
-      
-      translationCache.current[langCode] = newTranslations;
-      setCurrentTranslations(newTranslations);
+      translationCache.current[langCode] = result;
+      setCurrentTranslations(result);
       setLanguageState(langName);
       
     } catch (error) {
       console.error("Failed to translate UI:", error);
       toast({
         variant: "destructive",
-        title: "Translation AI Error",
+        title: "Translation Service Error",
         description: "An error occurred while communicating with the translation service. Please try again later.",
       });
       // Revert to English if translation fails to prevent a broken state
