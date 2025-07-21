@@ -18,14 +18,16 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { CROP_KEYS } from "./SoilQualityAdvisor";
 
 const formSchema = z.object({
-  location: z.string().min(1, "Location is required."),
-  cropType: z.string().min(1, "Crop type is required."),
-  landArea: z.coerce.number().min(0.1, "Land area must be positive."),
+  location: z.string().optional(),
+  cropType: z.string().optional(),
+  landArea: z.coerce.number().optional(),
 });
+
+type FormValues = z.infer<typeof formSchema>;
 
 export default function SchemeFinder() {
   const { t, language } = useLanguage();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<GovernmentSchemeSuggestionsOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fetchingLocation, setFetchingLocation] = useState(false);
@@ -36,12 +38,12 @@ export default function SchemeFinder() {
   const cropInputRef = useRef<HTMLDivElement>(null);
   const [cropSearch, setCropSearch] = useState("");
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       location: "",
       cropType: "",
-      landArea: 1,
+      landArea: undefined,
     },
   });
   
@@ -110,31 +112,15 @@ export default function SchemeFinder() {
   };
 
   useEffect(() => {
-    // Fetch general schemes on initial load
-    const fetchGeneralSchemes = async () => {
-      setLoading(true);
-      setError(null);
-      setIsPersonalizedSearch(false);
-      try {
-        const res = await governmentSchemeSuggestions({ language });
-        setResult(res);
-      } catch (e: any) {
-        setError(e.message || t('error_unexpected'));
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchGeneralSchemes();
     getLocation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [language]);
+  }, []);
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: FormValues) {
     setLoading(true);
     setResult(null);
     setError(null);
-    setIsPersonalizedSearch(true);
+    setIsPersonalizedSearch(!!(values.location || values.cropType || values.landArea));
     try {
       const res = await governmentSchemeSuggestions({...values, language});
       setResult(res);
@@ -229,7 +215,7 @@ export default function SchemeFinder() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('form_land_area')}</FormLabel>
-                    <FormControl><Input type="number" step="0.1" {...field} /></FormControl>
+                    <FormControl><Input type="number" placeholder="e.g., 5" step="0.1" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : +e.target.value)} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -244,6 +230,12 @@ export default function SchemeFinder() {
       </Card>
 
       <div className="md:col-span-2">
+        {!result && !loading && (
+             <Card className="flex flex-col items-center justify-center h-full p-8 text-center bg-muted/30 border-dashed">
+                <h3 className="text-xl font-headline text-muted-foreground">{t('scheme_finder_initial_prompt')}</h3>
+                <p className="text-muted-foreground">{t('scheme_finder_initial_prompt_desc')}</p>
+             </Card>
+        )}
         {loading && (
           <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-8">
             <Bot className="h-16 w-16 text-primary" />
@@ -255,7 +247,7 @@ export default function SchemeFinder() {
         {result && !loading && (
           <div className="animate-slide-up-fade">
             <h2 className="text-2xl font-headline mb-4">
-              {isPersonalizedSearch ? t('results_suggested_schemes') : t('latest_schemes')}
+              {isPersonalizedSearch ? t('results_suggested_schemes') : t('results_popular_schemes')}
             </h2>
             {result.schemes.length > 0 ? (
               <Accordion type="single" collapsible className="w-full" defaultValue="item-0">
@@ -299,5 +291,3 @@ export default function SchemeFinder() {
     </div>
   );
 }
-
-    

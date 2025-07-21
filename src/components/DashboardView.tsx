@@ -20,6 +20,7 @@ import { Separator } from "@/components/ui/separator";
 import WeatherIcon from "./WeatherIcon";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
+import { Button } from "./ui/button";
 
 
 const generateMspData = (basePrice: number, volatility: number, trend: number) => {
@@ -182,26 +183,32 @@ export default function DashboardView() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [cropInput, selectedCrop]);
   
+  const fetchPriceInfo = async () => {
+      if (selectedCrop && selectedCrop !== 'Overall') {
+          setLoadingPriceInfo(true);
+          setPriceInfo(null);
+          try {
+              const info = await cropPriceInfo({ cropName: selectedCrop, language });
+              setPriceInfo(info);
+          } catch (error) {
+              console.error("Error fetching price info:", error);
+              setPriceInfo(null);
+          } finally {
+              setLoadingPriceInfo(false);
+          }
+      } else {
+          setPriceInfo(null);
+      }
+  };
+
   useEffect(() => {
-    const fetchPriceInfo = async () => {
-        if (selectedCrop && selectedCrop !== 'Overall') {
-            setLoadingPriceInfo(true);
-            setPriceInfo(null);
-            try {
-                const info = await cropPriceInfo({ cropName: selectedCrop, language });
-                setPriceInfo(info);
-            } catch (error) {
-                console.error("Error fetching price info:", error);
-                setPriceInfo(null);
-            } finally {
-                setLoadingPriceInfo(false);
-            }
-        } else {
-            setPriceInfo(null);
-        }
-    };
-    fetchPriceInfo();
-  }, [selectedCrop, language]);
+    if (selectedCrop !== 'Overall') {
+        fetchPriceInfo();
+    } else {
+        setPriceInfo(null);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCrop]);
 
 
   useEffect(() => {
@@ -564,6 +571,12 @@ export default function DashboardView() {
                 <CardDescription>{t('price_analysis_description')}</CardDescription>
             </CardHeader>
             <CardContent>
+                {selectedCrop !== 'Overall' && (
+                    <Button onClick={fetchPriceInfo} disabled={loadingPriceInfo} className="mb-4 w-full">
+                        {loadingPriceInfo && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {t('get_price_analysis_button')}
+                    </Button>
+                )}
                 {loadingPriceInfo ? (
                     <div className="space-y-4">
                         <Skeleton className="h-4 w-3/4" />

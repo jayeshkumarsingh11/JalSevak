@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { createContext, useState, useContext, ReactNode, useCallback, useEffect } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useCallback, useEffect, useRef } from 'react';
 import { translateUi } from '@/ai/flows/translate-ui';
 import LanguageTransitionOverlay from '@/components/LanguageTransitionOverlay';
 
@@ -46,14 +46,12 @@ const defaultTranslations: Translations = {
   our_vision_desc: 'We envision a future where every farmer in India has the power of data and technology at their fingertips, leading to a prosperous, sustainable, and food-secure nation.',
   meet_team_title: 'Meet the Team',
   meet_team_subtitle: 'The passionate minds behind Samriddh Kheti.',
-  team_member_1_name: 'Dr. Aris',
-  team_member_1_role: 'Lead Agronomist',
-  team_member_2_name: 'Priya Singh',
-  team_member_2_role: 'AI & Data Scientist',
-  team_member_3_name: 'Rohan Kumar',
-  team_member_3_role: 'Lead Engineer',
-  team_member_4_name: 'Anjali Desai',
-  team_member_4_role: 'UX/UI Designer',
+  'Jayesh Kumar Singh': 'Jayesh Kumar Singh',
+  'Vidushi Srivastava': 'Vidushi Srivastava',
+  'Kritika Singh': 'Kritika Singh',
+  'jayeshkumarsingh11@gmail.com': 'jayeshkumarsingh11@gmail.com',
+  'vidushi.official1012@gmail.com': 'vidushi.official1012@gmail.com',
+  'kritikasince2005@gmail.com': 'kritikasince2005@gmail.com',
 
   // Contact Us Page
   contact_us_title: 'Contact Us',
@@ -115,6 +113,7 @@ const defaultTranslations: Translations = {
   price_current_msp: 'Current MSP',
   price_local_price: 'Local Price',
   price_analysis_select_crop_prompt: 'Select a crop to see price analysis.',
+  get_price_analysis_button: 'Get Price Analysis',
   
   // Crop Advisor
   crop_advisor_title: 'Crop Advisor',
@@ -165,8 +164,8 @@ const defaultTranslations: Translations = {
   // Soil Advisor
   soil_advisor_title: 'Soil Quality Advisor',
   soil_advisor_description: "Get AI advice on improving your soil's health based on its history.",
-  soil_advisor_initial_prompt: 'Unlock your soil\'s potential',
-  soil_advisor_initial_prompt_desc: 'Provide your farm\'s history to receive tailored advice for better soil health.',
+  soil_advisor_initial_prompt: "Unlock your soil's potential",
+  soil_advisor_initial_prompt_desc: "Provide your farm's history to receive tailored advice for better soil health.",
   form_soil_type_determining: 'Determining soil type...',
   form_past_crops: 'Past Crop History',
   form_past_crops_placeholder: 'Selected crops appear here',
@@ -190,7 +189,7 @@ const defaultTranslations: Translations = {
 
   // Irrigation Planner
   irrigation_planner_title: 'Plan Your Irrigation',
-  irrigation_planner_description: 'Enter your farm\'s details to get a smart, dynamic irrigation schedule.',
+  irrigation_planner_description: "Enter your farm's details to get a smart, dynamic irrigation schedule.",
   irrigation_planner_initial_prompt: 'Create your smart irrigation plan',
   irrigation_planner_initial_prompt_desc: 'Fill out the form to get a personalized, water-saving schedule.',
   form_crop_type: 'Crop Type',
@@ -218,13 +217,14 @@ const defaultTranslations: Translations = {
   scheme_finder_title: 'Find Government Schemes',
   scheme_finder_description: 'Discover subsidies and schemes you are eligible for.',
   scheme_finder_initial_prompt: 'Find relevant government schemes',
-  scheme_finder_initial_prompt_desc: 'Enter your details to discover subsidies and programs you may qualify for.',
+  scheme_finder_initial_prompt_desc: 'Enter your details or click below to see popular national schemes.',
   form_primary_crop: 'Primary Crop',
   form_land_area: 'Land Area (acres)',
   find_schemes_button: 'Find Schemes',
   loading_finding_schemes: 'Finding relevant schemes...',
   loading_searching_programs: 'Our AI is searching for programs tailored to your needs.',
   results_suggested_schemes: 'Suggested Schemes for You',
+  results_popular_schemes: 'Popular National Schemes',
   results_description: 'Description',
   results_eligibility: 'Eligibility',
   results_benefits: 'Benefits',
@@ -313,17 +313,27 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguageState] = useState('English');
   const [translations, setTranslations] = useState<Translations>(defaultTranslations);
   const [loading, setLoading] = useState(false);
+  const translationCache = useRef<Record<string, Translations>>({ English: defaultTranslations });
 
   const setLanguage = useCallback(async (lang: string) => {
-    if (lang === 'English') {
-      setTranslations(defaultTranslations);
+    if (lang === language) return;
+
+    if (translationCache.current[lang]) {
+      setTranslations(translationCache.current[lang]);
       setLanguageState(lang);
       return;
     }
+
+    if (lang === 'English') {
+      setTranslations(defaultTranslations);
+      setLanguageState(lang);
+      translationCache.current.English = defaultTranslations;
+      return;
+    }
+
     setLoading(true);
     setLanguageState(lang);
     try {
-      // Chunk the translations object into smaller pieces
       const translationChunks = chunkObject(defaultTranslations, 50);
       
       const promises = translationChunks.map(chunk => 
@@ -332,22 +342,23 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
 
       const results = await Promise.all(promises);
       
-      // Merge the results from all chunks
       const finalTranslations = results.reduce((acc, current) => {
         return { ...acc, ...current };
       }, {});
 
+      translationCache.current[lang] = finalTranslations;
       setTranslations(finalTranslations);
     } catch (error) {
       console.error('Translation failed:', error);
-      // Fallback to default if translation fails
+      setLanguageState('English');
       setTranslations(defaultTranslations);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [language]);
 
   const t = useCallback((key: string): string => {
+    // Attempt to translate, but fall back to the English version if a key is missing
     return translations[key] || defaultTranslations[key] || key;
   }, [translations]);
 
