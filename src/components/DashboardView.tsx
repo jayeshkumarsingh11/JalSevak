@@ -116,7 +116,7 @@ interface IrrigationTime {
 }
 
 export default function DashboardView() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [forecastData, setForecastData] = useState<ForecastDay[]>([]);
   const [loadingWeather, setLoadingWeather] = useState(true);
@@ -188,7 +188,7 @@ export default function DashboardView() {
             setLoadingPriceInfo(true);
             setPriceInfo(null);
             try {
-                const info = await cropPriceInfo({ cropName: selectedCrop });
+                const info = await cropPriceInfo({ cropName: selectedCrop, language });
                 setPriceInfo(info);
             } catch (error) {
                 console.error("Error fetching price info:", error);
@@ -201,7 +201,7 @@ export default function DashboardView() {
         }
     };
     fetchPriceInfo();
-  }, [selectedCrop]);
+  }, [selectedCrop, language]);
 
 
   useEffect(() => {

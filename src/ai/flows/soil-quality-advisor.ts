@@ -17,6 +17,7 @@ const SoilQualityAdvisorInputSchema = z.object({
   soilType: z.string().describe("The type of soil on the farm (e.g., Loamy, Clay, Sandy)."),
   pastCrops: z.string().describe("A comma-separated list of crops grown in the last 2-3 seasons."),
   mainConcern: z.string().describe("The farmer's primary concern regarding their soil (e.g., Increase Yield, Reduce Fertilizer Cost, Long-term Sustainability)."),
+  language: z.string().optional().describe('The language to generate the response in (e.g., "Hindi", "Tamil"). Defaults to English if not provided.'),
 });
 export type SoilQualityAdvisorInput = z.infer<typeof SoilQualityAdvisorInputSchema>;
 
@@ -43,6 +44,7 @@ const prompt = ai.definePrompt({
   output: {schema: SoilQualityAdvisorOutputSchema},
   prompt: `You are an expert soil scientist and agronomist advising a farmer in India.
   Your goal is to provide actionable advice to improve their soil quality.
+  The user is requesting the information in {{language}}. You MUST provide all textual descriptions (soilHealthAnalysis and all fields within recommendations) in {{language}}.
 
   Analyze the following information:
   - Location: {{{location}}}
@@ -60,7 +62,7 @@ const prompt = ai.definePrompt({
 
   Focus on practical, low-cost, and sustainable methods like crop rotation, cover crops, green manure, composting, and reduced tillage where appropriate.
 
-  Return the response in the specified JSON format.
+  Return the response in the specified JSON format. All text content must be in {{language}}.
 `,
 });
 
@@ -70,8 +72,9 @@ const soilQualityAdvisorFlow = ai.defineFlow(
     inputSchema: SoilQualityAdvisorInputSchema,
     outputSchema: SoilQualityAdvisorOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
+  async (input) => {
+    const promptInput = { ...input, language: input.language || 'English' };
+    const {output} = await prompt(promptInput);
     return output!;
   }
 );

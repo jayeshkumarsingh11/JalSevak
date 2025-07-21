@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -13,6 +14,7 @@ import {z} from 'genkit';
 
 const CropPriceInfoInputSchema = z.object({
   cropName: z.string().describe('The name of the crop.'),
+  language: z.string().optional().describe('The language to generate the response in (e.g., "Hindi", "Tamil"). Defaults to English if not provided.'),
 });
 export type CropPriceInfoInput = z.infer<typeof CropPriceInfoInputSchema>;
 
@@ -35,6 +37,8 @@ const prompt = ai.definePrompt({
   output: {schema: CropPriceInfoOutputSchema},
   prompt: `You are an agricultural economist specializing in Indian crop prices.
   Analyze the provided crop name and generate a brief analysis of its Minimum Support Price (MSP) and local vendor price trends.
+  The user is requesting the information in {{language}}. You MUST provide the 'analysis' field in {{language}}.
+
   Assume the current year is the latest data point. Provide a mock current MSP, last year's MSP, and a mock current local vendor price for the crop.
   The local vendor price is typically slightly higher than the MSP, but can be more volatile.
   The price should be in rupees per quintal.
@@ -45,7 +49,7 @@ const prompt = ai.definePrompt({
   For example, if the crop is Wheat, the current MSP might be 2275, last year's 2125, and the current local price 2350.
   The analysis could be: "The MSP for Wheat has shown a steady increase. The local market price is currently trading at a premium to the MSP, indicating strong demand."
   
-  Return the response in the specified JSON format.
+  Return the response in the specified JSON format. The analysis must be in {{language}}.
 `,
 });
 
@@ -55,8 +59,9 @@ const cropPriceInfoFlow = ai.defineFlow(
     inputSchema: CropPriceInfoInputSchema,
     outputSchema: CropPriceInfoOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
+  async (input) => {
+    const promptInput = { ...input, language: input.language || 'English' };
+    const {output} = await prompt(promptInput);
     return output!;
   }
 );

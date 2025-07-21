@@ -30,7 +30,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function CropAdvisor() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<CropSuggestionOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -110,7 +110,7 @@ export default function CropAdvisor() {
     setResult(null);
     setError(null);
     try {
-      const res = await cropSuggestion(values);
+      const res = await cropSuggestion({...values, language});
       setResult(res);
     } catch (e: any) {
       setError(e.message || "An unexpected error occurred.");

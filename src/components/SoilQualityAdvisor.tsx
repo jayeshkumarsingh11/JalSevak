@@ -37,7 +37,7 @@ const CROP_SUGGESTIONS = [
 ];
 
 export default function SoilQualityAdvisor() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SoilQualityAdvisorOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -152,7 +152,7 @@ export default function SoilQualityAdvisor() {
     setResult(null);
     setError(null);
     try {
-      const res = await soilQualityAdvisor(values);
+      const res = await soilQualityAdvisor({...values, language});
       setResult(res);
     } catch (e: any) {
       setError(e.message || t('error_unexpected'));

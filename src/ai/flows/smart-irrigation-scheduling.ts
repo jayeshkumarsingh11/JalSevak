@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI agent that analyzes weather and soil data to recommend optimal irrigation schedules.
@@ -17,6 +18,7 @@ const SmartIrrigationScheduleInputSchema = z.object({
   location: z.string().describe('The location of the farm.'),
   weatherData: z.string().describe('Real-time weather data for the location.'),
   soilData: z.string().describe('Real-time soil data for the location.'),
+  language: z.string().optional().describe('The language to generate the response in (e.g., "Hindi", "Tamil"). Defaults to English if not provided.'),
 });
 export type SmartIrrigationScheduleInput = z.infer<typeof SmartIrrigationScheduleInputSchema>;
 
@@ -39,6 +41,7 @@ const prompt = ai.definePrompt({
   input: {schema: SmartIrrigationScheduleInputSchema},
   output: {schema: SmartIrrigationScheduleOutputSchema},
   prompt: `You are an expert agricultural advisor specializing in irrigation. Based on the provided information, recommend an optimal irrigation schedule for the farmer.
+  The user is requesting the information in {{language}}. You MUST provide all textual descriptions (irrigationSchedule, justification, bestTimeToIrrigate, precautions, pesticideRecommendations) in {{language}}.
 
 Crop Type: {{{cropType}}}
 Farm Area: {{{farmArea}}} acres
@@ -54,7 +57,7 @@ In addition, provide the following:
 2. Key precautions the farmer should take (e.g., "Check for leaks in the system," "Avoid waterlogging").
 3. Any relevant pesticide recommendations that might be needed for this crop at this stage, assuming standard conditions. If none are typically needed, state that.
 
-Output all the information in the specified JSON format. Make sure to output the irrigation schedule as an easy to read text.
+Output all the information in the specified JSON format. Make sure to output all text content in {{language}}.
 `,
 });
 
@@ -64,8 +67,9 @@ const smartIrrigationScheduleFlow = ai.defineFlow(
     inputSchema: SmartIrrigationScheduleInputSchema,
     outputSchema: SmartIrrigationScheduleOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
+  async (input) => {
+    const promptInput = { ...input, language: input.language || 'English' };
+    const {output} = await prompt(promptInput);
     return output!;
   }
 );

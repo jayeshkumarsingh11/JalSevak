@@ -35,7 +35,7 @@ const CROP_SUGGESTIONS = [
 ];
 
 export default function IrrigationPlanner() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SmartIrrigationScheduleOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -165,6 +165,7 @@ export default function IrrigationPlanner() {
         ...values,
         weatherData: weatherAndSoilData.weatherData,
         soilData: weatherAndSoilData.soilData,
+        language: language,
       };
       const res = await smartIrrigationSchedule(input);
       setResult(res);
