@@ -8,6 +8,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Target, Eye, Users, Linkedin, Twitter } from "lucide-react";
 import image1 from "@/components/images/Jayesh.jpg";
 import image2 from "@/components/images/Vidushi.jpeg";
+import image3 from "@/components/images/Kritika.jpeg"
 
 
 const teamMembers = [
@@ -28,7 +29,7 @@ const teamMembers = [
   {
     nameKey: "Kritika Singh",
     email: "kritikasince2005@gmail.com",
-    image: "https://placehold.co/100x100.png",
+    image: image3,
     linkedin: "",
     x: "",
   },
