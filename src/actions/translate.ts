@@ -1,3 +1,4 @@
+
 'use server';
 
 import {Translate} from '@google-cloud/translate/build/src/v2';
@@ -19,9 +20,9 @@ export async function translateTexts(texts: string[], targetLanguageCode: string
     }
 
     if (!process.env.TRANSLATE_API_KEY) {
-        console.error('TRANSLATE_API_KEY is not set. Translation cannot proceed.');
-        // Throw an error to be caught by the calling function, which can then notify the user.
-        throw new Error('TRANSLATE_API_KEY is not set.');
+        console.error('TRANSLATE_API_KEY is not set. Translation cannot proceed. Returning original texts.');
+        // Return original texts to prevent a crash and allow the UI to handle it.
+        return texts;
     }
 
     try {
