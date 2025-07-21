@@ -44,7 +44,7 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
         } else if (item === "Contact Us") {
             setTimeout(() => handleScroll('contact-us'), 0);
         }
-        setIsMenuОpen(false);
+        setIsMenuOpen(false);
     }
 
     const filteredNavItems = isAppView 

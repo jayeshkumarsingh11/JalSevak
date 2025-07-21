@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import SamriddhKhetiApp from './SamriddhKhetiApp';
+import SamriddhKhetiApp from '@/components/SamriddhKhetiApp';
 import TopNavBar from './TopNavBar';
 import AboutPage from './AboutPage';
 import HeroPage from './HeroPage';
