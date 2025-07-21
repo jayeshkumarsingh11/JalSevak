@@ -25,7 +25,7 @@ const teamMembers = [
   {
     nameKey: "Kritika Singh",
     email: "kritikasince2005@gmail.com",
-    image: "/images/team3.jpg",
+    image: "https://placehold.co/100x100.png",
     linkedin: "",
   },
 ];
@@ -95,12 +95,14 @@ export default function AboutPage() {
               <Card className="text-center h-full transition-all duration-300 group-hover:shadow-xl group-hover:border-primary">
                 <CardContent className="flex flex-col items-center p-6">
                   <Avatar className="w-24 h-24 mb-4 border-4 border-accent transition-transform duration-300 group-hover:scale-105">
-                    <Image
-                      src={member.image}
+                    <AvatarImage
+                      src={typeof member.image === 'string' ? member.image : member.image.src}
                       alt={t(member.nameKey)}
                       width={100}
                       height={100}
+                      data-ai-hint="person"
                     />
+                    <AvatarFallback>{member.nameKey.substring(0, 2)}</AvatarFallback>
                   </Avatar>
                   <h3 className="text-lg font-semibold font-headline">
                     {t(member.nameKey)}
