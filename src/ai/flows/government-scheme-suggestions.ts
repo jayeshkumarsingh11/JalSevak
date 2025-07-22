@@ -9,7 +9,7 @@
  * - GovernmentSchemeSuggestionsOutput - The return type for the governmentSchemeSuggestions function.
  */
 
-import {ai} from '@/ai/genkit';
+import {ai, fastModel} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const GovernmentSchemeSuggestionsInputSchema = z.object({
@@ -41,6 +41,7 @@ const prompt = ai.definePrompt({
   name: 'governmentSchemeSuggestionsPrompt',
   input: {schema: GovernmentSchemeSuggestionsInputSchema.extend({ location_provided: z.boolean() })},
   output: {schema: GovernmentSchemeSuggestionsOutputSchema},
+  model: fastModel,
   prompt: `You are an expert in Indian agricultural government schemes.
   The user is requesting information in {{language}}. You MUST provide the entire response (name, description, eligibility, benefits, application procedure) for each scheme in {{language}}.
 

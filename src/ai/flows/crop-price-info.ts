@@ -9,7 +9,7 @@
  * - CropPriceInfoOutput - The return type for the cropPriceInfo function.
  */
 
-import {ai} from '@/ai/genkit';
+import {ai, fastModel} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const CropPriceInfoInputSchema = z.object({
@@ -35,6 +35,7 @@ const prompt = ai.definePrompt({
   name: 'cropPriceInfoPrompt',
   input: {schema: CropPriceInfoInputSchema},
   output: {schema: CropPriceInfoOutputSchema},
+  model: fastModel,
   prompt: `You are an agricultural economist specializing in Indian crop prices.
   Analyze the provided crop name and generate a brief analysis of its Minimum Support Price (MSP) and local vendor price trends.
   The user is requesting the information in {{language}}. You MUST provide the 'analysis' field in {{language}}.
