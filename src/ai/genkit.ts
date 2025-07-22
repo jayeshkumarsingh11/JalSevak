@@ -12,5 +12,5 @@ export const ai = genkit({
   logSinks: [],
 });
 
-export const fastModel = 'gemini-1.5-flash-latest';
-export const proModel = 'gemini-1.5-flash-latest';
+export const fastModel = 'gemini-1.5-pro-latest';
+export const proModel = 'gemini-1.5-pro-latest';
