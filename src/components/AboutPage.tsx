@@ -24,7 +24,7 @@ const teamMembers = [
     email: "vidushi.official1012@gmail.com",
     image: image2,
     linkedin: "https://www.linkedin.com/in/srivastava-vidushi/",
-    x:"",
+    x:"https://x.com/Vidushi1012",
   },
   {
     nameKey: "Kritika Singh",

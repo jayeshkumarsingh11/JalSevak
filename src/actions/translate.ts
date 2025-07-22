@@ -53,11 +53,20 @@ export async function translate(
 
     if (!response.ok) {
       const errorBody = await response.text();
-      throw new Error(`LibreTranslate API error: ${response.status} ${response.statusText} - ${errorBody}`);
+      // Log the detailed error on the server for debugging
+      console.error(`LibreTranslate API error: ${response.status} ${response.statusText} - ${errorBody}`);
+      // Return original texts to prevent a crash
+      return texts;
     }
 
     const result: TranslateResponse = await response.json();
     const translatedTexts = result.translatedText;
+    
+    // Sometimes the API returns the original text on failure, check for that
+    if (translatedTexts && translatedTexts.length > 0 && translatedTexts[0] === textsToTranslate[0]) {
+      console.error('LibreTranslate returned original text, indicating a translation failure for target:', targetLanguageCode);
+      return texts;
+    }
 
     const translatedObject: { [key: string]: string } = {};
     originalKeys.forEach((key, index) => {
@@ -68,7 +77,7 @@ export async function translate(
 
   } catch (error) {
     console.error('Failed to fetch from LibreTranslate:', error);
-    // In case of an error, return the original English texts to prevent the app from breaking.
+    // In case of a network error or other exception, return the original English texts.
     return texts;
   }
 }

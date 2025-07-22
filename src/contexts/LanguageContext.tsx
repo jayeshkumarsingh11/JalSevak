@@ -279,14 +279,15 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
       const firstOriginalText = Object.values(englishTranslations)[0];
       const firstTranslatedText = Object.values(result)[0];
 
-      if (!result || firstOriginalText === firstTranslatedText) {
+      // Check for translation failure by seeing if the returned text is the same as the original.
+      if (!result || !Object.keys(result).length || firstOriginalText === firstTranslatedText) {
         toast({
             variant: "destructive",
             title: "Translation Failed",
             description: "Could not switch language. The translation service may be unavailable.",
         });
         setLoading(false);
-        return;
+        return; // Important: Do not update state if translation failed.
       }
 
       translationCache.current[langCode] = result;
@@ -300,9 +301,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
         title: "Translation Service Error",
         description: "An error occurred while communicating with the translation service.",
       });
-      // Revert to English if translation fails to prevent a broken state
-      setCurrentTranslations(englishTranslations);
-      setLanguageState('English');
+      // Do not update state if an error occurs.
     } finally {
       setLoading(false);
     }
