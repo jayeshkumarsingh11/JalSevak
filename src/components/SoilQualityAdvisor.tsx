@@ -16,7 +16,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { soilQualityAdvisor, type SoilQualityAdvisorOutput } from "@/ai/flows/soil-quality-advisor";
 import { Loader2, Bot, LocateFixed, TestTube2, Sparkles } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import image from "./images/farmer.avif";
+import image from "./images/crop.webp";
 
 const formSchema = z.object({
   location: z.string().min(1, "Location is required."),
@@ -302,11 +302,11 @@ export default function SoilQualityAdvisor() {
           <Card className="flex flex-col items-center justify-center h-full p-8 text-center bg-muted/30 border-dashed">
             <Image 
               src={image}
-              alt="Illustration of soil layers"
+              alt="Illustration of a seedling"
               width={400}
               height={300}
               className="mb-4 rounded-lg opacity-80"
-              data-ai-hint="soil layers illustration"
+              data-ai-hint="seedling illustration"
             />
             <h3 className="text-xl font-headline text-muted-foreground">{t('soil_advisor_initial_prompt')}</h3>
             <p className="text-muted-foreground">{t('soil_advisor_initial_prompt_desc')}</p>
