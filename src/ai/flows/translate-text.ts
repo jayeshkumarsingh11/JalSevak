@@ -31,6 +31,8 @@ const prompt = ai.definePrompt({
   name: 'translateTextsPrompt',
   input: {schema: TranslateTextsInputSchema},
   output: {schema: TranslateTextsOutputSchema},
+  // Use a model better suited for simple translation.
+  model: 'googleai/gemini-1.5-flash-latest', 
   prompt: `Translate the following array of texts into {{targetLanguage}}.
 Return the translated texts as an array in the 'translations' field of the JSON output.
 The order of the translated texts must match the order of the input texts.
