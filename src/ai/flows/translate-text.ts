@@ -35,23 +35,23 @@ const translateTextsFlow = ai.defineFlow(
         outputSchema: TranslateTextOutputSchema,
     },
     async ({ texts, targetLanguage }) => {
-        const translatedTexts = await Promise.all(
-            texts.map(async (text) => {
-                const prompt = `Translate the following text to ${targetLanguage}. Do not add any extra explanation or formatting, just return the translated text. Text: "${text}"`;
-                try {
-                    const response = await fetch('https://gemini-apis.vercel.app/api/?prompt=' + encodeURIComponent(prompt));
-                    if (!response.ok) {
-                        return text; // Return original text on error
-                    }
+        const translatedTexts: string[] = [];
+        for (const text of texts) {
+            const prompt = `Translate the following text to ${targetLanguage}. Do not add any extra explanation or formatting, just return the translated text. Text: "${text}"`;
+            try {
+                const response = await fetch('https://gemini-apis.vercel.app/api/?prompt=' + encodeURIComponent(prompt));
+                if (!response.ok) {
+                    translatedTexts.push(text); // Return original text on error
+                } else {
                     const translatedText = await response.text();
                     // Clean up potential markdown or extra quotes
-                    return translatedText.replace(/`/g, '').replace(/"/g, '').trim();
-                } catch (error) {
-                    console.error('Error translating text:', error);
-                    return text; // Return original text on error
+                    translatedTexts.push(translatedText.replace(/`/g, '').replace(/"/g, '').trim());
                 }
-            })
-        );
+            } catch (error) {
+                console.error('Error translating text:', error);
+                translatedTexts.push(text); // Return original text on error
+            }
+        }
         
         return { translatedTexts };
     }
