@@ -18,6 +18,7 @@ const englishTranslations: Translations = {
     nav_govt_schemes: 'Govt. Schemes',
     nav_about_us: 'About Us',
     nav_contact_us: 'Contact Us',
+    nav_tools: 'Tools',
     // Hero
     hero_title: 'Revolutionizing Agriculture with AI',
     hero_subtitle: 'Welcome to Samriddh Kheti, your smart farming assistant designed to revolutionize agricultural practices in India by empowering farmers with data-driven insights. Our mission is to optimize resource usage, improve crop yields, and enhance the livelihoods of farmers for a prosperous, sustainable, and food-secure nation.',
@@ -319,12 +320,12 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
       setLanguageState(langName);
       setLanguageCode(langCode);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to translate UI:", error);
       toast({
         variant: "destructive",
         title: "Translation API Error",
-        description: "An error occurred while communicating with the translation service. Check your API key.",
+        description: `An error occurred: ${error.message}. Please check your Genkit configuration and API key.`,
       });
     } finally {
       setLoading(false);

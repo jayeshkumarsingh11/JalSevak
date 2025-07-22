@@ -89,6 +89,7 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
     }
 
     const filteredNavItems = getFilteredNavItems();
+    const isToolActive = toolNavItems.some(item => item.nameKey === activeItem);
 
     return (
     <header className="bg-background/80 backdrop-blur-sm border-b shadow-sm sticky top-0 z-40">
@@ -120,15 +121,23 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
                         {t(navItemMap[item.nameKey])}
                     </Button>
                 ))}
-                {isAppView && toolNavItems.map((item) => (
-                     <Button 
-                        key={item.nameKey}
-                        variant={activeItem === item.nameKey ? "secondary" : "ghost"} 
-                        onClick={() => handleNavClick(item.nameKey)}
-                    >
-                        {t(navItemMap[item.nameKey])}
-                    </Button>
-                ))}
+                {isAppView && (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant={isToolActive ? "secondary" : "ghost"}>
+                                {t('nav_tools')}
+                                <ChevronDown className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {toolNavItems.map((item) => (
+                                <DropdownMenuItem key={item.nameKey} onClick={() => handleNavClick(item.nameKey)}>
+                                    {t(navItemMap[item.nameKey])}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                )}
             </nav>
 
             <div className="hidden md:flex items-center gap-2">

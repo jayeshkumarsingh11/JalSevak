@@ -84,8 +84,7 @@ const translateTextsFlow = ai.defineFlow(
                 if (attempts >= 3) {
                     // If we've exhausted all retries, throw the final error.
                     console.error(`Failed to translate chunk after 3 attempts. Error: ${e.message}`);
-                    // As a fallback, push the original text to avoid a total failure.
-                    allTranslations.push(...chunk);
+                    throw e; // Re-throw the error to be caught by the caller
                 } else {
                     // Wait before retrying. The delay increases with each attempt.
                     const delay = Math.pow(2, attempts) * 500; // 1s, 2s

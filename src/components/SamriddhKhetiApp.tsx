@@ -22,8 +22,11 @@ export default function SamriddhKhetiApp({ initialView = "Dashboard", onNavigate
   const [activeView, setActiveView] = useState<NavItem>(initialView);
 
   const handleNavigation = (item: NavItem) => {
-    if (item === "Home") {
-      window.location.href = '/';
+    if (item === "Home" || item === "About Us" || item === "Contact Us") {
+        // Navigate to the marketing page and let the LandingPage component handle scrolling
+        const url = new URL(window.location.href);
+        url.searchParams.set('view', item);
+        window.location.href = url.toString().replace(url.origin, '');
     } else {
       setActiveView(item);
     }
