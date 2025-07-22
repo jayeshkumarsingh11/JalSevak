@@ -18,18 +18,14 @@ interface TopNavBarProps {
   isAppView?: boolean;
 }
 
-const mainNavItems: { nameKey: NavItem, isMarketingViewOnly?: boolean }[] = [
-    { nameKey: "Home" },
-    { nameKey: "Dashboard" },
-    { nameKey: "About Us", isMarketingViewOnly: true },
-    { nameKey: "Contact Us", isMarketingViewOnly: true },
-];
+const marketingNavItems: NavItem[] = ["Home", "About Us", "Contact Us"];
+const appNavItems: NavItem[] = ["Dashboard"];
 
-const toolNavItems: { nameKey: NavItem }[] = [
-    { nameKey: "Irrigation Planner" },
-    { nameKey: "Crop Advisor" },
-    { nameKey: "Soil Advisor" },
-    { nameKey: "Govt. Schemes" },
+const toolNavItems: NavItem[] = [
+    "Irrigation Planner",
+    "Crop Advisor",
+    "Soil Advisor",
+    "Govt. Schemes",
 ];
 
 const languageOptions = [
@@ -80,16 +76,9 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
         "Contact Us": "nav_contact_us",
         "Tools": "nav_tools",
     };
-
-    const getFilteredNavItems = () => {
-        if (isAppView) {
-            return mainNavItems.filter(item => item.nameKey !== 'Home' && !item.isMarketingViewOnly);
-        }
-        return mainNavItems.filter(item => item.nameKey !== 'Dashboard');
-    }
-
-    const filteredNavItems = getFilteredNavItems();
-    const isToolActive = toolNavItems.some(item => item.nameKey === activeItem);
+    
+    const currentNavItems = isAppView ? appNavItems : marketingNavItems;
+    const isToolActive = toolNavItems.some(item => item === activeItem);
 
     return (
     <header className="bg-background/80 backdrop-blur-sm border-b shadow-sm sticky top-0 z-40">
@@ -112,31 +101,39 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
             </div>
             
             <nav className="hidden md:flex items-center gap-2">
-                {filteredNavItems.map((item) => (
+                {currentNavItems.map((item) => (
                     <Button 
-                        key={item.nameKey}
-                        variant={activeItem === item.nameKey ? "secondary" : "ghost"} 
-                        onClick={() => handleNavClick(item.nameKey)}
+                        key={item}
+                        variant={activeItem === item ? "secondary" : "ghost"} 
+                        onClick={() => handleNavClick(item)}
                     >
-                        {t(navItemMap[item.nameKey])}
+                        {t(navItemMap[item])}
                     </Button>
                 ))}
-                {isAppView && (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant={isToolActive ? "secondary" : "ghost"}>
-                                {t('nav_tools')}
-                                <ChevronDown className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            {toolNavItems.map((item) => (
-                                <DropdownMenuItem key={item.nameKey} onClick={() => handleNavClick(item.nameKey)}>
-                                    {t(navItemMap[item.nameKey])}
-                                </DropdownMenuItem>
-                            ))}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant={isToolActive ? "secondary" : "ghost"}>
+                            {t('nav_tools')}
+                            <ChevronDown className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        {toolNavItems.map((item) => (
+                            <DropdownMenuItem key={item} onClick={() => handleNavClick(item)}>
+                                {t(navItemMap[item])}
+                            </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
+                 {!isAppView && (
+                    <Button 
+                        variant={activeItem === "Dashboard" ? "secondary" : "ghost"} 
+                        onClick={() => handleNavClick("Dashboard")}
+                    >
+                        {t(navItemMap["Dashboard"])}
+                    </Button>
                 )}
             </nav>
 
@@ -167,30 +164,38 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
         {isMenuOpen && (
             <div className="md:hidden bg-background border-t">
                 <nav className="flex flex-col p-4 gap-2">
-                    {filteredNavItems.map((item) => (
+                    {currentNavItems.map((item) => (
                          <Button 
-                            key={item.nameKey}
-                            variant={activeItem === item.nameKey ? "secondary" : "ghost"} 
+                            key={item}
+                            variant={activeItem === item ? "secondary" : "ghost"} 
                             className="w-full justify-start"
-                            onClick={() => handleNavClick(item.nameKey)}
+                            onClick={() => handleNavClick(item)}
                         >
-                            {t(navItemMap[item.nameKey])}
+                            {t(navItemMap[item])}
                         </Button>
                     ))}
-                    {isAppView && (
-                        <div className="border-t pt-2 mt-2">
-                            <h3 className="px-4 py-2 text-sm font-semibold text-muted-foreground">{t('nav_tools')}</h3>
-                            {toolNavItems.map((item) => (
-                                <Button 
-                                    key={item.nameKey}
-                                    variant={activeItem === item.nameKey ? "secondary" : "ghost"} 
-                                    className="w-full justify-start"
-                                    onClick={() => handleNavClick(item.nameKey)}
-                                >
-                                    {t(navItemMap[item.nameKey])}
-                                </Button>
-                            ))}
-                        </div>
+                    
+                    <div className="border-t pt-2 mt-2">
+                        <h3 className="px-4 py-2 text-sm font-semibold text-muted-foreground">{t('nav_tools')}</h3>
+                        {toolNavItems.map((item) => (
+                            <Button 
+                                key={item}
+                                variant={activeItem === item ? "secondary" : "ghost"} 
+                                className="w-full justify-start"
+                                onClick={() => handleNavClick(item)}
+                            >
+                                {t(navItemMap[item])}
+                            </Button>
+                        ))}
+                    </div>
+                     {!isAppView && (
+                         <Button 
+                            variant={activeItem === "Dashboard" ? "secondary" : "ghost"} 
+                            className="w-full justify-start"
+                            onClick={() => handleNavClick("Dashboard")}
+                        >
+                            {t(navItemMap["Dashboard"])}
+                        </Button>
                     )}
                      <div className="border-t pt-4 mt-2 flex items-center gap-2">
                         <ThemeToggle />
