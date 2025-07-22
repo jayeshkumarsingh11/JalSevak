@@ -44,9 +44,9 @@ const translateTextsFlow = ai.defineFlow(
     async ({ texts, targetLanguage }) => {
         const translatedTexts: string[] = [];
         for (const text of texts) {
-             const promptInput = { text: text, language: targetLanguage };
             try {
-                const response = await fetch('https://gemini-apis.vercel.app/api/?prompt=' + encodeURIComponent(`Translate the following text to ${targetLanguage}. Do not add any extra explanation or formatting, just return the translated text. Text: "${text}"`));
+                const prompt = `Translate the following text to ${targetLanguage}. Do not add any extra explanation or formatting, just return the translated text. Text: "${text}"`;
+                const response = await fetch('https://gemini-apis.vercel.app/api/?prompt=' + encodeURIComponent(prompt));
                 if (!response.ok) {
                     translatedTexts.push(text); // Return original text on error
                 } else {
@@ -63,4 +63,3 @@ const translateTextsFlow = ai.defineFlow(
         return { translatedTexts };
     }
 );
-
