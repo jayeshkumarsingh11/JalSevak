@@ -36,6 +36,7 @@ export const CROP_KEYS = [
   "tea", "tomato", "turmeric", "wheat"
 ];
 
+// This is kept for mapping keys to English names if needed, but the primary source of truth for UI is the translation function.
 export const CROP_NAMES: {[key: string]: string} = {
     "apple": "Apple", "bajra": "Bajra", "banana": "Banana", "barley": "Barley", "brinjal": "Brinjal", "cabbage": "Cabbage", "capsicum": "Capsicum", "cauliflower": "Cauliflower",
     "chilli": "Chilli", "coffee": "Coffee", "cotton": "Cotton", "ginger": "Ginger", "gram": "Gram", "grapes": "Grapes", "groundnut": "Groundnut", "guava": "Guava",
@@ -87,12 +88,12 @@ export default function SoilQualityAdvisor() {
   };
 
   const handleCropInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setCropSearch(value);
+    const value = e.target.value.toLowerCase();
+    setCropSearch(e.target.value);
     if (value) {
       const existingCrops = form.getValues('pastCrops').split(',').map(c => c.trim().toLowerCase());
       const filtered = CROP_KEYS.filter(key =>
-        CROP_NAMES[key].toLowerCase().startsWith(value.toLowerCase()) && !existingCrops.includes(key)
+        t(key).toLowerCase().startsWith(value) && !existingCrops.includes(key)
       );
       setSuggestions(filtered);
       setShowSuggestions(true);
@@ -103,6 +104,7 @@ export default function SoilQualityAdvisor() {
 
   const handleSuggestionClick = (key: string) => {
     const currentCrops = form.getValues('pastCrops');
+    // We store the key, and translate it for display.
     const newCropsValue = currentCrops ? `${currentCrops}, ${key}` : key;
     form.setValue("pastCrops", newCropsValue, { shouldValidate: true });
     setCropSearch('');
@@ -112,7 +114,7 @@ export default function SoilQualityAdvisor() {
   const displayPastCrops = form.getValues('pastCrops')
     .split(',')
     .filter(c => c.trim())
-    .map(key => CROP_NAMES[key.trim().toLowerCase()] || key)
+    .map(key => t(key.trim()))
     .join(', ');
 
   useEffect(() => {
@@ -169,7 +171,18 @@ export default function SoilQualityAdvisor() {
     setResult(null);
     setError(null);
     try {
-      const res = await soilQualityAdvisor({...values, language: language});
+      // Translate the crop keys to the current language before sending to the AI
+      const translatedPastCrops = values.pastCrops
+        .split(',')
+        .filter(c => c.trim())
+        .map(key => t(key.trim()))
+        .join(', ');
+
+      const res = await soilQualityAdvisor({
+          ...values, 
+          pastCrops: translatedPastCrops,
+          language: language
+      });
       setResult(res);
     } catch (e: any) {
       setError(e.message || t('error_unexpected'));
@@ -284,7 +297,7 @@ export default function SoilQualityAdvisor() {
                                   className="px-3 py-2 cursor-pointer hover:bg-accent text-sm"
                                   onMouseDown={() => handleSuggestionClick(key)}
                                 >
-                                  {CROP_NAMES[key]}
+                                  {t(key)}
                                 </li>
                               ))}
                             </ul>
@@ -409,5 +422,3 @@ export default function SoilQualityAdvisor() {
     </div>
   );
 }
-
-    

@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { smartIrrigationSchedule, type SmartIrrigationScheduleInput, type SmartIrrigationScheduleOutput } from "@/ai/flows/smart-irrigation-scheduling";
 import { Loader2, Droplets, Bot, LocateFixed, Clock, Shield, Leaf } from "lucide-react";
 import image from "./images/IrrigationPlanner.webp"
-import { CROP_KEYS, CROP_NAMES } from "./SoilQualityAdvisor";
+import { CROP_KEYS } from "./SoilQualityAdvisor";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const formSchema = z.object({
@@ -52,11 +52,11 @@ export default function IrrigationPlanner() {
   });
   
   const handleCropInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setCropSearch(value);
+    const value = e.target.value.toLowerCase();
+    setCropSearch(e.target.value);
     if (value) {
       const filtered = CROP_KEYS.filter(key =>
-        CROP_NAMES[key].toLowerCase().startsWith(value.toLowerCase())
+        t(key).toLowerCase().startsWith(value)
       );
       setSuggestions(filtered);
       setShowSuggestions(true);
@@ -66,8 +66,8 @@ export default function IrrigationPlanner() {
   };
 
   const handleSuggestionClick = (key: string) => {
-    form.setValue("cropType", key, { shouldValidate: true });
-    setCropSearch(CROP_NAMES[key]);
+    form.setValue("cropType", t(key), { shouldValidate: true });
+    setCropSearch(t(key));
     setShowSuggestions(false);
   };
 
@@ -186,32 +186,34 @@ export default function IrrigationPlanner() {
                   control={form.control}
                   name="cropType"
                   render={({ field }) => (
-                    <FormItem ref={cropInputRef}>
+                    <FormItem>
                       <FormLabel>{t('form_crop_type')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={t('form_crop_type_placeholder')}
-                          value={cropSearch}
-                          onChange={handleCropInputChange}
-                          onFocus={() => setShowSuggestions(true)}
-                          autoComplete="off"
-                        />
-                      </FormControl>
-                      {showSuggestions && suggestions.length > 0 && (
-                        <div className="absolute z-10 w-full bg-background border border-input rounded-md shadow-lg mt-1">
-                          <ul className="py-1 max-h-60 overflow-y-auto">
-                            {suggestions.map((key) => (
-                              <li
-                                key={key}
-                                className="px-3 py-2 cursor-pointer hover:bg-accent text-sm"
-                                onMouseDown={() => handleSuggestionClick(key)}
-                              >
-                                {CROP_NAMES[key]}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+                       <div ref={cropInputRef}>
+                          <FormControl>
+                            <Input
+                              placeholder={t('form_crop_type_placeholder')}
+                              value={cropSearch}
+                              onChange={handleCropInputChange}
+                              onFocus={() => setShowSuggestions(true)}
+                              autoComplete="off"
+                            />
+                          </FormControl>
+                          {showSuggestions && suggestions.length > 0 && (
+                            <div className="absolute z-10 w-full bg-background border border-input rounded-md shadow-lg mt-1">
+                              <ul className="py-1 max-h-60 overflow-y-auto">
+                                {suggestions.map((key) => (
+                                  <li
+                                    key={key}
+                                    className="px-3 py-2 cursor-pointer hover:bg-accent text-sm"
+                                    onMouseDown={() => handleSuggestionClick(key)}
+                                  >
+                                    {t(key)}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                       </div>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -352,5 +354,3 @@ export default function IrrigationPlanner() {
     </div>
   );
 }
-
-    

@@ -49,7 +49,7 @@ const prompt = ai.definePrompt({
   prompt: `You are an expert agronomist providing crop recommendations to farmers in India.
   Based on the farmer's inputs, suggest up to 3 suitable crops.
   The user is requesting the information in {{language}}. You MUST provide all textual descriptions (justification, landAllocation, estimatedProfit, waterNeeds, growingSeason) in {{language}}.
-  The 'name' of the crop should remain in English as it is used as a key.
+  The 'name' of the crop MUST also be translated to {{language}}.
   Infer the general climate and weather patterns from the provided location.
 
   Farmer's Inputs:
