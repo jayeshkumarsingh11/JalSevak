@@ -9,7 +9,8 @@ import { ThemeToggle } from "./ThemeToggle";
 import image from "@/components/images/logo.png"
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Languages } from "lucide-react";
+import { Languages, ChevronDown } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface TopNavBarProps {
   activeItem: NavItem;
@@ -17,15 +18,18 @@ interface TopNavBarProps {
   isAppView?: boolean;
 }
 
-const navItems: { nameKey: NavItem, isAppViewOnly?: boolean, isMarketingViewOnly?: boolean }[] = [
+const mainNavItems: { nameKey: NavItem, isMarketingViewOnly?: boolean }[] = [
     { nameKey: "Home" },
     { nameKey: "Dashboard" },
     { nameKey: "About Us", isMarketingViewOnly: true },
     { nameKey: "Contact Us", isMarketingViewOnly: true },
-    { nameKey: "Irrigation Planner", isAppViewOnly: true },
-    { nameKey: "Crop Advisor", isAppViewOnly: true },
-    { nameKey: "Soil Advisor", isAppViewOnly: true },
-    { nameKey: "Govt. Schemes", isAppViewOnly: true },
+];
+
+const toolNavItems: { nameKey: NavItem }[] = [
+    { nameKey: "Irrigation Planner" },
+    { nameKey: "Crop Advisor" },
+    { nameKey: "Soil Advisor" },
+    { nameKey: "Govt. Schemes" },
 ];
 
 const languageOptions = [
@@ -39,7 +43,7 @@ const languageOptions = [
 
 export default function TopNavBar({ activeItem, setActiveItem, isAppView = false }: TopNavBarProps) {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-    const { language, setLanguage, t, languageCode } = useLanguage();
+    const { t, languageCode, setLanguage } = useLanguage();
 
     const handleScroll = (targetId: string) => {
       const element = document.getElementById(targetId);
@@ -65,10 +69,6 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
         }
     };
 
-    const filteredNavItems = isAppView 
-        ? navItems.filter(item => item.nameKey !== 'Home' && !item.isMarketingViewOnly) 
-        : navItems.filter(item => !item.isAppViewOnly);
-    
     const navItemMap: Record<NavItem, string> = {
         "Home": "nav_home",
         "Dashboard": "nav_dashboard",
@@ -78,7 +78,22 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
         "Govt. Schemes": "nav_govt_schemes",
         "About Us": "nav_about_us",
         "Contact Us": "nav_contact_us",
+    };
+    
+    const toolsNavItemKey: NavItem = "Tools";
+    navItemMap[toolsNavItemKey] = "nav_tools";
+
+
+    const getFilteredNavItems = () => {
+        if (isAppView) {
+            return mainNavItems.filter(item => item.nameKey !== 'Home' && !item.isMarketingViewOnly);
+        }
+        return mainNavItems.filter(item => item.nameKey !== 'Dashboard');
     }
+
+    const filteredNavItems = getFilteredNavItems();
+
+    const isToolActive = toolNavItems.some(item => item.nameKey === activeItem);
 
     return (
     <header className="bg-background/80 backdrop-blur-sm border-b shadow-sm sticky top-0 z-40">
@@ -110,6 +125,23 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
                         {t(navItemMap[item.nameKey])}
                     </Button>
                 ))}
+                {isAppView && (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                             <Button variant={isToolActive ? "secondary" : "ghost"}>
+                                {t('nav_tools')}
+                                <ChevronDown className="relative top-[1px] ml-1 h-4 w-4 transition duration-200 group-data-[state=open]:rotate-180" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {toolNavItems.map((item) => (
+                                <DropdownMenuItem key={item.nameKey} onClick={() => handleNavClick(item.nameKey)}>
+                                    {t(navItemMap[item.nameKey])}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                )}
             </nav>
 
             <div className="hidden md:flex items-center gap-2">
@@ -149,6 +181,21 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
                             {t(navItemMap[item.nameKey])}
                         </Button>
                     ))}
+                    {isAppView && (
+                        <div className="border-t pt-2 mt-2">
+                            <h3 className="px-4 py-2 text-sm font-semibold text-muted-foreground">{t('nav_tools')}</h3>
+                            {toolNavItems.map((item) => (
+                                <Button 
+                                    key={item.nameKey}
+                                    variant={activeItem === item.nameKey ? "secondary" : "ghost"} 
+                                    className="w-full justify-start"
+                                    onClick={() => handleNavClick(item.nameKey)}
+                                >
+                                    {t(navItemMap[item.nameKey])}
+                                </Button>
+                            ))}
+                        </div>
+                    )}
                      <div className="border-t pt-4 mt-2 flex items-center gap-2">
                         <ThemeToggle />
                         <Select onValueChange={handleLanguageChange} value={languageCode}>

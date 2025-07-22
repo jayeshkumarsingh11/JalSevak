@@ -12,6 +12,7 @@ const englishTranslations: Translations = {
     // Nav
     nav_home: 'Home',
     nav_dashboard: 'Dashboard',
+    nav_tools: 'Tools',
     nav_irrigation_planner: 'Irrigation Planner',
     nav_crop_advisor: 'Crop Advisor',
     nav_soil_advisor: 'Soil Advisor',
@@ -53,7 +54,6 @@ const englishTranslations: Translations = {
     form_message_placeholder: 'Type your message here...',
     send_message_button: 'Send Message',
     // Dashboard
-    next_irrigation: 'Next Irrigation',
     in_time_prefix: 'in',
     time_hour: 'hour',
     time_hours: 'hours',

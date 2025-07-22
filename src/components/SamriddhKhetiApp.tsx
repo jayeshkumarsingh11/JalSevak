@@ -10,7 +10,7 @@ import SoilQualityAdvisor from "@/components/SoilQualityAdvisor"
 import SchemeFinder from "@/components/SchemeFinder"
 import TopNavBar from './TopNavBar'
 
-export type NavItem = "Dashboard" | "Irrigation Planner" | "Crop Advisor" | "Soil Advisor" | "Govt. Schemes" | "Home" | "About Us" | "Contact Us";
+export type NavItem = "Dashboard" | "Irrigation Planner" | "Crop Advisor" | "Soil Advisor" | "Govt. Schemes" | "Home" | "About Us" | "Contact Us" | "Tools";
 
 interface SamriddhKhetiAppProps {
   initialView?: NavItem;
@@ -23,7 +23,7 @@ export default function SamriddhKhetiApp({ initialView = "Dashboard", onNavigate
 
   const handleNavigation = (item: NavItem) => {
     if (item === "Home") {
-      onNavigate(item);
+      window.location.href = '/';
     } else {
       setActiveView(item);
     }
