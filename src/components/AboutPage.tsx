@@ -4,7 +4,7 @@
 import Image from "next/image";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Target, Eye, Users, Linkedin, Twitter } from "lucide-react";
+import { Target, Eye, Users, Linkedin } from "lucide-react";
 import image1 from "@/components/images/Jayesh.jpg";
 import image2 from "@/components/images/Vidushi.jpeg";
 import image3 from "@/components/images/Kritika.jpeg"
@@ -17,21 +17,18 @@ const teamMembers = [
     emailKey: "jayeshkumarsingh11@gmail.com",
     image: image1,
     linkedin: "https://www.linkedin.com/in/jayesh-singh-510953304/",
-    x : "https://x.com/Jayeshs74820705",
   },
   {
     nameKey: "Vidushi Srivastava",
     emailKey: "vidushi.official1012@gmail.com",
     image: image2,
     linkedin: "https://www.linkedin.com/in/srivastava-vidushi/",
-    x:"https://x.com/Vidushi1012",
   },
   {
     nameKey: "Kritika Singh",
     emailKey: "kritikasince05@gmail.com",
     image: image3,
-    linkedin: "",
-    x: "",
+    linkedin: "https://www.linkedin.com/in/kritika-singh-1a50b7325/",
   },
 ];
 
@@ -116,8 +113,7 @@ export default function AboutPage() {
                     <p>{t(member.emailKey)}</p>
                   </div>
                   <div className="flex space-x-4 pt-4">
-                  <a href={member.x} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary"><Twitter /></a>
-                  <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary"><Linkedin /></a>
+                    <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary"><Linkedin /></a>
                   </div>
                 </CardContent>
               </Card>
