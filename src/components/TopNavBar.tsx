@@ -78,11 +78,8 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
         "Govt. Schemes": "nav_govt_schemes",
         "About Us": "nav_about_us",
         "Contact Us": "nav_contact_us",
+        "Tools": "nav_tools",
     };
-    
-    const toolsNavItemKey: NavItem = "Tools";
-    navItemMap[toolsNavItemKey] = "nav_tools";
-
 
     const getFilteredNavItems = () => {
         if (isAppView) {
@@ -92,8 +89,6 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
     }
 
     const filteredNavItems = getFilteredNavItems();
-
-    const isToolActive = toolNavItems.some(item => item.nameKey === activeItem);
 
     return (
     <header className="bg-background/80 backdrop-blur-sm border-b shadow-sm sticky top-0 z-40">
@@ -125,23 +120,15 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
                         {t(navItemMap[item.nameKey])}
                     </Button>
                 ))}
-                {isAppView && (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                             <Button variant={isToolActive ? "secondary" : "ghost"}>
-                                {t('nav_tools')}
-                                <ChevronDown className="relative top-[1px] ml-1 h-4 w-4 transition duration-200 group-data-[state=open]:rotate-180" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            {toolNavItems.map((item) => (
-                                <DropdownMenuItem key={item.nameKey} onClick={() => handleNavClick(item.nameKey)}>
-                                    {t(navItemMap[item.nameKey])}
-                                </DropdownMenuItem>
-                            ))}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                )}
+                {isAppView && toolNavItems.map((item) => (
+                     <Button 
+                        key={item.nameKey}
+                        variant={activeItem === item.nameKey ? "secondary" : "ghost"} 
+                        onClick={() => handleNavClick(item.nameKey)}
+                    >
+                        {t(navItemMap[item.nameKey])}
+                    </Button>
+                ))}
             </nav>
 
             <div className="hidden md:flex items-center gap-2">

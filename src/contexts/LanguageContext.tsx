@@ -12,7 +12,6 @@ const englishTranslations: Translations = {
     // Nav
     nav_home: 'Home',
     nav_dashboard: 'Dashboard',
-    nav_tools: 'Tools',
     nav_irrigation_planner: 'Irrigation Planner',
     nav_crop_advisor: 'Crop Advisor',
     nav_soil_advisor: 'Soil Advisor',
