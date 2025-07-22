@@ -331,26 +331,7 @@ export default function DashboardView() {
 
   return (
     <div className="grid gap-6 md:gap-8">
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">{t('next_irrigation')}</CardTitle>
-            <Droplets className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {irrigationTime ? (
-              <>
-                <div className="text-2xl font-bold font-headline">{irrigationTime.relative}</div>
-                <p className="text-xs text-muted-foreground">{irrigationTime.time}</p>
-              </>
-            ) : (
-               <>
-                <Skeleton className="h-7 w-40 mb-1" />
-                <Skeleton className="h-3 w-24" />
-              </>
-            )}
-          </CardContent>
-        </Card>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">{t('latest_schemes')}</CardTitle>
@@ -611,5 +592,7 @@ export default function DashboardView() {
     </div>
   );
 }
+
+    
 
     
