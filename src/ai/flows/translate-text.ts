@@ -2,7 +2,7 @@
 'use server';
 
 /**
- * @fileOverview Translates UI text elements using the Gemini API.
+ * @fileOverview Translates UI text elements using a public Gemini API endpoint.
  * 
  * - translateTexts - A function that translates texts.
  * - TranslateTextInput - The input type for the translateTexts function.
@@ -27,22 +27,6 @@ export async function translateTexts(input: TranslateTextInput): Promise<Transla
     return translateTextsFlow(input);
 }
 
-const prompt = ai.definePrompt({
-    name: 'translateTextsPrompt',
-    input: {schema: TranslateTextInputSchema},
-    output: {schema: TranslateTextOutputSchema},
-    model: fastModel,
-    prompt: `You are a professional translator. Translate the following array of English texts into {{targetLanguage}}.
-    It is crucial that you return the translated texts in a JSON object with a key "translatedTexts", and the value should be an array of strings.
-    The order of the translated texts in the output array MUST match the order of the texts in the input array.
-    Do not translate proper nouns, technical terms, or brand names like "Samriddh Kheti".
-    
-    Texts to translate:
-    {{#each texts}}
-    - "{{this}}"
-    {{/each}}
-    `,
-});
 
 const translateTextsFlow = ai.defineFlow(
     {
@@ -50,8 +34,25 @@ const translateTextsFlow = ai.defineFlow(
         inputSchema: TranslateTextInputSchema,
         outputSchema: TranslateTextOutputSchema,
     },
-    async (input) => {
-        const {output} = await prompt(input);
-        return output!;
+    async ({ texts, targetLanguage }) => {
+        const translatedTexts = await Promise.all(
+            texts.map(async (text) => {
+                const prompt = `Translate the following text to ${targetLanguage}. Do not add any extra explanation or formatting, just return the translated text. Text: "${text}"`;
+                try {
+                    const response = await fetch('https://gemini-apis.vercel.app/api/?prompt=' + encodeURIComponent(prompt));
+                    if (!response.ok) {
+                        return text; // Return original text on error
+                    }
+                    const translatedText = await response.text();
+                    // Clean up potential markdown or extra quotes
+                    return translatedText.replace(/`/g, '').replace(/"/g, '').trim();
+                } catch (error) {
+                    console.error('Error translating text:', error);
+                    return text; // Return original text on error
+                }
+            })
+        );
+        
+        return { translatedTexts };
     }
 );
