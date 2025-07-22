@@ -15,11 +15,10 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 interface TopNavBarProps {
   activeItem: NavItem;
   setActiveItem: (item: NavItem) => void;
-  isAppView?: boolean;
+  isAppView?: boolean; // This prop is no longer used but kept to avoid breaking changes if it was used elsewhere.
 }
 
-const marketingNavItems: NavItem[] = ["Home", "About Us", "Contact Us"];
-const appNavItems: NavItem[] = ["Dashboard"];
+const navItems: NavItem[] = ["Home", "About Us", "Contact Us", "Dashboard"];
 
 const toolNavItems: NavItem[] = [
     "Irrigation Planner",
@@ -37,7 +36,7 @@ const languageOptions = [
     { name: 'ਪੰਜਾਬੀ', code: 'pa' }, // Punjabi
 ];
 
-export default function TopNavBar({ activeItem, setActiveItem, isAppView = false }: TopNavBarProps) {
+export default function TopNavBar({ activeItem, setActiveItem }: TopNavBarProps) {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const { t, languageCode, setLanguage } = useLanguage();
 
@@ -77,7 +76,6 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
         "Tools": "nav_tools",
     };
     
-    const currentNavItems = isAppView ? appNavItems : marketingNavItems;
     const isToolActive = toolNavItems.some(item => item === activeItem);
 
     return (
@@ -101,7 +99,7 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
             </div>
             
             <nav className="hidden md:flex items-center gap-2">
-                {currentNavItems.map((item) => (
+                {navItems.map((item) => (
                     <Button 
                         key={item}
                         variant={activeItem === item ? "secondary" : "ghost"} 
@@ -126,15 +124,6 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
                         ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
-
-                 {!isAppView && (
-                    <Button 
-                        variant={activeItem === "Dashboard" ? "secondary" : "ghost"} 
-                        onClick={() => handleNavClick("Dashboard")}
-                    >
-                        {t(navItemMap["Dashboard"])}
-                    </Button>
-                )}
             </nav>
 
             <div className="hidden md:flex items-center gap-2">
@@ -154,53 +143,41 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
 
             <div className="md:hidden">
                 <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7"} />
-                    </svg>
-                    <span className="sr-only">Toggle menu</span>
+                    <ChevronDown className="h-6 w-6" />
                 </Button>
             </div>
         </div>
         {isMenuOpen && (
-            <div className="md:hidden bg-background border-t">
-                <nav className="flex flex-col p-4 gap-2">
-                    {currentNavItems.map((item) => (
+            <div className="md:hidden bg-background/95 pb-4">
+                <nav className="flex flex-col items-center gap-2 px-4">
+                    {navItems.map((item) => (
                          <Button 
                             key={item}
                             variant={activeItem === item ? "secondary" : "ghost"} 
-                            className="w-full justify-start"
                             onClick={() => handleNavClick(item)}
+                            className="w-full"
                         >
                             {t(navItemMap[item])}
                         </Button>
                     ))}
-                    
-                    <div className="border-t pt-2 mt-2">
-                        <h3 className="px-4 py-2 text-sm font-semibold text-muted-foreground">{t('nav_tools')}</h3>
-                        {toolNavItems.map((item) => (
-                            <Button 
-                                key={item}
-                                variant={activeItem === item ? "secondary" : "ghost"} 
-                                className="w-full justify-start"
-                                onClick={() => handleNavClick(item)}
-                            >
-                                {t(navItemMap[item])}
+                     <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant={isToolActive ? "secondary" : "ghost"} className="w-full">
+                                {t('nav_tools')}
+                                <ChevronDown className="relative top-[1px] ml-1 h-3 w-3" />
                             </Button>
-                        ))}
-                    </div>
-                     {!isAppView && (
-                         <Button 
-                            variant={activeItem === "Dashboard" ? "secondary" : "ghost"} 
-                            className="w-full justify-start"
-                            onClick={() => handleNavClick("Dashboard")}
-                        >
-                            {t(navItemMap["Dashboard"])}
-                        </Button>
-                    )}
-                     <div className="border-t pt-4 mt-2 flex items-center gap-2">
-                        <ThemeToggle />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="center" className="w-56">
+                            {toolNavItems.map((item) => (
+                                <DropdownMenuItem key={item} onClick={() => handleNavClick(item)}>
+                                    {t(navItemMap[item])}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <div className="flex items-center gap-2 pt-4">
                         <Select onValueChange={handleLanguageChange} value={languageCode}>
-                            <SelectTrigger className="w-full gap-2">
+                            <SelectTrigger className="w-auto gap-2">
                                 <Languages className="h-4 w-4" />
                                 <SelectValue placeholder="Language" />
                             </SelectTrigger>
@@ -210,10 +187,11 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
                                 ))}
                             </SelectContent>
                         </Select>
-                     </div>
+                        <ThemeToggle />
+                    </div>
                 </nav>
             </div>
         )}
     </header>
-    );
+  );
 }
