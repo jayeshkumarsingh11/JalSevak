@@ -14,9 +14,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { smartIrrigationSchedule, type SmartIrrigationScheduleInput, type SmartIrrigationScheduleOutput } from "@/ai/flows/smart-irrigation-scheduling";
 import { Loader2, Droplets, Bot, LocateFixed, Clock, Shield, Leaf } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
 import image from "./images/IrrigationPlanner.webp"
-import { CROP_KEYS } from "./SoilQualityAdvisor";
+import { CROP_KEYS, CROP_NAMES } from "./SoilQualityAdvisor";
 
 const formSchema = z.object({
   cropType: z.string().min(1, "Crop type is required."),
@@ -28,7 +27,6 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function IrrigationPlanner() {
-  const { t, language } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SmartIrrigationScheduleOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +54,7 @@ export default function IrrigationPlanner() {
     setCropSearch(value);
     if (value) {
       const filtered = CROP_KEYS.filter(key =>
-        t(key).toLowerCase().startsWith(value.toLowerCase())
+        CROP_NAMES[key].toLowerCase().startsWith(value.toLowerCase())
       );
       setSuggestions(filtered);
       setShowSuggestions(true);
@@ -67,7 +65,7 @@ export default function IrrigationPlanner() {
 
   const handleSuggestionClick = (key: string) => {
     form.setValue("cropType", key, { shouldValidate: true });
-    setCropSearch(t(key));
+    setCropSearch(CROP_NAMES[key]);
     setShowSuggestions(false);
   };
 
@@ -115,7 +113,7 @@ export default function IrrigationPlanner() {
       }
     } catch (error) {
       console.error("Error fetching location or weather data:", error);
-      setError(t('error_fetching_location_weather'));
+      setError('Could not fetch location or weather data. Please enter manually.');
     } finally {
       setFetchingLocation(false);
     }
@@ -149,7 +147,7 @@ export default function IrrigationPlanner() {
 
   async function onSubmit(values: FormValues) {
     if (!weatherAndSoilData) {
-        setError(t('error_weather_data_not_available'));
+        setError('Weather and soil data is not available yet. Please wait a moment and try again.');
         return;
     }
     setLoading(true);
@@ -160,12 +158,12 @@ export default function IrrigationPlanner() {
         ...values,
         weatherData: weatherAndSoilData.weatherData,
         soilData: weatherAndSoilData.soilData,
-        language: language,
+        language: 'English',
       };
       const res = await smartIrrigationSchedule(input);
       setResult(res);
     } catch (e: any) {
-      setError(e.message || t('error_unexpected'));
+      setError(e.message || 'An unexpected error occurred.');
     } finally {
       setLoading(false);
     }
@@ -175,8 +173,8 @@ export default function IrrigationPlanner() {
     <div className="grid md:grid-cols-2 gap-8 items-start">
       <Card>
         <CardHeader>
-          <CardTitle className="font-headline">{t('irrigation_planner_title')}</CardTitle>
-          <CardDescription>{t('irrigation_planner_description')}</CardDescription>
+          <CardTitle className="font-headline">Plan Your Irrigation</CardTitle>
+          <CardDescription>Enter your farm's details to get a smart, dynamic irrigation schedule.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -187,10 +185,10 @@ export default function IrrigationPlanner() {
                   name="cropType"
                   render={({ field }) => (
                     <FormItem ref={cropInputRef}>
-                      <FormLabel>{t('form_crop_type')}</FormLabel>
+                      <FormLabel>Crop Type</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder={t('form_crop_type_placeholder')}
+                          placeholder="e.g., Wheat, Rice"
                           value={cropSearch}
                           onChange={handleCropInputChange}
                           onFocus={() => setShowSuggestions(true)}
@@ -206,7 +204,7 @@ export default function IrrigationPlanner() {
                                 className="px-3 py-2 cursor-pointer hover:bg-accent text-sm"
                                 onMouseDown={() => handleSuggestionClick(key)}
                               >
-                                {t(key)}
+                                {CROP_NAMES[key]}
                               </li>
                             ))}
                           </ul>
@@ -221,7 +219,7 @@ export default function IrrigationPlanner() {
                   name="farmArea"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('form_farm_area')}</FormLabel>
+                      <FormLabel>Farm Area (acres)</FormLabel>
                       <FormControl><Input type="number" step="0.1" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -233,17 +231,17 @@ export default function IrrigationPlanner() {
                 name="waterSource"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('form_water_source')}</FormLabel>
+                    <FormLabel>Water Source</FormLabel>
                      <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger><SelectValue placeholder={t('form_water_source_placeholder')} /></SelectTrigger>
+                          <SelectTrigger><SelectValue placeholder="Select a water source" /></SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Canal">{t('water_source_canal')}</SelectItem>
-                          <SelectItem value="Well">{t('water_source_well')}</SelectItem>
-                          <SelectItem value="Borewell">{t('water_source_borewell')}</SelectItem>
-                          <SelectItem value="River">{t('water_source_river')}</SelectItem>
-                          <SelectItem value="Rainwater Harvesting">{t('water_source_rainwater')}</SelectItem>
+                          <SelectItem value="Canal">Canal</SelectItem>
+                          <SelectItem value="Well">Well</SelectItem>
+                          <SelectItem value="Borewell">Borewell</SelectItem>
+                          <SelectItem value="River">River</SelectItem>
+                          <SelectItem value="Rainwater Harvesting">Rainwater Harvesting</SelectItem>
                         </SelectContent>
                       </Select>
                     <FormMessage />
@@ -255,11 +253,11 @@ export default function IrrigationPlanner() {
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('form_location')}</FormLabel>
+                    <FormLabel>Your Location</FormLabel>
                     <div className="relative">
                       <FormControl>
                         <Input
-                          placeholder={t('form_location_placeholder')}
+                          placeholder="e.g., Village, State"
                           {...field}
                           className="pr-10"
                         />
@@ -271,7 +269,7 @@ export default function IrrigationPlanner() {
                         className="absolute top-1/2 right-1 -translate-y-1/2 h-7 w-7 text-muted-foreground"
                         onClick={getLocation}
                         disabled={fetchingLocation}
-                        aria-label={t('get_current_location_label')}
+                        aria-label="Get current location"
                       >
                         {fetchingLocation ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
@@ -287,7 +285,7 @@ export default function IrrigationPlanner() {
               
               <Button type="submit" disabled={loading || fetchingLocation} className="w-full">
                 {(loading || fetchingLocation) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('get_schedule_button')}
+                Get Schedule
               </Button>
             </form>
           </Form>
@@ -305,15 +303,15 @@ export default function IrrigationPlanner() {
                 className="mb-4 rounded-lg opacity-80"
                 data-ai-hint="stylized water droplet"
               />
-              <h3 className="text-xl font-headline text-muted-foreground">{t('irrigation_planner_initial_prompt')}</h3>
-              <p className="text-muted-foreground">{t('irrigation_planner_initial_prompt_desc')}</p>
+              <h3 className="text-xl font-headline text-muted-foreground">Create your smart irrigation plan</h3>
+              <p className="text-muted-foreground">Fill out the form to get a personalized, water-saving schedule.</p>
             </Card>
         )}
         {loading && (
           <div className="flex flex-col items-center gap-4 text-center p-8">
             <Bot className="h-16 w-16 text-primary" />
-            <p className="font-headline text-xl">{t('loading_analyzing_farm_data')}</p>
-            <p className="text-muted-foreground">{t('loading_preparing_plan')}</p>
+            <p className="font-headline text-xl">Analyzing your farm data...</p>
+            <p className="text-muted-foreground">Our AI is preparing your custom irrigation plan.</p>
           </div>
         )}
         {error && <p className="text-destructive p-8">{error}</p>}
@@ -321,28 +319,28 @@ export default function IrrigationPlanner() {
           <Card className="w-full animate-slide-up-fade">
             <CardHeader>
               <CardTitle className="font-headline flex items-center gap-2">
-                <Droplets className="text-primary"/> {t('results_recommended_schedule')}
+                <Droplets className="text-primary"/> Recommended Schedule
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <h3 className="font-semibold text-lg flex items-center gap-2"><Droplets className="h-4 w-4 text-primary" />{t('results_schedule')}</h3>
+                <h3 className="font-semibold text-lg flex items-center gap-2"><Droplets className="h-4 w-4 text-primary" />Schedule</h3>
                 <p className="text-muted-foreground whitespace-pre-wrap pl-6">{result.irrigationSchedule}</p>
               </div>
               <div>
-                <h3 className="font-semibold text-lg flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />{t('results_best_time')}</h3>
+                <h3 className="font-semibold text-lg flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />Best Time to Irrigate</h3>
                 <p className="text-muted-foreground pl-6">{result.bestTimeToIrrigate}</p>
               </div>
               <div>
-                <h3 className="font-semibold text-lg flex items-center gap-2"><Shield className="h-4 w-4 text-primary" />{t('results_precautions')}</h3>
+                <h3 className="font-semibold text-lg flex items-center gap-2"><Shield className="h-4 w-4 text-primary" />Precautions</h3>
                 <p className="text-muted-foreground whitespace-pre-wrap pl-6">{result.precautions}</p>
               </div>
               <div>
-                <h3 className="font-semibold text-lg flex items-center gap-2"><Leaf className="h-4 w-4 text-primary" />{t('results_pesticides')}</h3>
+                <h3 className="font-semibold text-lg flex items-center gap-2"><Leaf className="h-4 w-4 text-primary" />Pesticide Recommendations</h3>
                 <p className="text-muted-foreground whitespace-pre-wrap pl-6">{result.pesticideRecommendations}</p>
               </div>
               <div>
-                <h3 className="font-semibold text-lg">{t('results_justification')}</h3>
+                <h3 className="font-semibold text-lg">Justification</h3>
                 <p className="text-muted-foreground">{result.justification}</p>
               </div>
             </CardContent>
@@ -352,5 +350,3 @@ export default function IrrigationPlanner() {
     </div>
   );
 }
-
-    

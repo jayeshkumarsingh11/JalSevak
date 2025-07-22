@@ -15,7 +15,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cropSuggestion, type CropSuggestionOutput } from "@/ai/flows/crop-suggestion";
 import { suggestSoilType } from "@/ai/flows/suggest-soil-type";
 import { Loader2, Bot, LocateFixed, Leaf, Droplets, Banknote, CalendarDays, Rss } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
 import image from "./images/crop.webp";
 
 const formSchema = z.object({
@@ -30,7 +29,6 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function CropAdvisor() {
-  const { t, language } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<CropSuggestionOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -112,7 +110,7 @@ export default function CropAdvisor() {
     setResult(null);
     setError(null);
     try {
-      const res = await cropSuggestion({...values, language});
+      const res = await cropSuggestion({...values, language: 'English'});
       setResult(res);
     } catch (e: any) {
       setError(e.message || "An unexpected error occurred.");
@@ -125,8 +123,8 @@ export default function CropAdvisor() {
     <div className="grid md:grid-cols-3 gap-8 items-start">
       <Card className="md:col-span-1">
         <CardHeader>
-          <CardTitle className="font-headline">{t('crop_advisor_title')}</CardTitle>
-          <CardDescription>{t('crop_advisor_description')}</CardDescription>
+          <CardTitle className="font-headline">Crop Advisor</CardTitle>
+          <CardDescription>Get AI-powered crop recommendations tailored to your farm.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -136,11 +134,11 @@ export default function CropAdvisor() {
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('form_location')}</FormLabel>
+                    <FormLabel>Your Location</FormLabel>
                     <div className="relative">
                       <FormControl>
                         <Input
-                          placeholder={t('form_location_placeholder')}
+                          placeholder="e.g., Village, State"
                           {...field}
                           className="pr-10"
                           onBlur={(e) => handleLocationUpdate(e.target.value)}
@@ -153,7 +151,7 @@ export default function CropAdvisor() {
                         className="absolute top-1/2 right-1 -translate-y-1/2 h-7 w-7 text-muted-foreground"
                         onClick={getLocation}
                         disabled={fetchingLocation}
-                        aria-label={t('get_current_location_label')}
+                        aria-label="Get current location"
                       >
                         {fetchingLocation ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
@@ -172,7 +170,7 @@ export default function CropAdvisor() {
                     name="farmArea"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('form_farm_area')}</FormLabel>
+                        <FormLabel>Farm Area (acres)</FormLabel>
                         <FormControl><Input type="number" step="0.1" {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
@@ -183,24 +181,24 @@ export default function CropAdvisor() {
                     name="soilType"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('form_soil_type')}</FormLabel>
+                        <FormLabel>Soil Type</FormLabel>
                          <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                                <SelectTrigger>
                                   <div className="flex items-center gap-2">
                                   {fetchingSoilType && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
-                                  <SelectValue placeholder={t('form_soil_type_placeholder')} />
+                                  <SelectValue placeholder="Select soil" />
                                   </div>
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="Loamy">{t('soil_loamy')}</SelectItem>
-                              <SelectItem value="Clay">{t('soil_clay')}</SelectItem>
-                              <SelectItem value="Sandy">{t('soil_sandy')}</SelectItem>
-                              <SelectItem value="Alluvial">{t('soil_alluvial')}</SelectItem>
-                              <SelectItem value="Black Soil">{t('soil_black')}</SelectItem>
-                              <SelectItem value="Red and Yellow Soil">{t('soil_red_yellow')}</SelectItem>
-                              <SelectItem value="Laterite Soil">{t('soil_laterite')}</SelectItem>
+                              <SelectItem value="Loamy">Loamy</SelectItem>
+                              <SelectItem value="Clay">Clay</SelectItem>
+                              <SelectItem value="Sandy">Sandy</SelectItem>
+                              <SelectItem value="Alluvial">Alluvial</SelectItem>
+                              <SelectItem value="Black Soil">Black Soil (Regur)</SelectItem>
+                              <SelectItem value="Red and Yellow Soil">Red and Yellow Soil</SelectItem>
+                              <SelectItem value="Laterite Soil">Laterite Soil</SelectItem>
                             </SelectContent>
                           </Select>
                         <FormMessage />
@@ -213,15 +211,15 @@ export default function CropAdvisor() {
                 name="waterAvailability"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('form_water_availability')}</FormLabel>
+                    <FormLabel>Water Availability</FormLabel>
                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger><SelectValue placeholder={t('form_water_availability_placeholder')} /></SelectTrigger>
+                          <SelectTrigger><SelectValue placeholder="Select water availability" /></SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Abundant">{t('water_abundant')}</SelectItem>
-                          <SelectItem value="Moderate">{t('water_moderate')}</SelectItem>
-                          <SelectItem value="Scarce">{t('water_scarce')}</SelectItem>
+                          <SelectItem value="Abundant">Abundant (Canal, River)</SelectItem>
+                          <SelectItem value="Moderate">Moderate (Well, Borewell)</SelectItem>
+                          <SelectItem value="Scarce">Scarce (Rain-fed)</SelectItem>
                         </SelectContent>
                       </Select>
                     <FormMessage />
@@ -233,16 +231,16 @@ export default function CropAdvisor() {
                 name="farmerPreference"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('form_primary_goal')}</FormLabel>
+                    <FormLabel>Primary Goal</FormLabel>
                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger><SelectValue placeholder={t('form_primary_goal_placeholder')} /></SelectTrigger>
+                          <SelectTrigger><SelectValue placeholder="What is your main goal?" /></SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Maximize Profit">{t('goal_maximize_profit')}</SelectItem>
-                          <SelectItem value="Drought Resistant">{t('goal_drought_resistant')}</SelectItem>
-                          <SelectItem value="Low Maintenance">{t('goal_low_maintenance')}</SelectItem>
-                          <SelectItem value="Improve Soil Health">{t('goal_improve_soil')}</SelectItem>
+                          <SelectItem value="Maximize Profit">Maximize Profit</SelectItem>
+                          <SelectItem value="Drought Resistant">Drought Resistant</SelectItem>
+                          <SelectItem value="Low Maintenance">Low Maintenance</SelectItem>
+                          <SelectItem value="Improve Soil Health">Improve Soil Health</SelectItem>
                         </SelectContent>
                       </Select>
                     <FormMessage />
@@ -254,15 +252,15 @@ export default function CropAdvisor() {
                 name="personalConsumption"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('form_crop_usage')}</FormLabel>
+                    <FormLabel>Primary Crop Usage</FormLabel>
                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger><SelectValue placeholder={t('form_crop_usage_placeholder')} /></SelectTrigger>
+                          <SelectTrigger><SelectValue placeholder="How will the crops be used?" /></SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Personal Use">{t('usage_personal')}</SelectItem>
-                          <SelectItem value="Local Market">{t('usage_local_market')}</SelectItem>
-                          <SelectItem value="Commercial Farming">{t('usage_commercial')}</SelectItem>
+                          <SelectItem value="Personal Use">Personal Use (Subsistence)</SelectItem>
+                          <SelectItem value="Local Market">Sell in Local Market</SelectItem>
+                          <SelectItem value="Commercial Farming">Commercial Farming</SelectItem>
                         </SelectContent>
                       </Select>
                     <FormMessage />
@@ -271,7 +269,7 @@ export default function CropAdvisor() {
               />
               <Button type="submit" disabled={loading} className="w-full">
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('get_recommendations_button')}
+                Get Recommendations
               </Button>
             </form>
           </Form>
@@ -289,21 +287,21 @@ export default function CropAdvisor() {
               className="mb-4 rounded-lg opacity-80"
               data-ai-hint="seedling illustration"
             />
-            <h3 className="text-xl font-headline text-muted-foreground">{t('crop_advisor_initial_prompt')}</h3>
-            <p className="text-muted-foreground">{t('crop_advisor_initial_prompt_desc')}</p>
+            <h3 className="text-xl font-headline text-muted-foreground">Discover the perfect crops for your land</h3>
+            <p className="text-muted-foreground">Fill in your farm details to get personalized, AI-driven suggestions.</p>
           </Card>
         )}
         {loading && (
           <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-8">
             <Bot className="h-16 w-16 text-primary" />
-            <p className="font-headline text-xl">{t('loading_analyzing_farm')}</p>
-            <p className="text-muted-foreground">{t('loading_finding_crops')}</p>
+            <p className="font-headline text-xl">Analyzing your farm...</p>
+            <p className="text-muted-foreground">Our AI is finding the best crops for you.</p>
           </div>
         )}
         {error && <p className="text-destructive p-8">{error}</p>}
         {result && (
           <div className="space-y-6 animate-slide-up-fade">
-            <h2 className="text-2xl font-headline mb-4">{t('results_top_recommendations')}</h2>
+            <h2 className="text-2xl font-headline mb-4">Top Crop Recommendations</h2>
             {result.suggestions.length > 0 ? (
                 result.suggestions.map((crop, index) => (
                   <Card key={index}>
@@ -315,32 +313,32 @@ export default function CropAdvisor() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                        <div>
-                            <h4 className="font-semibold text-base">{t('results_why_suggested')}</h4>
+                            <h4 className="font-semibold text-base">Why we suggest this crop:</h4>
                             <p className="text-muted-foreground">{crop.justification}</p>
                        </div>
                        <div className="border-t pt-4">
-                            <h4 className="font-semibold text-base flex items-center gap-2 mb-2"><Rss className="h-4 w-4" />{t('results_land_tip')}</h4>
+                            <h4 className="font-semibold text-base flex items-center gap-2 mb-2"><Rss className="h-4 w-4" />Land Allocation Tip</h4>
                             <p className="text-muted-foreground">{crop.landAllocation}</p>
                        </div>
                        <div className="grid grid-cols-3 gap-4 text-sm pt-4 border-t">
                            <div className="flex items-center gap-2">
                                 <Banknote className="h-4 w-4 text-muted-foreground"/>
                                 <div>
-                                    <p className="font-semibold">{t('results_profit_potential')}</p>
+                                    <p className="font-semibold">Profit Potential</p>
                                     <p className="text-muted-foreground">{crop.estimatedProfit}</p>
                                 </div>
                            </div>
                            <div className="flex items-center gap-2">
                                 <Droplets className="h-4 w-4 text-muted-foreground"/>
                                  <div>
-                                    <p className="font-semibold">{t('results_water_needs')}</p>
+                                    <p className="font-semibold">Water Needs</p>
                                     <p className="text-muted-foreground">{crop.waterNeeds}</p>
                                 </div>
                            </div>
                            <div className="flex items-center gap-2">
                                 <CalendarDays className="h-4 w-4 text-muted-foreground"/>
                                  <div>
-                                    <p className="font-semibold">{t('results_growing_season')}</p>
+                                    <p className="font-semibold">Growing Season</p>
                                     <p className="text-muted-foreground">{crop.growingSeason}</p>
                                 </div>
                            </div>
@@ -351,10 +349,10 @@ export default function CropAdvisor() {
             ) : (
                 <Card className="flex flex-col items-center justify-center p-8 text-center">
                     <CardHeader>
-                        <CardTitle className="font-headline">{t('results_no_recommendations_title')}</CardTitle>
+                        <CardTitle className="font-headline">No Specific Recommendations Found</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-muted-foreground">{t('results_no_recommendations_description')}</p>
+                        <p className="text-muted-foreground">We couldn't generate specific recommendations based on your inputs. Please try different criteria.</p>
                     </CardContent>
                 </Card>
             )}

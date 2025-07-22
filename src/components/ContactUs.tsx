@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { Send, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
@@ -22,7 +21,6 @@ const formSchema = z.object({
 });
 
 export default function ContactUs() {
-  const { t } = useLanguage();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -67,17 +65,17 @@ export default function ContactUs() {
     <div id="contact-us" className="bg-muted/40 scroll-mt-20">
       <div className="container mx-auto px-4 py-12">
         <header className="text-center mb-12">
-          <h1 className="text-4xl font-headline text-primary">{t('contact_us_title')}</h1>
+          <h1 className="text-4xl font-headline text-primary">Contact Us</h1>
           <p className="mt-2 text-lg text-muted-foreground max-w-2xl mx-auto">
-            {t('contact_us_subtitle')}
+            We'd love to hear from you! Whether you have a question about our features, pricing, or anything else, our team is ready to answer all your questions.
           </p>
         </header>
 
         <div className="max-w-2xl mx-auto">
           <Card>
             <CardHeader>
-              <CardTitle className="font-headline">{t('contact_form_title')}</CardTitle>
-              <CardDescription>{t('contact_form_desc')}</CardDescription>
+              <CardTitle className="font-headline">Send us a Message</CardTitle>
+              <CardDescription>Fill out the form and we'll get back to you shortly.</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
@@ -87,9 +85,9 @@ export default function ContactUs() {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('form_name')}</FormLabel>
+                        <FormLabel>Your Name</FormLabel>
                         <FormControl>
-                          <Input placeholder={t('form_name_placeholder')} {...field} />
+                          <Input placeholder="Enter your full name" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -100,9 +98,9 @@ export default function ContactUs() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('form_email')}</FormLabel>
+                        <FormLabel>Your Email</FormLabel>
                         <FormControl>
-                          <Input placeholder={t('form_email_placeholder')} {...field} />
+                          <Input placeholder="Enter your email address" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -113,9 +111,9 @@ export default function ContactUs() {
                     name="subject"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('form_subject')}</FormLabel>
+                        <FormLabel>Subject</FormLabel>
                         <FormControl>
-                          <Input placeholder={t('form_subject_placeholder')} {...field} />
+                          <Input placeholder="How can we help you?" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -126,9 +124,9 @@ export default function ContactUs() {
                     name="message"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('form_message')}</FormLabel>
+                        <FormLabel>Your Message</FormLabel>
                         <FormControl>
-                          <Textarea placeholder={t('form_message_placeholder')} className="min-h-[120px]" {...field} />
+                          <Textarea placeholder="Type your message here..." className="min-h-[120px]" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -140,7 +138,7 @@ export default function ContactUs() {
                      ) : (
                        <Send className="mr-2 h-4 w-4" />
                      )}
-                     {isSubmitting ? 'Sending...' : t('send_message_button')}
+                     {isSubmitting ? 'Sending...' : 'Send Message'}
                   </Button>
                 </form>
               </Form>

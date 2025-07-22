@@ -4,23 +4,21 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Footer() {
-    const { t } = useLanguage();
 
     const footerNavLinks = [
-        { name: "Home", key: "nav_home", href: "/" },
-        { name: "Dashboard", key: "nav_dashboard", href: "/?view=Dashboard" },
-        { name: "About Us", key: "nav_about_us", href: "/?view=About Us" },
-        { name: "Contact Us", key: "nav_contact_us", href: "/?view=Contact Us" },
+        { name: "Home", href: "/" },
+        { name: "Dashboard", href: "/?view=Dashboard" },
+        { name: "About Us", href: "/?view=About Us" },
+        { name: "Contact Us", href: "/?view=Contact Us" },
     ];
 
     const footerToolLinks = [
-        { name: "Irrigation Planner", key: "nav_irrigation_planner", href: "/?view=Irrigation Planner" },
-        { name: "Crop Advisor", key: "nav_crop_advisor", href: "/?view=Crop Advisor" },
-        { name: "Soil Advisor", key: "nav_soil_advisor", href: "/?view=Soil Advisor" },
-        { name: "Govt. Schemes", key: "nav_govt_schemes", href: "/?view=Govt. Schemes" },
+        { name: "Irrigation Planner", href: "/?view=Irrigation Planner" },
+        { name: "Crop Advisor", href: "/?view=Crop Advisor" },
+        { name: "Soil Advisor", href: "/?view=Soil Advisor" },
+        { name: "Govt. Schemes", href: "/?view=Govt. Schemes" },
     ];
 
     return (
@@ -33,18 +31,18 @@ export default function Footer() {
                             <span className="text-xl font-headline font-semibold text-primary">Samriddh Kheti</span>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                            {t('hero_subtitle')}
+                            Welcome to Samriddh Kheti, your smart farming assistant designed to revolutionize agricultural practices in India by empowering farmers with data-driven insights. Our mission is to optimize resource usage, improve crop yields, and enhance the livelihoods of farmers for a prosperous, sustainable, and food-secure nation.
                         </p>
                     </div>
 
                     {/* Quick Links */}
                     <div className="space-y-4">
-                        <h3 className="font-headline text-lg font-semibold">{t('footer_quick_links')}</h3>
+                        <h3 className="font-headline text-lg font-semibold">Quick Links</h3>
                         <ul className="space-y-2">
                             {footerNavLinks.map(link => (
-                                <li key={link.key}>
+                                <li key={link.name}>
                                     <a href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                                        {t(link.key)}
+                                        {link.name}
                                     </a>
                                 </li>
                             ))}
@@ -53,12 +51,12 @@ export default function Footer() {
 
                     {/* Tools Links */}
                     <div className="space-y-4">
-                        <h3 className="font-headline text-lg font-semibold">{t('footer_tools')}</h3>
+                        <h3 className="font-headline text-lg font-semibold">Tools</h3>
                         <ul className="space-y-2">
                             {footerToolLinks.map(link => (
-                                <li key={link.key}>
+                                <li key={link.name}>
                                     <a href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                                        {t(link.key)}
+                                        {link.name}
                                     </a>
                                 </li>
                             ))}
@@ -67,11 +65,11 @@ export default function Footer() {
 
                     {/* Newsletter & Socials */}
                     <div className="space-y-4">
-                        <h3 className="font-headline text-lg font-semibold">{t('footer_newsletter')}</h3>
-                        <p className="text-sm text-muted-foreground">{t('footer_newsletter_desc')}</p>
+                        <h3 className="font-headline text-lg font-semibold">Subscribe to our Newsletter</h3>
+                        <p className="text-sm text-muted-foreground">Get the latest updates on agricultural tech and government schemes.</p>
                         <div className="flex w-full max-w-sm items-center space-x-2">
-                            <Input type="email" placeholder={t('form_email_placeholder')} />
-                            <Button type="submit">{t('footer_subscribe')}</Button>
+                            <Input type="email" placeholder="Enter your email address" />
+                            <Button type="submit">Subscribe</Button>
                         </div>
                         
                     </div>

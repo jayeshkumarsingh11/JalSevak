@@ -5,9 +5,7 @@ import Image from "next/image";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import type { NavItem } from "./SamriddhKhetiApp";
-import { LanguageToggle } from "./LanguageToggle";
 import { ThemeToggle } from "./ThemeToggle";
-import { useLanguage } from "@/contexts/LanguageContext";
 import image from "@/components/images/logo.png"
 
 interface TopNavBarProps {
@@ -16,19 +14,18 @@ interface TopNavBarProps {
   isAppView?: boolean;
 }
 
-const navItems: { name: NavItem, key: string, isAppViewOnly?: boolean, isMarketingViewOnly?: boolean }[] = [
-    { name: "Home", key: "nav_home" },
-    { name: "Dashboard", key: "nav_dashboard" },
-    { name: "About Us", key: "nav_about_us", isMarketingViewOnly: true },
-    { name: "Contact Us", key: "nav_contact_us", isMarketingViewOnly: true },
-    { name: "Irrigation Planner", key: "nav_irrigation_planner", isAppViewOnly: true },
-    { name: "Crop Advisor", key: "nav_crop_advisor", isAppViewOnly: true },
-    { name: "Soil Advisor", key: "nav_soil_advisor", isAppViewOnly: true },
-    { name: "Govt. Schemes", key: "nav_govt_schemes", isAppViewOnly: true },
+const navItems: { name: NavItem, isAppViewOnly?: boolean, isMarketingViewOnly?: boolean }[] = [
+    { name: "Home" },
+    { name: "Dashboard" },
+    { name: "About Us", isMarketingViewOnly: true },
+    { name: "Contact Us", isMarketingViewOnly: true },
+    { name: "Irrigation Planner", isAppViewOnly: true },
+    { name: "Crop Advisor", isAppViewOnly: true },
+    { name: "Soil Advisor", isAppViewOnly: true },
+    { name: "Govt. Schemes", isAppViewOnly: true },
 ];
 
 export default function TopNavBar({ activeItem, setActiveItem, isAppView = false }: TopNavBarProps) {
-    const { t } = useLanguage();
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
     const handleScroll = (targetId: string) => {
@@ -79,14 +76,13 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
                         variant={activeItem === item.name ? "secondary" : "ghost"} 
                         onClick={() => handleNavClick(item.name)}
                     >
-                        {t(item.key)}
+                        {item.name}
                     </Button>
                 ))}
             </nav>
 
             <div className="hidden md:flex items-center gap-2">
                 <ThemeToggle />
-                <LanguageToggle />
             </div>
 
             <div className="md:hidden">
@@ -108,12 +104,11 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
                             className="w-full justify-start"
                             onClick={() => handleNavClick(item.name)}
                         >
-                            {t(item.key)}
+                            {item.name}
                         </Button>
                     ))}
                      <div className="border-t pt-4 mt-2 flex items-center gap-2">
                         <ThemeToggle />
-                        <LanguageToggle />
                      </div>
                 </nav>
             </div>

@@ -18,7 +18,6 @@ import { Input } from "@/components/ui/input";
 import { cropPriceInfo, type CropPriceInfoOutput } from "@/ai/flows/crop-price-info";
 import { Separator } from "@/components/ui/separator";
 import WeatherIcon from "./WeatherIcon";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 
@@ -117,7 +116,6 @@ interface IrrigationTime {
 }
 
 export default function DashboardView() {
-  const { t, language } = useLanguage();
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [forecastData, setForecastData] = useState<ForecastDay[]>([]);
   const [loadingWeather, setLoadingWeather] = useState(true);
@@ -188,7 +186,7 @@ export default function DashboardView() {
           setLoadingPriceInfo(true);
           setPriceInfo(null);
           try {
-              const info = await cropPriceInfo({ cropName: selectedCrop, language });
+              const info = await cropPriceInfo({ cropName: selectedCrop, language: 'English' });
               setPriceInfo(info);
           } catch (error) {
               console.error("Error fetching price info:", error);
@@ -219,11 +217,11 @@ export default function DashboardView() {
 
       let relativeString = '';
       if (diffHours > 0) {
-        relativeString = `${t('in_time_prefix')} ${diffHours} ${diffHours > 1 ? t('time_hours') : t('time_hour')}`;
+        relativeString = `in ${diffHours} ${diffHours > 1 ? 'hours' : 'hour'}`;
       } else if (diffMinutes > 0) {
-        relativeString = `${t('in_time_prefix')} ${diffMinutes} ${diffMinutes > 1 ? t('time_minutes') : t('time_minute')}`;
+        relativeString = `in ${diffMinutes} ${diffMinutes > 1 ? 'minutes' : 'minute'}`;
       } else {
-        relativeString = t('time_now');
+        relativeString = 'now';
       }
       
       const irrigationDate = tomorrow.toLocaleDateString(undefined, {
@@ -248,7 +246,7 @@ export default function DashboardView() {
     const interval = setInterval(calculateIrrigationTime, 60000); 
 
     return () => clearInterval(interval);
-  }, [t]);
+  }, []);
 
   useEffect(() => {
     const fetchWeatherAndLocation = async (latitude: number, longitude: number) => {
@@ -295,19 +293,19 @@ export default function DashboardView() {
                 ]
                 .filter(Boolean)
                 .join(", ");
-                setLocationName(locationString || t('current_location'));
+                setLocationName(locationString || 'Current Location');
             } else {
-                setLocationName(t('unknown_location'));
+                setLocationName('Unknown Location');
             }
         } catch (locationError) {
              console.error("Error fetching location name:", locationError);
-             setLocationName(t('could_not_fetch_location'));
+             setLocationName('Could not fetch location');
         }
 
       } catch (error) {
         console.error("Failed to fetch weather data:", error);
         setWeatherData(null);
-        setLocationName(t('could_not_fetch_location'));
+        setLocationName('Could not fetch location');
       } finally {
         setLoadingWeather(false);
       }
@@ -327,14 +325,14 @@ export default function DashboardView() {
         // Fallback to Delhi for browsers that don't support geolocation
         fetchWeatherAndLocation(28.61, 77.23);
     }
-  }, [t]);
+  }, []);
 
   return (
     <div className="grid gap-6 md:gap-8">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">{t('next_irrigation')}</CardTitle>
+            <CardTitle className="text-sm font-medium">Next Irrigation</CardTitle>
             <Droplets className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -353,25 +351,25 @@ export default function DashboardView() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">{t('latest_schemes')}</CardTitle>
+            <CardTitle className="text-sm font-medium">Latest Schemes</CardTitle>
             <Landmark className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent className="pt-4">
             <div className="space-y-3">
               <div className="text-sm">
-                  <p className="font-semibold truncate">{t('scheme_pm_kisan_title')}</p>
-                  <p className="text-xs text-muted-foreground">{t('scheme_pm_kisan_desc')}</p>
+                  <p className="font-semibold truncate">PM-KISAN</p>
+                  <p className="text-xs text-muted-foreground">Income support for small farmers.</p>
               </div>
               <div className="text-sm">
-                  <p className="font-semibold truncate">{t('scheme_fasal_bima_title')}</p>
-                  <p className="text-xs text-muted-foreground">{t('scheme_fasal_bima_desc')}</p>
+                  <p className="font-semibold truncate">Fasal Bima Yojana</p>
+                  <p className="text-xs text-muted-foreground">Crop insurance against yield loss.</p>
               </div>
             </div>
           </CardContent>
         </Card>
         <Card className="lg:col-span-2">
           <CardHeader className="flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">{t('current_weather')}</CardTitle>
+            <CardTitle className="text-sm font-medium">Current Weather</CardTitle>
              <div className="flex items-center gap-1 text-xs text-muted-foreground">
               {loadingWeather ? (
                 <Skeleton className="h-4 w-24" />
@@ -397,27 +395,27 @@ export default function DashboardView() {
                   <WeatherIcon code={weatherData.weathercode} className="h-6 w-6 text-accent" />
                   <span className="font-bold text-lg">{weatherData.temperature}°C</span>
                   <span className="text-xs text-muted-foreground">
-                    {t('weather_temperature')}
+                    Temperature
                   </span>
                 </div>
                 <div className="flex flex-col items-center gap-1">
                   <CloudRain className="h-6 w-6 text-muted-foreground" />
                   <span className="font-bold text-lg">{weatherData.precipitation_probability}%</span>
-                  <span className="text-xs text-muted-foreground">{t('weather_rain_chance')}</span>
+                  <span className="text-xs text-muted-foreground">Rain Chance</span>
                 </div>
                 <div className="flex flex-col items-center gap-1">
                   <Thermometer className="h-6 w-6 text-muted-foreground" />
                   <span className="font-bold text-lg">{weatherData.relative_humidity}%</span>
-                  <span className="text-xs text-muted-foreground">{t('weather_humidity')}</span>
+                  <span className="text-xs text-muted-foreground">Humidity</span>
                 </div>
                 <div className="flex flex-col items-center gap-1">
                   <Wind className="h-6 w-6 text-muted-foreground" />
                   <span className="font-bold text-lg">{weatherData.wind_speed} km/h</span>
-                  <span className="text-xs text-muted-foreground">{t('weather_wind')}</span>
+                  <span className="text-xs text-muted-foreground">Wind</span>
                 </div>
               </>
             ) : (
-                <p className="text-sm text-muted-foreground col-span-4 text-center">{t('weather_could_not_load')}</p>
+                <p className="text-sm text-muted-foreground col-span-4 text-center">Could not load weather data.</p>
             )}
           </CardContent>
         </Card>
@@ -428,7 +426,7 @@ export default function DashboardView() {
             <CardHeader>
               <CardTitle className="font-headline flex items-center gap-2">
                 <CalendarDays className="h-5 w-5"/>
-                {t('forecast_title')}
+                5-Day Forecast
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -459,7 +457,7 @@ export default function DashboardView() {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground text-center">{t('forecast_not_available')}</p>
+                <p className="text-sm text-muted-foreground text-center">Forecast not available.</p>
               )}
             </CardContent>
         </Card>
@@ -467,23 +465,23 @@ export default function DashboardView() {
             <CardHeader>
                 <CardTitle className="font-headline flex items-center gap-2">
                     <Wheat className="h-5 w-5" />
-                    {t('latest_prices_title')}
+                    Latest Prices
                 </CardTitle>
-                <CardDescription>{t('latest_prices_description')}</CardDescription>
+                <CardDescription>Govt. MSP vs. Local Vendor Price.</CardDescription>
             </CardHeader>
             <CardContent>
                 <ul className="space-y-3">
                     {latestPrices.map((crop, index) => (
                         <li key={crop.name}>
                             <div className="flex justify-between items-center text-sm">
-                                <span className="font-medium">{t(crop.name.toLowerCase())}</span>
+                                <span className="font-medium">{crop.name}</span>
                                 <div className="flex items-center gap-4">
                                      <div className="text-right">
-                                        <p className="text-xs text-muted-foreground">{t('price_msp')}</p>
+                                        <p className="text-xs text-muted-foreground">MSP</p>
                                         <p className="font-semibold">₹{crop.msp}</p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-xs text-muted-foreground">{t('price_local')}</p>
+                                        <p className="text-xs text-muted-foreground">Local</p>
                                         <p className="font-semibold">₹{crop.local}</p>
                                     </div>
                                 </div>
@@ -500,12 +498,12 @@ export default function DashboardView() {
         <Card className="md:col-span-3">
           <CardHeader className="flex flex-row items-start justify-between gap-4">
             <div className="space-y-1">
-              <CardTitle className="font-headline">{t('price_comparison_title')}</CardTitle>
-              <CardDescription>{t('price_comparison_description')}</CardDescription>
+              <CardTitle className="font-headline">Crop Price Comparison</CardTitle>
+              <CardDescription>Govt. MSP vs. Local Vendor Price (₹ per Quintal).</CardDescription>
             </div>
              <div className="relative w-40" ref={cropInputRef}>
                 <Input
-                  placeholder={t('price_search_crop_placeholder')}
+                  placeholder="Search Crop"
                   value={cropInput}
                   onChange={handleCropInputChange}
                   onFocus={handleCropInputFocus}
@@ -521,7 +519,7 @@ export default function DashboardView() {
                           className="px-3 py-2 cursor-pointer hover:bg-accent text-sm"
                           onMouseDown={() => handleCropSuggestionClick(suggestion as MspDataKey)}
                         >
-                          {t(suggestion.toLowerCase())}
+                          {suggestion}
                         </li>
                       ))}
                     </ul>
@@ -547,9 +545,9 @@ export default function DashboardView() {
                 <Tooltip
                     wrapperClassName="!bg-card !border-border !rounded-lg !shadow-lg"
                     labelClassName="font-bold"
-                    formatter={(value: number, name: string) => [`₹${value.toLocaleString()}`, name === 'msp' ? t('price_msp_full') : t('price_local_full')]}
+                    formatter={(value: number, name: string) => [`₹${value.toLocaleString()}`, name === 'msp' ? 'Govt. MSP' : 'Local Vendor']}
                 />
-                <Legend verticalAlign="top" height={36} formatter={(value) => value === 'msp' ? t('price_msp_full') : t('price_local_full')} />
+                <Legend verticalAlign="top" height={36} formatter={(value) => value === 'msp' ? 'Govt. MSP' : 'Local Vendor'} />
                 <Area type="monotone" dataKey="local" stroke="hsl(var(--accent))" fillOpacity={1} fill="url(#colorLocal)" />
                 <Area type="monotone" dataKey="msp" stroke="hsl(var(--primary))" fillOpacity={1} fill="url(#colorMsp)" />
               </AreaChart>
@@ -561,15 +559,15 @@ export default function DashboardView() {
             <CardHeader>
                 <CardTitle className="font-headline flex items-center gap-2">
                     <Info className="h-5 w-5" />
-                    {t('price_analysis_title')}
+                    Price Analysis
                 </CardTitle>
-                <CardDescription>{t('price_analysis_description')}</CardDescription>
+                <CardDescription>AI-powered insights on the selected crop's price trends.</CardDescription>
             </CardHeader>
             <CardContent>
                 {selectedCrop !== 'Overall' && (
                     <Button onClick={fetchPriceInfo} disabled={loadingPriceInfo} className="mb-4 w-full">
                         {loadingPriceInfo && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        {t('get_price_analysis_button')}
+                        Get Price Analysis
                     </Button>
                 )}
                 {loadingPriceInfo ? (
@@ -586,23 +584,23 @@ export default function DashboardView() {
                         <p className="text-sm text-muted-foreground">{priceInfo.analysis}</p>
                         <div className="flex justify-around items-end pt-2 text-center">
                             <div>
-                                <div className="text-xs text-muted-foreground">{t('price_last_year_msp')}</div>
+                                <div className="text-xs text-muted-foreground">Last Year MSP</div>
                                 <div className="font-bold text-lg">₹{priceInfo.lastYearMsp}</div>
                             </div>
                             <TrendingUp className="h-6 w-6 text-green-500 mb-2" />
                              <div>
-                                <div className="text-xs text-muted-foreground">{t('price_current_msp')}</div>
+                                <div className="text-xs text-muted-foreground">Current MSP</div>
                                 <div className="font-bold text-lg text-primary">₹{priceInfo.currentMsp}</div>
                             </div>
                              <div>
-                                <div className="text-xs text-muted-foreground">{t('price_local_price')}</div>
+                                <div className="text-xs text-muted-foreground">Local Price</div>
                                 <div className="font-bold text-lg text-accent">₹{priceInfo.currentLocalPrice}</div>
                             </div>
                         </div>
                     </div>
                 ) : (
                     <div className="text-center text-sm text-muted-foreground h-full flex items-center justify-center">
-                        <p>{t('price_analysis_select_crop_prompt')}</p>
+                        <p>Select a crop to see price analysis.</p>
                     </div>
                 )}
             </CardContent>
