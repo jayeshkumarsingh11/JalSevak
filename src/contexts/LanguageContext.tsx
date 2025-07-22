@@ -4,7 +4,7 @@
 import React, { createContext, useState, useContext, ReactNode, useCallback, useRef } from 'react';
 import LanguageTransitionOverlay from '@/components/LanguageTransitionOverlay';
 import { useToast } from "@/hooks/use-toast";
-import { translate } from '@/actions/translate';
+import { translateTexts } from '@/ai/flows/translate-text';
 
 type Translations = { [key: string]: string };
 
@@ -277,22 +277,12 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
       const textsToTranslate = Object.entries(englishTranslations);
       const valuesToTranslate = textsToTranslate.map(([_, value]) => value);
       
-      const response = await fetch('/api/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ texts: valuesToTranslate, target: langCode }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Translation API failed with status: ${response.status}`);
-      }
-
-      const translatedValues = await response.json();
+      const result = await translateTexts({ texts: valuesToTranslate, targetLanguage: langName });
       
-      if (Array.isArray(translatedValues.translatedTexts)) {
+      if (result && result.translatedTexts && result.translatedTexts.length === valuesToTranslate.length) {
         const newTranslations: Translations = {};
         textsToTranslate.forEach(([key], index) => {
-          newTranslations[key] = translatedValues.translatedTexts[index];
+          newTranslations[key] = result.translatedTexts[index];
         });
 
         translationCache.current[langCode] = newTranslations;

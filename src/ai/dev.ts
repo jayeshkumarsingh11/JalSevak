@@ -7,3 +7,4 @@ import '@/ai/flows/smart-irrigation-scheduling.ts';
 import '@/ai/flows/crop-price-info.ts';
 import '@/ai/flows/crop-suggestion.ts';
 import '@/ai/flows/soil-quality-advisor.ts';
+import '@/ai/flows/translate-text.ts';
