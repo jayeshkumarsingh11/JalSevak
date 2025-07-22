@@ -12,5 +12,5 @@ export const ai = genkit({
   logSinks: [],
 });
 
-export const fastModel = 'gemma-3n-e2b-it';
-export const proModel = 'gemma-3n-e2b-it';
+export const fastModel = 'gemma-7b-it';
+export const proModel = 'gemma-7b-it';
