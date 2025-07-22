@@ -8,3 +8,4 @@ import '@/ai/flows/crop-price-info.ts';
 import '@/ai/flows/crop-suggestion.ts';
 import '@/ai/flows/soil-quality-advisor.ts';
 import '@/ai/flows/translate-text.ts';
+import '@/ai/flows/suggest-soil-type.ts';

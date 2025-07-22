@@ -13,6 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cropSuggestion, type CropSuggestionOutput } from "@/ai/flows/crop-suggestion";
+import { suggestSoilType } from "@/ai/flows/suggest-soil-type";
 import { Loader2, Bot, LocateFixed, Leaf, Droplets, Banknote, CalendarDays, Rss } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import image from "./images/crop.webp";
@@ -34,6 +35,7 @@ export default function CropAdvisor() {
   const [result, setResult] = useState<CropSuggestionOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fetchingLocation, setFetchingLocation] = useState(false);
+  const [fetchingSoilType, setFetchingSoilType] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -46,6 +48,24 @@ export default function CropAdvisor() {
       personalConsumption: "Local Market",
     },
   });
+  
+  const handleLocationUpdate = async (location: string) => {
+    form.setValue("location", location);
+    if (location) {
+      setFetchingSoilType(true);
+      try {
+        const soilResult = await suggestSoilType({ location });
+        if (soilResult && soilResult.soilType) {
+          form.setValue("soilType", soilResult.soilType, { shouldValidate: true });
+        }
+      } catch (err) {
+        console.error("Failed to fetch soil type", err);
+        // Do not show error to user, they can select manually
+      } finally {
+        setFetchingSoilType(false);
+      }
+    }
+  };
 
   const getLocation = () => {
     if (navigator.geolocation) {
@@ -67,7 +87,7 @@ export default function CropAdvisor() {
               .filter(Boolean)
               .join(", ");
             const finalLocation = locationString || data.display_name;
-            form.setValue("location", finalLocation);
+            await handleLocationUpdate(finalLocation);
           } catch (error) {
             console.error("Error fetching location name:", error);
           } finally {
@@ -123,6 +143,7 @@ export default function CropAdvisor() {
                           placeholder={t('form_location_placeholder')}
                           {...field}
                           className="pr-10"
+                          onBlur={(e) => handleLocationUpdate(e.target.value)}
                         />
                       </FormControl>
                        <Button
@@ -166,7 +187,10 @@ export default function CropAdvisor() {
                          <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
                                <SelectTrigger>
+                                  <div className="flex items-center gap-2">
+                                  {fetchingSoilType && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
                                   <SelectValue placeholder={t('form_soil_type_placeholder')} />
+                                  </div>
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
