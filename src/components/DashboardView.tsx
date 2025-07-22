@@ -12,7 +12,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { Sun, CloudRain, Droplets, Thermometer, Wind, Leaf, MapPin, TrendingUp, Info, Landmark, Wheat, CalendarDays, BarChartHorizontal, Loader2 } from "lucide-react";
+import { Sun, CloudRain, Droplets, Thermometer, Wind, Leaf, MapPin, TrendingUp, Info, Landmark, Wheat, CalendarDays, BarChartHorizontal, Loader2, ArrowRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { cropPriceInfo, type CropPriceInfoOutput } from "@/ai/flows/crop-price-info";
@@ -21,6 +21,7 @@ import WeatherIcon from "./WeatherIcon";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
+import type { NavItem } from "./SamriddhKhetiApp";
 
 
 const generateMspData = (basePrice: number, volatility: number, trend: number) => {
@@ -116,7 +117,12 @@ interface IrrigationTime {
   relative: string;
 }
 
-export default function DashboardView() {
+interface DashboardViewProps {
+  onNavigate: (view: NavItem) => void;
+}
+
+
+export default function DashboardView({ onNavigate }: DashboardViewProps) {
   const { t, language } = useLanguage();
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [forecastData, setForecastData] = useState<ForecastDay[]>([]);
@@ -332,23 +338,26 @@ export default function DashboardView() {
   return (
     <div className="grid gap-6 md:gap-8">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">{t('latest_schemes')}</CardTitle>
-            <Landmark className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent className="pt-4">
-            <div className="space-y-3">
-              <div className="text-sm">
-                  <p className="font-semibold truncate">{t('scheme_pm_kisan_title')}</p>
-                  <p className="text-xs text-muted-foreground">{t('scheme_pm_kisan_desc')}</p>
+        <Card className="relative group cursor-pointer hover:shadow-lg transition-shadow" onClick={() => onNavigate('Govt. Schemes')}>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">{t('latest_schemes')}</CardTitle>
+              <Landmark className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent className="pt-4">
+              <div className="space-y-3">
+                <div className="text-sm">
+                    <p className="font-semibold truncate">{t('scheme_pm_kisan_title')}</p>
+                    <p className="text-xs text-muted-foreground">{t('scheme_pm_kisan_desc')}</p>
+                </div>
+                <div className="text-sm">
+                    <p className="font-semibold truncate">{t('scheme_fasal_bima_title')}</p>
+                    <p className="text-xs text-muted-foreground">{t('scheme_fasal_bima_desc')}</p>
+                </div>
               </div>
-              <div className="text-sm">
-                  <p className="font-semibold truncate">{t('scheme_fasal_bima_title')}</p>
-                  <p className="text-xs text-muted-foreground">{t('scheme_fasal_bima_desc')}</p>
-              </div>
+            </CardContent>
+             <div className="absolute bottom-4 right-4 text-muted-foreground group-hover:text-primary transition-colors">
+                <ArrowRight className="h-5 w-5" />
             </div>
-          </CardContent>
         </Card>
         <Card className="lg:col-span-2">
           <CardHeader className="flex-row items-center justify-between pb-2 space-y-0">

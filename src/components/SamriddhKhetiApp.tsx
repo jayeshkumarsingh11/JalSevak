@@ -23,19 +23,21 @@ export default function SamriddhKhetiApp({ initialView = "Dashboard", onNavigate
 
   const handleNavigation = (item: NavItem) => {
     if (item === "Home" || item === "About Us" || item === "Contact Us") {
-        // Navigate to the marketing page and let the LandingPage component handle scrolling
         const url = new URL(window.location.href);
         url.searchParams.set('view', item);
         window.location.href = url.toString().replace(url.origin, '');
     } else {
       setActiveView(item);
+       const url = new URL(window.location.href);
+       url.searchParams.set('view', item);
+       window.history.pushState({}, '', url.toString());
     }
   };
 
   const renderContent = () => {
     switch (activeView) {
       case "Dashboard":
-        return <DashboardView />;
+        return <DashboardView onNavigate={handleNavigation} />;
       case "Irrigation Planner":
         return <IrrigationPlanner />;
       case "Crop Advisor":
@@ -45,13 +47,13 @@ export default function SamriddhKhetiApp({ initialView = "Dashboard", onNavigate
       case "Govt. Schemes":
         return <SchemeFinder />;
       default:
-        return <DashboardView />;
+        return <DashboardView onNavigate={handleNavigation}/>;
     }
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <TopNavBar activeItem={activeView} setActiveItem={handleNavigation} isAppView={true} />
+      <TopNavBar activeItem={activeView} setActiveItem={handleNavigation} />
       <main className="flex-1 p-4 lg:p-6 animate-slide-up-fade">
         {renderContent()}
       </main>

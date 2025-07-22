@@ -9,17 +9,16 @@ import { ThemeToggle } from "./ThemeToggle";
 import image from "@/components/images/logo.png"
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Languages, ChevronDown } from "lucide-react";
+import { Languages, ChevronDown, Menu } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface TopNavBarProps {
   activeItem: NavItem;
   setActiveItem: (item: NavItem) => void;
-  isAppView?: boolean; // This prop is no longer used but kept to avoid breaking changes if it was used elsewhere.
 }
 
-const navItems: NavItem[] = ["Home", "About Us", "Contact Us", "Dashboard"];
-
+const mainNavItems: NavItem[] = ["Home", "About Us", "Contact Us"];
+const appNavItems: NavItem[] = ["Dashboard"];
 const toolNavItems: NavItem[] = [
     "Irrigation Planner",
     "Crop Advisor",
@@ -99,7 +98,17 @@ export default function TopNavBar({ activeItem, setActiveItem }: TopNavBarProps)
             </div>
             
             <nav className="hidden md:flex items-center gap-2">
-                {navItems.map((item) => (
+                {mainNavItems.map((item) => (
+                    <Button 
+                        key={item}
+                        variant={activeItem === item ? "secondary" : "ghost"} 
+                        onClick={() => handleNavClick(item)}
+                    >
+                        {t(navItemMap[item])}
+                    </Button>
+                ))}
+
+                 {appNavItems.map((item) => (
                     <Button 
                         key={item}
                         variant={activeItem === item ? "secondary" : "ghost"} 
@@ -143,14 +152,14 @@ export default function TopNavBar({ activeItem, setActiveItem }: TopNavBarProps)
 
             <div className="md:hidden">
                 <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                    <ChevronDown className="h-6 w-6" />
+                    <Menu className="h-6 w-6" />
                 </Button>
             </div>
         </div>
         {isMenuOpen && (
             <div className="md:hidden bg-background/95 pb-4">
                 <nav className="flex flex-col items-center gap-2 px-4">
-                    {navItems.map((item) => (
+                    {[...mainNavItems, ...appNavItems].map((item) => (
                          <Button 
                             key={item}
                             variant={activeItem === item ? "secondary" : "ghost"} 
