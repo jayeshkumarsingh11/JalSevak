@@ -28,7 +28,7 @@ const teamMembers = [
   },
   {
     nameKey: "Kritika Singh",
-    emailKey: "kritikasince2005@gmail.com",
+    emailKey: "kritikasince05@gmail.com",
     image: image3,
     linkedin: "",
     x: "",
