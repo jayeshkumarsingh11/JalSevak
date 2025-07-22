@@ -285,9 +285,24 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
           newTranslations[key] = result.translatedTexts[index];
         });
 
-        translationCache.current[langCode] = newTranslations;
-        setCurrentTranslations(newTranslations);
-        setLanguageState(langName);
+        // Check if the first few translations are the same as the original.
+        // This is a simple heuristic to detect if the translation service failed
+        // without throwing an error (e.g., returned original text).
+        const translationFailed = textsToTranslate.slice(0, 5).every(([key], index) => {
+          return newTranslations[key] === englishTranslations[key];
+        });
+
+        if (translationFailed) {
+            toast({
+              variant: "destructive",
+              title: "Translation Service Unavailable",
+              description: "Could not switch language. The service may be down. Please try again later.",
+            });
+        } else {
+            translationCache.current[langCode] = newTranslations;
+            setCurrentTranslations(newTranslations);
+            setLanguageState(langName);
+        }
       } else {
         toast({
           variant: "destructive",
