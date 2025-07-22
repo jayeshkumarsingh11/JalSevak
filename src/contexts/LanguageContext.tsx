@@ -257,7 +257,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
 
   const setLanguage = useCallback(async (langName: string, langCode: string) => {
-    if (loading) return; // Prevent multiple requests
+    if (loading) return;
 
     if (langCode === 'en') {
       setCurrentTranslations(englishTranslations);
@@ -270,41 +270,20 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
       setLanguageState(langName);
       return;
     }
-
+    
     setLoading(true);
 
-    try {
-      const result = await translate(englishTranslations, langCode);
-      
-      const firstOriginalText = Object.values(englishTranslations)[0];
-      const firstTranslatedText = Object.values(result)[0];
+    toast({
+        title: "Language switching is temporarily disabled.",
+        description: "The AI translation feature is being migrated.",
+    });
 
-      // Check for translation failure by seeing if the returned text is the same as the original.
-      if (!result || !Object.keys(result).length || firstOriginalText === firstTranslatedText) {
-        toast({
-            variant: "destructive",
-            title: "Translation Failed",
-            description: "Could not switch language. The translation service may be unavailable.",
-        });
-        setLoading(false);
-        return; // Important: Do not update state if translation failed.
-      }
+    // NOTE: The former AI translation logic has been removed. 
+    // A new stable solution should be implemented here.
+    // For now, we will just show a toast and not change the language.
 
-      translationCache.current[langCode] = result;
-      setCurrentTranslations(result);
-      setLanguageState(langName);
-      
-    } catch (error) {
-      console.error("Failed to translate UI:", error);
-      toast({
-        variant: "destructive",
-        title: "Translation Service Error",
-        description: "An error occurred while communicating with the translation service.",
-      });
-      // Do not update state if an error occurs.
-    } finally {
-      setLoading(false);
-    }
+    setLoading(false);
+
   }, [loading, toast]);
 
   const t = useCallback((key: string): string => {
