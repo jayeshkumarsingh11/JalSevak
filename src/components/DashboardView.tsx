@@ -601,7 +601,3 @@ export default function DashboardView({ onNavigate }: DashboardViewProps) {
     </div>
   );
 }
-
-    
-
-    

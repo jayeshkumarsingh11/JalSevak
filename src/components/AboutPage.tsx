@@ -62,7 +62,7 @@ export default function AboutPage() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-8 items-center">
-        <Card className="shadow-lg">
+        <Card className="shadow-lg transition-all hover:shadow-xl hover:scale-105">
           <CardHeader>
             <CardTitle className="font-headline flex items-center gap-3">
               <Target className="w-8 h-8 text-primary" />
@@ -73,7 +73,7 @@ export default function AboutPage() {
             <p className="text-muted-foreground">{t('our_mission_desc')}</p>
           </CardContent>
         </Card>
-        <Card className="shadow-lg">
+        <Card className="shadow-lg transition-all hover:shadow-xl hover:scale-105">
           <CardHeader>
             <CardTitle className="font-headline flex items-center gap-3">
               <Eye className="w-8 h-8 text-primary" />
