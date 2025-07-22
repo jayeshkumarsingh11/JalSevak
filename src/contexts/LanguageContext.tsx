@@ -273,17 +273,41 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     
     setLoading(true);
 
-    toast({
-        title: "Language switching is temporarily disabled.",
-        description: "The AI translation feature is being migrated.",
-    });
+    try {
+      const textsToTranslate = Object.entries(englishTranslations);
+      const valuesToTranslate = textsToTranslate.map(([_, value]) => value);
+      
+      const translatedValues = await translate({ q: valuesToTranslate, source: 'en', target: langCode, format: 'text' });
+      
+      // Check for failure by seeing if the API returned an array (success) or the original object (failure)
+      if (Array.isArray(translatedValues.translatedText)) {
+        const newTranslations: Translations = {};
+        textsToTranslate.forEach(([key], index) => {
+          newTranslations[key] = translatedValues.translatedText[index];
+        });
 
-    // NOTE: The former AI translation logic has been removed. 
-    // A new stable solution should be implemented here.
-    // For now, we will just show a toast and not change the language.
+        translationCache.current[langCode] = newTranslations;
+        setCurrentTranslations(newTranslations);
+        setLanguageState(langName);
+      } else {
+        // This 'else' block handles the case where the API call fails and returns the original object.
+        toast({
+          variant: "destructive",
+          title: "Translation Service Unavailable",
+          description: "Could not switch language. The translation service may be temporarily down. Please try again later.",
+        });
+      }
 
-    setLoading(false);
-
+    } catch (error) {
+       console.error("Failed to translate UI:", error);
+       toast({
+        variant: "destructive",
+        title: "Translation Error",
+        description: "An unexpected error occurred while trying to change the language.",
+      });
+    } finally {
+        setLoading(false);
+    }
   }, [loading, toast]);
 
   const t = useCallback((key: string): string => {
