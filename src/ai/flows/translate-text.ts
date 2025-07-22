@@ -64,13 +64,33 @@ const translateTextsFlow = ai.defineFlow(
     const allTranslations: string[] = [];
     
     for (const chunk of chunks) {
-        const {output} = await prompt({ texts: chunk, targetLanguage: input.targetLanguage });
-        if (output?.translations) {
-            allTranslations.push(...output.translations);
-        } else {
-            // Handle cases where a chunk might fail
-            console.warn('A chunk translation returned no output. Filling with original text.');
-            allTranslations.push(...chunk);
+        let attempts = 0;
+        let success = false;
+        while (attempts < 3 && !success) {
+            try {
+                const {output} = await prompt({ texts: chunk, targetLanguage: input.targetLanguage });
+                if (output?.translations) {
+                    allTranslations.push(...output.translations);
+                    success = true; // Mark as success to exit the while loop
+                } else {
+                    // This case is for when the API call succeeds but returns no data.
+                    // We'll treat it like a failure and retry.
+                    throw new Error('Translation returned no output.');
+                }
+            } catch (e: any) {
+                attempts++;
+                if (attempts >= 3) {
+                    // If we've exhausted all retries, throw the final error.
+                    console.error(`Failed to translate chunk after 3 attempts. Error: ${e.message}`);
+                    // As a fallback, push the original text to avoid a total failure.
+                    allTranslations.push(...chunk);
+                } else {
+                    // Wait before retrying. The delay increases with each attempt.
+                    const delay = Math.pow(2, attempts) * 500; // 1s, 2s
+                    console.warn(`Translation chunk failed, attempt ${attempts}. Retrying in ${delay}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
         }
     }
     
