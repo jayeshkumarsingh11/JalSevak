@@ -1,6 +1,6 @@
 
 import {genkit} from 'genkit';
-import {openai} from 'genkit/x/openai';
+import {openai} from 'genkitx-openai';
 
 export const ai = genkit({
   plugins: [
