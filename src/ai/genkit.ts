@@ -1,10 +1,12 @@
 
 import {genkit} from 'genkit';
 import {openai} from 'genkitx-openai';
+import {googleAI} from '@genkit-ai/googleai';
 
 export const ai = genkit({
   plugins: [
-    openai,
+    googleAI(),
+    openai(),
   ],
   logSinks: [],
 });
