@@ -194,6 +194,7 @@ const englishTranslations: Translations = {
     scheme_finder_initial_prompt_desc: 'Enter your details or click below to see popular national schemes.',
     form_primary_crop: 'Primary Crop',
     form_land_area: 'Land Area (acres)',
+    form_land_area_placeholder: 'e.g., 5',
     find_schemes_button: 'Find Schemes',
     popular_national_schemes_button: 'Popular National Schemes',
     loading_finding_schemes: 'Finding relevant schemes...',
@@ -212,10 +213,48 @@ const englishTranslations: Translations = {
     footer_newsletter: "Subscribe to our Newsletter",
     footer_newsletter_desc: "Get the latest updates on agricultural tech and government schemes.",
     footer_subscribe: "Subscribe",
+    // Crop Names
+    wheat: "Wheat",
+    rice: "Rice",
+    maize: "Maize",
+    sugarcane: "Sugarcane",
+    cotton: "Cotton",
+    soybean: "Soybean",
+    groundnut: "Groundnut",
+    mustard: "Mustard",
+    potato: "Potato",
+    onion: "Onion",
+    tomato: "Tomato",
+    mango: "Mango",
+    banana: "Banana",
+    pulses: "Pulses",
+    jute: "Jute",
+    tea: "Tea",
+    coffee: "Coffee",
+    millet: "Millet",
+    barley: "Barley",
+    lentil: "Lentil",
+    gram: "Gram",
+    sorghum: "Sorghum",
+    bajra: "Bajra",
+    turmeric: "Turmeric",
+    ginger: "Ginger",
+    chilli: "Chilli",
+    capsicum: "Capsicum",
+    brinjal: "Brinjal",
+    okra: "Okra",
+    cabbage: "Cabbage",
+    cauliflower: "Cauliflower",
+    grapes: "Grapes",
+    apple: "Apple",
+    pomegranate: "Pomegranate",
+    guava: "Guava",
+    papaya: "Papaya",
 };
 
 interface LanguageContextType {
   language: string;
+  languageCode: string;
   setLanguage: (language: string, code: string) => void;
   t: (key: string) => string;
   loading: boolean;
@@ -238,23 +277,20 @@ function LanguageTransitionOverlay({ loading }: { loading: boolean }) {
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguageState] = useState('English');
+  const [languageCode, setLanguageCode] = useState('en');
   const [currentTranslations, setCurrentTranslations] = useState<Translations>(englishTranslations);
   const [loading, setLoading] = useState(false);
   const translationCache = useRef<Record<string, Translations>>({ 'en': englishTranslations });
   const { toast } = useToast();
 
   const setLanguage = useCallback(async (langName: string, langCode: string) => {
-    if (langCode === 'en') {
-      setCurrentTranslations(englishTranslations);
-      setLanguageState('English');
-      return;
-    }
-    
+    if (langCode === languageCode) return;
     if (loading) return;
 
     if (translationCache.current[langCode]) {
       setCurrentTranslations(translationCache.current[langCode]);
       setLanguageState(langName);
+      setLanguageCode(langCode);
       return;
     }
 
@@ -282,6 +318,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
       translationCache.current[langCode] = newTranslations;
       setCurrentTranslations(newTranslations);
       setLanguageState(langName);
+      setLanguageCode(langCode);
       
     } catch (error) {
       console.error("Failed to translate UI:", error);
@@ -293,13 +330,13 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [loading, toast]);
+  }, [loading, toast, languageCode]);
 
   const t = useCallback((key: string): string => {
     return currentTranslations[key] || englishTranslations[key] || key;
   }, [currentTranslations]);
 
-  const value = { language, setLanguage, t, loading };
+  const value = { language, languageCode, setLanguage, t, loading };
 
   return (
     <LanguageContext.Provider value={value}>

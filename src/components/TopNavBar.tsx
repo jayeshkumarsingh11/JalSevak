@@ -39,7 +39,7 @@ const languageOptions = [
 
 export default function TopNavBar({ activeItem, setActiveItem, isAppView = false }: TopNavBarProps) {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-    const { language, setLanguage, t } = useLanguage();
+    const { language, setLanguage, t, languageCode } = useLanguage();
 
     const handleScroll = (targetId: string) => {
       const element = document.getElementById(targetId);
@@ -113,7 +113,7 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
             </nav>
 
             <div className="hidden md:flex items-center gap-2">
-                 <Select onValueChange={handleLanguageChange} defaultValue="en">
+                 <Select onValueChange={handleLanguageChange} value={languageCode}>
                     <SelectTrigger className="w-auto gap-2">
                         <Languages className="h-4 w-4" />
                         <SelectValue placeholder="Language" />
@@ -151,7 +151,7 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
                     ))}
                      <div className="border-t pt-4 mt-2 flex items-center gap-2">
                         <ThemeToggle />
-                        <Select onValueChange={handleLanguageChange} defaultValue="en">
+                        <Select onValueChange={handleLanguageChange} value={languageCode}>
                             <SelectTrigger className="w-full gap-2">
                                 <Languages className="h-4 w-4" />
                                 <SelectValue placeholder="Language" />

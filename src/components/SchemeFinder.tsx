@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { governmentSchemeSuggestions, type GovernmentSchemeSuggestionsOutput } from "@/ai/flows/government-scheme-suggestions";
 import { Loader2, Bot, LocateFixed } from "lucide-react";
-import { CROP_KEYS, CROP_NAMES } from "./SoilQualityAdvisor";
+import { CROP_KEYS } from "./SoilQualityAdvisor";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const formSchema = z.object({
@@ -223,7 +223,7 @@ export default function SchemeFinder() {
                     <FormControl>
                       <Input 
                         type="number" 
-                        placeholder="e.g., 5" 
+                        placeholder={t('form_land_area_placeholder')} 
                         step="0.1" 
                         {...field} 
                         onChange={e => field.onChange(e.target.value === '' ? undefined : +e.target.value)} 
