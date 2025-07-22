@@ -9,7 +9,7 @@
  * - TranslateTextOutput - The return type for the translateTexts function.
  */
 
-import {ai, fastModel} from '@/ai/genkit';
+import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const TranslateTextInputSchema = z.object({

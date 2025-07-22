@@ -8,7 +8,7 @@
  * - SmartIrrigationScheduleOutput - The return type for the smartIrrigationSchedule function.
  */
 
-import {ai, proModel} from '@/ai/genkit';
+import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const SmartIrrigationScheduleInputSchema = z.object({
@@ -40,7 +40,6 @@ const prompt = ai.definePrompt({
   name: 'smartIrrigationSchedulePrompt',
   input: {schema: SmartIrrigationScheduleInputSchema},
   output: {schema: SmartIrrigationScheduleOutputSchema},
-  model: proModel,
   prompt: `You are an expert agricultural advisor specializing in irrigation. Based on the provided information, recommend an optimal irrigation schedule for the farmer.
   The user is requesting the information in {{language}}. You MUST provide all textual descriptions (irrigationSchedule, justification, bestTimeToIrrigate, precautions, pesticideRecommendations) in {{language}}.
 
