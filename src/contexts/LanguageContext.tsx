@@ -277,20 +277,28 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
       const textsToTranslate = Object.entries(englishTranslations);
       const valuesToTranslate = textsToTranslate.map(([_, value]) => value);
       
-      const translatedValues = await translate({ q: valuesToTranslate, source: 'en', target: langCode, format: 'text' });
+      const response = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ texts: valuesToTranslate, target: langCode }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Translation API failed with status: ${response.status}`);
+      }
+
+      const translatedValues = await response.json();
       
-      // Check for failure by seeing if the API returned an array (success) or the original object (failure)
-      if (Array.isArray(translatedValues.translatedText)) {
+      if (Array.isArray(translatedValues.translatedTexts)) {
         const newTranslations: Translations = {};
         textsToTranslate.forEach(([key], index) => {
-          newTranslations[key] = translatedValues.translatedText[index];
+          newTranslations[key] = translatedValues.translatedTexts[index];
         });
 
         translationCache.current[langCode] = newTranslations;
         setCurrentTranslations(newTranslations);
         setLanguageState(langName);
       } else {
-        // This 'else' block handles the case where the API call fails and returns the original object.
         toast({
           variant: "destructive",
           title: "Translation Service Unavailable",
