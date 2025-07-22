@@ -41,7 +41,7 @@ const prompt = ai.definePrompt({
   input: {schema: SmartIrrigationScheduleInputSchema},
   output: {schema: SmartIrrigationScheduleOutputSchema},
   prompt: `You are an expert agricultural advisor specializing in irrigation. Based on the provided information, recommend an optimal irrigation schedule for the farmer.
-  The user is requesting the information in {{language}}. You MUST provide all textual descriptions (irrigationSchedule, justification, bestTimeToIrrigate, precautions, pesticideRecommendations) in {{language}}.
+  The user is requesting the information in {{language}}. It is a strict requirement that you MUST provide ALL textual descriptions (irrigationSchedule, justification, bestTimeToIrrigate, precautions, pesticideRecommendations) in {{language}}. Every single text field must be in {{language}}.
 
 Crop Type: {{{cropType}}}
 Farm Area: {{{farmArea}}} acres

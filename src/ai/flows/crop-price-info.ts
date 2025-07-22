@@ -37,7 +37,7 @@ const prompt = ai.definePrompt({
   output: {schema: CropPriceInfoOutputSchema},
   prompt: `You are an agricultural economist specializing in Indian crop prices.
   Analyze the provided crop name and generate a brief analysis of its Minimum Support Price (MSP) and local vendor price trends.
-  The user is requesting the information in {{language}}. You MUST provide the 'analysis' field in {{language}}.
+  The user is requesting the information in {{language}}. It is a strict requirement that you MUST provide the 'analysis' field in {{language}}.
 
   Assume the current year is the latest data point. Provide a mock current MSP, last year's MSP, and a mock current local vendor price for the crop.
   The local vendor price is typically slightly higher than the MSP, but can be more volatile.
@@ -49,7 +49,7 @@ const prompt = ai.definePrompt({
   For example, if the crop is Wheat, the current MSP might be 2275, last year's 2125, and the current local price 2350.
   The analysis could be: "The MSP for Wheat has shown a steady increase. The local market price is currently trading at a premium to the MSP, indicating strong demand."
   
-  Return the response in the specified JSON format. The analysis must be in {{language}}.
+  Return the response in the specified JSON format. The analysis MUST be in {{language}}.
 `,
 });
 
@@ -65,3 +65,4 @@ const cropPriceInfoFlow = ai.defineFlow(
     return output!;
   }
 );
+

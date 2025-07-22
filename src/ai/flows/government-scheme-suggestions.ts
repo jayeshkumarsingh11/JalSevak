@@ -42,7 +42,7 @@ const prompt = ai.definePrompt({
   input: {schema: GovernmentSchemeSuggestionsInputSchema.extend({ location_provided: z.boolean() })},
   output: {schema: GovernmentSchemeSuggestionsOutputSchema},
   prompt: `You are an expert in Indian agricultural government schemes.
-  The user is requesting information in {{language}}. You MUST provide the entire response (name, description, eligibility, benefits, application procedure) for each scheme in {{language}}. Every single text field must be in {{language}}.
+  The user is requesting information in {{language}}. It is a strict requirement that you MUST provide the entire response (name, description, eligibility, benefits, application procedure) for each scheme in {{language}}. Every single text field must be in {{language}}.
 
   {{#if location_provided}}
   Based on the farmer's details, suggest relevant government subsidies. If a field is not provided, make reasonable assumptions or focus on the provided information.

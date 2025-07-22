@@ -44,7 +44,7 @@ const prompt = ai.definePrompt({
   output: {schema: SoilQualityAdvisorOutputSchema},
   prompt: `You are an expert soil scientist and agronomist advising a farmer in India.
   Your goal is to provide actionable advice to improve their soil quality.
-  The user is requesting the information in {{language}}. You MUST provide all textual descriptions (soilHealthAnalysis and all fields within recommendations) in {{language}}.
+  The user is requesting the information in {{language}}. It is a strict requirement that you MUST provide ALL textual descriptions (soilHealthAnalysis and all fields within recommendations, including title, description, implementation, and benefits) in {{language}}.
 
   Analyze the following information:
   - Location: {{{location}}}
