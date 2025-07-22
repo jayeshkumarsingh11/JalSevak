@@ -4,21 +4,23 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Footer() {
+    const { t } = useLanguage();
 
     const footerNavLinks = [
-        { name: "Home", href: "/" },
-        { name: "Dashboard", href: "/?view=Dashboard" },
-        { name: "About Us", href: "/?view=About Us" },
-        { name: "Contact Us", href: "/?view=Contact Us" },
+        { nameKey: "nav_home", href: "/" },
+        { nameKey: "nav_dashboard", href: "/?view=Dashboard" },
+        { nameKey: "nav_about_us", href: "/?view=About Us" },
+        { nameKey: "nav_contact_us", href: "/?view=Contact Us" },
     ];
 
     const footerToolLinks = [
-        { name: "Irrigation Planner", href: "/?view=Irrigation Planner" },
-        { name: "Crop Advisor", href: "/?view=Crop Advisor" },
-        { name: "Soil Advisor", href: "/?view=Soil Advisor" },
-        { name: "Govt. Schemes", href: "/?view=Govt. Schemes" },
+        { nameKey: "nav_irrigation_planner", href: "/?view=Irrigation Planner" },
+        { nameKey: "nav_crop_advisor", href: "/?view=Crop Advisor" },
+        { nameKey: "nav_soil_advisor", href: "/?view=Soil Advisor" },
+        { nameKey: "nav_govt_schemes", href: "/?view=Govt. Schemes" },
     ];
 
     return (
@@ -31,18 +33,18 @@ export default function Footer() {
                             <span className="text-xl font-headline font-semibold text-primary">Samriddh Kheti</span>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                            Welcome to Samriddh Kheti, your smart farming assistant designed to revolutionize agricultural practices in India by empowering farmers with data-driven insights. Our mission is to optimize resource usage, improve crop yields, and enhance the livelihoods of farmers for a prosperous, sustainable, and food-secure nation.
+                            {t('hero_subtitle')}
                         </p>
                     </div>
 
                     {/* Quick Links */}
                     <div className="space-y-4">
-                        <h3 className="font-headline text-lg font-semibold">Quick Links</h3>
+                        <h3 className="font-headline text-lg font-semibold">{t('footer_quick_links')}</h3>
                         <ul className="space-y-2">
                             {footerNavLinks.map(link => (
-                                <li key={link.name}>
+                                <li key={link.nameKey}>
                                     <a href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                                        {link.name}
+                                        {t(link.nameKey)}
                                     </a>
                                 </li>
                             ))}
@@ -51,12 +53,12 @@ export default function Footer() {
 
                     {/* Tools Links */}
                     <div className="space-y-4">
-                        <h3 className="font-headline text-lg font-semibold">Tools</h3>
+                        <h3 className="font-headline text-lg font-semibold">{t('footer_tools')}</h3>
                         <ul className="space-y-2">
                             {footerToolLinks.map(link => (
-                                <li key={link.name}>
+                                <li key={link.nameKey}>
                                     <a href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                                        {link.name}
+                                        {t(link.nameKey)}
                                     </a>
                                 </li>
                             ))}
@@ -65,11 +67,11 @@ export default function Footer() {
 
                     {/* Newsletter & Socials */}
                     <div className="space-y-4">
-                        <h3 className="font-headline text-lg font-semibold">Subscribe to our Newsletter</h3>
-                        <p className="text-sm text-muted-foreground">Get the latest updates on agricultural tech and government schemes.</p>
+                        <h3 className="font-headline text-lg font-semibold">{t('footer_newsletter')}</h3>
+                        <p className="text-sm text-muted-foreground">{t('footer_newsletter_desc')}</p>
                         <div className="flex w-full max-w-sm items-center space-x-2">
-                            <Input type="email" placeholder="Enter your email address" />
-                            <Button type="submit">Subscribe</Button>
+                            <Input type="email" placeholder={t('form_email_placeholder')} />
+                            <Button type="submit">{t('footer_subscribe')}</Button>
                         </div>
                         
                     </div>

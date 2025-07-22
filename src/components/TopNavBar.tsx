@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import type { NavItem } from "./SamriddhKhetiApp";
 import { ThemeToggle } from "./ThemeToggle";
 import image from "@/components/images/logo.png"
+import { useLanguage } from "@/contexts/LanguageContext";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Languages } from "lucide-react";
 
 interface TopNavBarProps {
   activeItem: NavItem;
@@ -14,19 +17,29 @@ interface TopNavBarProps {
   isAppView?: boolean;
 }
 
-const navItems: { name: NavItem, isAppViewOnly?: boolean, isMarketingViewOnly?: boolean }[] = [
-    { name: "Home" },
-    { name: "Dashboard" },
-    { name: "About Us", isMarketingViewOnly: true },
-    { name: "Contact Us", isMarketingViewOnly: true },
-    { name: "Irrigation Planner", isAppViewOnly: true },
-    { name: "Crop Advisor", isAppViewOnly: true },
-    { name: "Soil Advisor", isAppViewOnly: true },
-    { name: "Govt. Schemes", isAppViewOnly: true },
+const navItems: { nameKey: NavItem, isAppViewOnly?: boolean, isMarketingViewOnly?: boolean }[] = [
+    { nameKey: "Home" },
+    { nameKey: "Dashboard" },
+    { nameKey: "About Us", isMarketingViewOnly: true },
+    { nameKey: "Contact Us", isMarketingViewOnly: true },
+    { nameKey: "Irrigation Planner", isAppViewOnly: true },
+    { nameKey: "Crop Advisor", isAppViewOnly: true },
+    { nameKey: "Soil Advisor", isAppViewOnly: true },
+    { nameKey: "Govt. Schemes", isAppViewOnly: true },
+];
+
+const languageOptions = [
+    { name: 'English', code: 'en' },
+    { name: 'हिंदी', code: 'hi' }, // Hindi
+    { name: 'தமிழ்', code: 'ta' }, // Tamil
+    { name: 'తెలుగు', code: 'te' }, // Telugu
+    { name: 'ಕನ್ನಡ', code: 'kn' }, // Kannada
+    { name: 'ਪੰਜਾਬੀ', code: 'pa' }, // Punjabi
 ];
 
 export default function TopNavBar({ activeItem, setActiveItem, isAppView = false }: TopNavBarProps) {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const { language, setLanguage, t } = useLanguage();
 
     const handleScroll = (targetId: string) => {
       const element = document.getElementById(targetId);
@@ -44,11 +57,29 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
         }
         setIsMenuOpen(false);
     }
+    
+    const handleLanguageChange = (code: string) => {
+        const selectedLang = languageOptions.find(l => l.code === code);
+        if (selectedLang) {
+            setLanguage(selectedLang.name, selectedLang.code);
+        }
+    };
 
     const filteredNavItems = isAppView 
-        ? navItems.filter(item => item.name !== 'Home' && !item.isMarketingViewOnly) 
+        ? navItems.filter(item => item.nameKey !== 'Home' && !item.isMarketingViewOnly) 
         : navItems.filter(item => !item.isAppViewOnly);
     
+    const navItemMap: Record<NavItem, string> = {
+        "Home": "nav_home",
+        "Dashboard": "nav_dashboard",
+        "Irrigation Planner": "nav_irrigation_planner",
+        "Crop Advisor": "nav_crop_advisor",
+        "Soil Advisor": "nav_soil_advisor",
+        "Govt. Schemes": "nav_govt_schemes",
+        "About Us": "nav_about_us",
+        "Contact Us": "nav_contact_us",
+    }
+
     return (
     <header className="bg-background/80 backdrop-blur-sm border-b shadow-sm sticky top-0 z-40">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -72,16 +103,27 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
             <nav className="hidden md:flex items-center gap-2">
                 {filteredNavItems.map((item) => (
                     <Button 
-                        key={item.name}
-                        variant={activeItem === item.name ? "secondary" : "ghost"} 
-                        onClick={() => handleNavClick(item.name)}
+                        key={item.nameKey}
+                        variant={activeItem === item.nameKey ? "secondary" : "ghost"} 
+                        onClick={() => handleNavClick(item.nameKey)}
                     >
-                        {item.name}
+                        {t(navItemMap[item.nameKey])}
                     </Button>
                 ))}
             </nav>
 
             <div className="hidden md:flex items-center gap-2">
+                 <Select onValueChange={handleLanguageChange} defaultValue="en">
+                    <SelectTrigger className="w-auto gap-2">
+                        <Languages className="h-4 w-4" />
+                        <SelectValue placeholder="Language" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {languageOptions.map(lang => (
+                            <SelectItem key={lang.code} value={lang.code}>{lang.name}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
                 <ThemeToggle />
             </div>
 
@@ -99,16 +141,27 @@ export default function TopNavBar({ activeItem, setActiveItem, isAppView = false
                 <nav className="flex flex-col p-4 gap-2">
                     {filteredNavItems.map((item) => (
                          <Button 
-                            key={item.name}
-                            variant={activeItem === item.name ? "secondary" : "ghost"} 
+                            key={item.nameKey}
+                            variant={activeItem === item.nameKey ? "secondary" : "ghost"} 
                             className="w-full justify-start"
-                            onClick={() => handleNavClick(item.name)}
+                            onClick={() => handleNavClick(item.nameKey)}
                         >
-                            {item.name}
+                            {t(navItemMap[item.nameKey])}
                         </Button>
                     ))}
                      <div className="border-t pt-4 mt-2 flex items-center gap-2">
                         <ThemeToggle />
+                        <Select onValueChange={handleLanguageChange} defaultValue="en">
+                            <SelectTrigger className="w-full gap-2">
+                                <Languages className="h-4 w-4" />
+                                <SelectValue placeholder="Language" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {languageOptions.map(lang => (
+                                    <SelectItem key={lang.code} value={lang.code}>{lang.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                      </div>
                 </nav>
             </div>

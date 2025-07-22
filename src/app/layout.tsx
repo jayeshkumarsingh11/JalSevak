@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Footer from "@/components/Footer";
 import "./globals.css";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 
 export const metadata: Metadata = {
   title: "Samriddh Kheti: Smart Farming Assistant",
@@ -37,9 +38,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster />
-          <Footer />
+          <LanguageProvider>
+            {children}
+            <Toaster />
+            <Footer />
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>
