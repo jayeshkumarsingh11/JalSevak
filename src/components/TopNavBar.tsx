@@ -39,20 +39,8 @@ export default function TopNavBar({ activeItem, setActiveItem }: TopNavBarProps)
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const { t, languageCode, setLanguage } = useLanguage();
 
-    const handleScroll = (targetId: string) => {
-      const element = document.getElementById(targetId);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    };
-
     const handleNavClick = (item: NavItem) => {
         setActiveItem(item);
-        if(item === "About Us") {
-            setTimeout(() => handleScroll('about-us'), 0);
-        } else if (item === "Contact Us") {
-            setTimeout(() => handleScroll('contact-us'), 0);
-        }
         setIsMenuOpen(false);
     }
     
