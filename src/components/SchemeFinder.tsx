@@ -184,32 +184,34 @@ export default function SchemeFinder() {
                 control={form.control}
                 name="cropType"
                 render={({ field }) => (
-                  <FormItem ref={cropInputRef}>
+                  <FormItem>
                     <FormLabel>{t('form_primary_crop')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder={t('form_crop_type_placeholder')}
-                        value={cropSearch}
-                        onChange={handleCropInputChange}
-                        onFocus={() => setShowSuggestions(true)}
-                        autoComplete="off"
-                      />
-                    </FormControl>
-                     {showSuggestions && suggestions.length > 0 && (
-                      <div className="absolute z-10 w-full bg-background border border-input rounded-md shadow-lg mt-1">
-                        <ul className="py-1 max-h-60 overflow-y-auto">
-                          {suggestions.map((key) => (
-                            <li
-                              key={key}
-                              className="px-3 py-2 cursor-pointer hover:bg-accent text-sm"
-                              onMouseDown={() => handleSuggestionClick(key)}
-                            >
-                              {t(key)}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                    <div className="relative" ref={cropInputRef}>
+                      <FormControl>
+                        <Input
+                          placeholder={t('form_crop_type_placeholder')}
+                          value={cropSearch}
+                          onChange={handleCropInputChange}
+                          onFocus={() => setShowSuggestions(true)}
+                          autoComplete="off"
+                        />
+                      </FormControl>
+                      {showSuggestions && suggestions.length > 0 && (
+                        <div className="absolute z-10 w-full bg-background border border-input rounded-md shadow-lg mt-1">
+                          <ul className="py-1 max-h-60 overflow-y-auto">
+                            {suggestions.map((key) => (
+                              <li
+                                key={key}
+                                className="px-3 py-2 cursor-pointer hover:bg-accent text-sm"
+                                onMouseDown={() => handleSuggestionClick(key)}
+                              >
+                                {t(key)}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}

@@ -188,7 +188,7 @@ export default function IrrigationPlanner() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('form_crop_type')}</FormLabel>
-                       <div ref={cropInputRef}>
+                       <div className="relative" ref={cropInputRef}>
                           <FormControl>
                             <Input
                               placeholder={t('form_crop_type_placeholder')}

@@ -279,7 +279,7 @@ export default function SoilQualityAdvisor() {
                         className="bg-muted"
                       />
                     </FormControl>
-                     <div ref={cropInputRef}>
+                     <div className="relative" ref={cropInputRef}>
                       <Input
                         placeholder={t('form_past_crops_search_placeholder')}
                         value={cropSearch}
@@ -288,8 +288,7 @@ export default function SoilQualityAdvisor() {
                         autoComplete="off"
                       />
                       {showSuggestions && suggestions.length > 0 && (
-                        <div className="relative z-10">
-                          <div className="absolute w-full bg-background border border-input rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
+                        <div className="absolute z-10 w-full bg-background border border-input rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
                             <ul className="py-1">
                               {suggestions.map((key) => (
                                 <li
@@ -301,7 +300,6 @@ export default function SoilQualityAdvisor() {
                                 </li>
                               ))}
                             </ul>
-                          </div>
                         </div>
                       )}
                     </div>
