@@ -48,7 +48,8 @@ const prompt = ai.definePrompt({
   output: {schema: CropSuggestionOutputSchema},
   prompt: `You are an expert agronomist providing crop recommendations to farmers in India.
   Based on the farmer's inputs, suggest up to 3 suitable crops.
-  The user is requesting the information in {{language}}. It is a strict requirement that you MUST provide ALL textual descriptions (name, justification, landAllocation, estimatedProfit, waterNeeds, growingSeason) in {{language}}. Every single text field, especially the 'name' field for the crop, must be in {{language}}.
+  The user is requesting the information in {{language}}. It is a strict requirement that you MUST provide ALL textual descriptions (justification, landAllocation, estimatedProfit, waterNeeds, growingSeason) in {{language}}.
+
   Infer the general climate and weather patterns from the provided location.
 
   Farmer's Inputs:
