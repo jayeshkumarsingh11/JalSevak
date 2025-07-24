@@ -54,7 +54,7 @@ export default function SamriddhKhetiApp({ initialView = "Dashboard", onNavigate
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <TopNavBar activeItem={activeView} setActiveItem={handleNavigation} />
-      <main className="flex-1 p-4 lg:p-6 animate-slide-up-fade">
+      <main className="flex-1 p-4 lg:p-6">
         {renderContent()}
       </main>
     </div>

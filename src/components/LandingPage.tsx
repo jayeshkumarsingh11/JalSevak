@@ -83,7 +83,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
         <TopNavBar activeItem={activeView} setActiveItem={handleNavigation} />
-        <main className="flex-1 animate-slide-up-fade">
+        <main className="flex-1">
             {renderContent()}
         </main>
     </div>
