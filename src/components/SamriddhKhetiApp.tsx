@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import DashboardView from "@/components/DashboardView"
 import IrrigationPlanner from "@/components/IrrigationPlanner"
@@ -20,23 +20,16 @@ interface SamriddhKhetiAppProps {
 export default function SamriddhKhetiApp({ initialView = "Dashboard", onNavigate }: SamriddhKhetiAppProps) {
   const [activeView, setActiveView] = useState<NavItem>(initialView);
 
-  const handleNavigation = (item: NavItem) => {
-    if (item === "Home" || item === "About Us" || item === "Contact Us") {
-        const url = new URL(window.location.href);
-        url.searchParams.set('view', item);
-        window.location.href = url.toString().replace(url.origin, '');
-    } else {
-      setActiveView(item);
-       const url = new URL(window.location.href);
-       url.searchParams.set('view', item);
-       window.history.pushState({}, '', url.toString());
-    }
-  };
+  // This effect ensures that if the initialView prop changes (e.g., due to browser back/forward),
+  // the component re-renders with the correct view.
+  useEffect(() => {
+    setActiveView(initialView);
+  }, [initialView]);
 
   const renderContent = () => {
     switch (activeView) {
       case "Dashboard":
-        return <DashboardView onNavigate={handleNavigation} />;
+        return <DashboardView onNavigate={onNavigate} />;
       case "Irrigation Planner":
         return <IrrigationPlanner />;
       case "Crop Advisor":
@@ -46,7 +39,7 @@ export default function SamriddhKhetiApp({ initialView = "Dashboard", onNavigate
       case "Govt. Schemes":
         return <SchemeFinder />;
       default:
-        return <DashboardView onNavigate={handleNavigation}/>;
+        return <DashboardView onNavigate={onNavigate}/>;
     }
   };
 

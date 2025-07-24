@@ -19,17 +19,25 @@ export default function LandingPage() {
 
   useEffect(() => {
     const viewFromUrl = searchParams.get('view') as NavItem;
+    // On initial load, we want to start at the Home page, but allow deep links to scroll to sections later.
     if (isInitialLoad) {
         setIsInitialLoad(false);
-        if (viewFromUrl && (APP_VIEWS.includes(viewFromUrl) || ['About Us', 'Contact Us'].includes(viewFromUrl))) {
-             // If there's a view in the URL on first load, we want to stay on the home page
-             // but allow deep links to scroll to sections later if needed.
-             // For now, we set the view to Home.
-             setActiveView('Home');
+        // If a view is in the URL (e.g. from a bookmark), set the state to that view.
+        if (viewFromUrl && (APP_VIEWS.includes(viewFromUrl) || ['About Us', 'Contact Us', 'Home'].includes(viewFromUrl))) {
+            if (APP_VIEWS.includes(viewFromUrl)) {
+              setActiveView(viewFromUrl);
+            } else {
+              // This handles scrolling to #about-us or #contact-us on first load
+              const element = document.getElementById(viewFromUrl.toLowerCase().replace(' ', '-'));
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+              }
+            }
         }
         return;
     }
     
+    // For subsequent navigation events handled by history.pushState
     if (viewFromUrl && (APP_VIEWS.includes(viewFromUrl) || ['About Us', 'Contact Us', 'Home'].includes(viewFromUrl))) {
       if (APP_VIEWS.includes(viewFromUrl)) {
         setActiveView(viewFromUrl);
@@ -52,23 +60,22 @@ export default function LandingPage() {
 
     const url = new URL(window.location.href);
     url.searchParams.set('view', item);
+    // This updates the URL and triggers the useEffect above to handle the view change.
     window.history.pushState({}, '', url.toString());
-    
+
+    // We also manually set the active view to make the change feel instantaneous.
     if (APP_VIEWS.includes(item)) {
        setActiveView(item);
     } else { // Home, About Us, Contact Us
-       if (item === 'Home') {
-         setActiveView('Home');
-       } else {
-         setActiveView('Home'); // Stay on home page to show sections
-         const elementId = item.toLowerCase().replace(' ', '-');
-         setTimeout(() => {
-             const element = document.getElementById(elementId);
-             if (element) {
-                 element.scrollIntoView({ behavior: 'smooth' });
-             }
-         }, 100); // Small delay to ensure the view is set to home first
-       }
+       setActiveView('Home'); // Stay on home page to show sections
+       // We need a timeout to ensure the DOM has re-rendered to the 'Home' view before we try to scroll.
+       setTimeout(() => {
+           const elementId = item.toLowerCase().replace(' ', '-');
+           const element = document.getElementById(elementId);
+           if (element) {
+               element.scrollIntoView({ behavior: 'smooth' });
+           }
+       }, 100);
     }
   };
   
