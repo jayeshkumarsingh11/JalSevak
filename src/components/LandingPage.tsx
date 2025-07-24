@@ -10,23 +10,71 @@ import HeroPage from './HeroPage';
 import ContactUs from './ContactUs';
 import type { NavItem } from './SamriddhKhetiApp';
 
+const APP_VIEWS: NavItem[] = ["Dashboard", "Irrigation Planner", "Crop Advisor", "Soil Advisor", "Govt. Schemes"];
+
 export default function LandingPage() {
   const searchParams = useSearchParams();
   const [activeView, setActiveView] = useState<NavItem>('Home');
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     const viewFromUrl = searchParams.get('view') as NavItem;
-    if (viewFromUrl) {
-        setActiveView(viewFromUrl);
+    if (viewFromUrl && APP_VIEWS.includes(viewFromUrl)) {
+      setActiveView(viewFromUrl);
     } else {
-        // Default to home, which doesn't prerender the heavy app components
-        setActiveView('Home');
+      setActiveView('Home');
     }
-  }, [searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (isInitialLoad) return;
+
+    const viewFromUrl = searchParams.get('view') as NavItem;
+
+    if (viewFromUrl) {
+      if (APP_VIEWS.includes(viewFromUrl)) {
+        setActiveView(viewFromUrl);
+      } else {
+        setActiveView('Home');
+        const element = document.getElementById(viewFromUrl.toLowerCase().replace(' ', '-'));
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    } else {
+      setActiveView('Home');
+    }
+  }, [searchParams, isInitialLoad]);
 
 
   const handleNavigation = (item: NavItem) => {
-    setActiveView(item);
+    setIsInitialLoad(false);
+    
+    if (APP_VIEWS.includes(item)) {
+       const url = new URL(window.location.href);
+       url.searchParams.set('view', item);
+       window.history.pushState({}, '', url.toString());
+       setActiveView(item);
+    } else { // Home, About Us, Contact Us
+       const url = new URL(window.location.href);
+       url.searchParams.set('view', item);
+       window.history.pushState({}, '', url.toString());
+
+       if (item === 'Home') {
+         setActiveView('Home');
+         window.scrollTo({ top: 0, behavior: 'smooth'});
+       } else {
+         setActiveView('Home'); // Stay on home page to show sections
+         const elementId = item.toLowerCase().replace(' ', '-');
+         setTimeout(() => {
+             const element = document.getElementById(elementId);
+             if (element) {
+                 element.scrollIntoView({ behavior: 'smooth' });
+             }
+         }, 0);
+       }
+    }
   };
   
   const handleLearnMoreClick = () => {
@@ -37,47 +85,17 @@ export default function LandingPage() {
   };
 
   const renderContent = () => {
-      switch (activeView) {
-        case 'Dashboard':
-        case 'Irrigation Planner':
-        case 'Crop Advisor':
-        case 'Soil Advisor':
-        case 'Govt. Schemes':
-          return <SamriddhKhetiApp initialView={activeView} onNavigate={handleNavigation} />;
-        case 'Home':
-             return (
-              <>
-                <HeroPage onNavigate={handleNavigation} onLearnMoreClick={handleLearnMoreClick} />
-                <AboutPage />
-                <ContactUs />
-              </>
-            );
-        case 'About Us':
-             return (
-              <>
-                <HeroPage onNavigate={handleNavigation} onLearnMoreClick={handleLearnMoreClick} />
-                <AboutPage />
-                <ContactUs />
-              </>
-            );
-        case 'Contact Us':
-            return (
-              <>
-                <HeroPage onNavigate={handleNavigation} onLearnMoreClick={handleLearnMoreClick} />
-                <AboutPage />
-                <ContactUs />
-              </>
-            );
-        default:
-           // Fallback to home to prevent build errors
-           return (
-            <>
-              <HeroPage onNavigate={handleNavigation} onLearnMoreClick={handleLearnMoreClick} />
-              <AboutPage />
-              <ContactUs />
-            </>
-          );
+      if (APP_VIEWS.includes(activeView)) {
+        return <SamriddhKhetiApp initialView={activeView} onNavigate={handleNavigation} />;
       }
+      
+      return (
+        <>
+          <HeroPage onNavigate={handleNavigation} onLearnMoreClick={handleLearnMoreClick} />
+          <AboutPage />
+          <ContactUs />
+        </>
+      );
   };
   
   return (
@@ -89,3 +107,4 @@ export default function LandingPage() {
     </div>
   )
 }
+
