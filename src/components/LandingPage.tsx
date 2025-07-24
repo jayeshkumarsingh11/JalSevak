@@ -80,12 +80,6 @@ export default function LandingPage() {
       }
   };
   
-  const isAppView = ['Dashboard', 'Irrigation Planner', 'Crop Advisor', 'Soil Advisor', 'Govt. Schemes'].includes(activeView);
-
-  if (isAppView) {
-    return renderContent();
-  }
-
   return (
     <div className="flex flex-col min-h-screen bg-background">
         <TopNavBar activeItem={activeView} setActiveItem={handleNavigation} />
