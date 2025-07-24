@@ -11,6 +11,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Languages, ChevronDown, Menu } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 interface TopNavBarProps {
   activeItem: NavItem;
@@ -115,7 +116,11 @@ export default function TopNavBar({ activeItem, setActiveItem }: TopNavBarProps)
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         {toolNavItems.map((item) => (
-                            <DropdownMenuItem key={item} onClick={() => handleNavClick(item)}>
+                            <DropdownMenuItem 
+                                key={item} 
+                                onClick={() => handleNavClick(item)}
+                                className={cn(activeItem === item && "bg-accent/80")}
+                            >
                                 {t(navItemMap[item])}
                             </DropdownMenuItem>
                         ))}
@@ -166,7 +171,11 @@ export default function TopNavBar({ activeItem, setActiveItem }: TopNavBarProps)
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="center" className="w-56">
                             {toolNavItems.map((item) => (
-                                <DropdownMenuItem key={item} onClick={() => handleNavClick(item)}>
+                                <DropdownMenuItem 
+                                    key={item} 
+                                    onClick={() => handleNavClick(item)}
+                                    className={cn(activeItem === item && "bg-accent/80")}
+                                >
                                     {t(navItemMap[item])}
                                 </DropdownMenuItem>
                             ))}
