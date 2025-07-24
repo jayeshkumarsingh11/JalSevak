@@ -19,20 +19,18 @@ export default function LandingPage() {
 
   useEffect(() => {
     const viewFromUrl = searchParams.get('view') as NavItem;
-    if (viewFromUrl && APP_VIEWS.includes(viewFromUrl)) {
-      setActiveView(viewFromUrl);
-    } else {
-      setActiveView('Home');
+    if (isInitialLoad) {
+        setIsInitialLoad(false);
+        if (viewFromUrl && (APP_VIEWS.includes(viewFromUrl) || ['About Us', 'Contact Us'].includes(viewFromUrl))) {
+             // If there's a view in the URL on first load, we want to stay on the home page
+             // but allow deep links to scroll to sections later if needed.
+             // For now, we set the view to Home.
+             setActiveView('Home');
+        }
+        return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (isInitialLoad) return;
-
-    const viewFromUrl = searchParams.get('view') as NavItem;
-
-    if (viewFromUrl) {
+    
+    if (viewFromUrl && (APP_VIEWS.includes(viewFromUrl) || ['About Us', 'Contact Us', 'Home'].includes(viewFromUrl))) {
       if (APP_VIEWS.includes(viewFromUrl)) {
         setActiveView(viewFromUrl);
       } else {
@@ -45,25 +43,22 @@ export default function LandingPage() {
     } else {
       setActiveView('Home');
     }
-  }, [searchParams, isInitialLoad]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
 
   const handleNavigation = (item: NavItem) => {
-    setIsInitialLoad(false);
+    window.scrollTo({ top: 0, behavior: 'smooth'});
+
+    const url = new URL(window.location.href);
+    url.searchParams.set('view', item);
+    window.history.pushState({}, '', url.toString());
     
     if (APP_VIEWS.includes(item)) {
-       const url = new URL(window.location.href);
-       url.searchParams.set('view', item);
-       window.history.pushState({}, '', url.toString());
        setActiveView(item);
     } else { // Home, About Us, Contact Us
-       const url = new URL(window.location.href);
-       url.searchParams.set('view', item);
-       window.history.pushState({}, '', url.toString());
-
        if (item === 'Home') {
          setActiveView('Home');
-         window.scrollTo({ top: 0, behavior: 'smooth'});
        } else {
          setActiveView('Home'); // Stay on home page to show sections
          const elementId = item.toLowerCase().replace(' ', '-');
@@ -72,7 +67,7 @@ export default function LandingPage() {
              if (element) {
                  element.scrollIntoView({ behavior: 'smooth' });
              }
-         }, 0);
+         }, 100); // Small delay to ensure the view is set to home first
        }
     }
   };
@@ -107,4 +102,3 @@ export default function LandingPage() {
     </div>
   )
 }
-
