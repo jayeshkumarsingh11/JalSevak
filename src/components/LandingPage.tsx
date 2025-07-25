@@ -2,7 +2,6 @@
 "use client"
 
 import { useState, useEffect, useRef } from 'react';
-import { useSearchParams } from 'next/navigation';
 import SamriddhKhetiApp from '@/components/SamriddhKhetiApp';
 import TopNavBar from './TopNavBar';
 import AboutPage from './AboutPage';
@@ -19,15 +18,76 @@ export default function LandingPage() {
   const [activeView, setActiveView] = useState<NavItem>('Home');
   const isInitialLoad = useRef(true);
 
+  // Scroll spy for home page sections
   useEffect(() => {
-    // On initial load, we ignore the URL, force the Home view, and scroll to top.
+    // Do not run the observer if we are on an app view
+    if (APP_VIEWS.includes(activeView)) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            let newActiveView: NavItem;
+            if (id === 'hero-page') {
+              newActiveView = 'Home';
+            } else if (id === 'about-us') {
+              newActiveView = 'About Us';
+            } else if (id === 'contact-us') {
+              newActiveView = 'Contact Us';
+            } else {
+              return;
+            }
+            
+            // Only update if the view has changed
+            setActiveView(prev => {
+              if (prev !== newActiveView) {
+                const url = new URL(window.location.href);
+                if (newActiveView === 'Home') {
+                  url.searchParams.delete('view');
+                } else {
+                  url.searchParams.set('view', newActiveView);
+                }
+                // Use replaceState to not pollute browser history with scroll changes
+                window.history.replaceState({}, '', url.toString());
+              }
+              return newActiveView;
+            });
+          }
+        });
+      },
+      { rootMargin: '-50% 0px -50% 0px' } // Trigger when the section is in the middle of the screen
+    );
+
+    const sections = document.querySelectorAll('#hero-page, #about-us, #contact-us');
+    sections.forEach((section) => observer.observe(section));
+
+    return () => sections.forEach((section) => observer.unobserve(section));
+  }, [activeView]);
+
+
+  useEffect(() => {
+    // On initial load, determine view from URL or default to Home.
     if (isInitialLoad.current) {
       isInitialLoad.current = false;
-      setActiveView('Home');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      // We can also clean the URL to prevent confusion on refresh.
-      if (window.location.search) {
-        window.history.replaceState({}, '', window.location.pathname);
+      const urlParams = new URLSearchParams(window.location.search);
+      const viewFromUrl = urlParams.get('view') as NavItem | null;
+
+      if (viewFromUrl && APP_VIEWS.includes(viewFromUrl)) {
+        setActiveView(viewFromUrl);
+      } else {
+        setActiveView('Home');
+        // If the URL has a section, scroll to it. Otherwise, scroll to top.
+        const sectionId = (viewFromUrl && HOME_SECTIONS.includes(viewFromUrl)) 
+          ? viewFromUrl.toLowerCase().replace(' ', '-') 
+          : 'hero-page';
+        
+        // Use a timeout to ensure the component has rendered before scrolling
+        setTimeout(() => {
+          document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
       }
     }
   }, []);
@@ -42,39 +102,30 @@ export default function LandingPage() {
     } else {
       url.searchParams.set('view', item);
     }
-    // We use replaceState for scrolling on the same page to not pollute browser history
+    
     if (HOME_SECTIONS.includes(item) && !isCurrentlyOnAppView) {
-        window.history.replaceState({}, '', url.toString());
+        window.history.pushState({}, '', url.toString());
     } else {
         window.history.pushState({}, '', url.toString());
     }
-
-
-    // Set state to make change feel instant
-    setActiveView(item);
+    
+    // Set state to make change feel instant for app views or when coming from an app view
+    if (APP_VIEWS.includes(item) || isCurrentlyOnAppView) {
+      setActiveView(item);
+    }
     
     // If the item is a section on the home page, scroll to it.
     if (HOME_SECTIONS.includes(item)) {
-        // If we are on a tool page, we need to switch view first, then scroll.
-        // We use a small timeout to allow React to re-render the home page components.
-        if (isCurrentlyOnAppView) {
-            setTimeout(() => {
-                const elementId = item === 'Home' ? 'hero-page' : item.toLowerCase().replace(' ', '-');
-                const element = document.getElementById(elementId);
-                if (element) {
-                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            }, 50);
-        } else {
-            // If we're already on a home page section, just scroll.
-             const elementId = item === 'Home' ? 'hero-page' : item.toLowerCase().replace(' ', '-');
+        // Use a small timeout to allow React to re-render the home page components if needed.
+        setTimeout(() => {
+            const elementId = item === 'Home' ? 'hero-page' : item.toLowerCase().replace(' ', '-');
             const element = document.getElementById(elementId);
             if (element) {
                 element.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
-        }
+        }, isCurrentlyOnAppView ? 50 : 0);
     } else {
-        // For app views, just scroll to the top.
+        // For app views, scroll to the top.
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
