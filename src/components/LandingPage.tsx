@@ -16,7 +16,6 @@ const APP_VIEWS: NavItem[] = ["Dashboard", "Irrigation Planner", "Crop Advisor",
 const HOME_SECTIONS: NavItem[] = ["Home", "About Us", "Contact Us"];
 
 export default function LandingPage() {
-  const searchParams = useSearchParams();
   const [activeView, setActiveView] = useState<NavItem>('Home');
   const isInitialLoad = useRef(true);
 
@@ -25,23 +24,13 @@ export default function LandingPage() {
     if (isInitialLoad.current) {
       isInitialLoad.current = false;
       setActiveView('Home');
-      window.scrollTo(0, 0); // Scroll to top on refresh
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       // We can also clean the URL to prevent confusion on refresh.
       if (window.location.search) {
         window.history.replaceState({}, '', window.location.pathname);
       }
-      return;
     }
-
-    // For subsequent navigations (back/forward), we respect the URL.
-    const viewFromUrl = searchParams.get('view') as NavItem;
-    if (viewFromUrl && viewFromUrl !== activeView) {
-        if ([...APP_VIEWS, ...HOME_SECTIONS].includes(viewFromUrl)) {
-            setActiveView(viewFromUrl);
-        }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+  }, []);
 
   const handleNavigation = (item: NavItem) => {
     const isCurrentlyOnAppView = APP_VIEWS.includes(activeView);
@@ -53,7 +42,13 @@ export default function LandingPage() {
     } else {
       url.searchParams.set('view', item);
     }
-    window.history.pushState({}, '', url.toString());
+    // We use replaceState for scrolling on the same page to not pollute browser history
+    if (HOME_SECTIONS.includes(item) && !isCurrentlyOnAppView) {
+        window.history.replaceState({}, '', url.toString());
+    } else {
+        window.history.pushState({}, '', url.toString());
+    }
+
 
     // Set state to make change feel instant
     setActiveView(item);
