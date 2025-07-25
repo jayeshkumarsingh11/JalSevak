@@ -9,6 +9,8 @@ import AboutPage from './AboutPage';
 import HeroPage from './HeroPage';
 import ContactUs from './ContactUs';
 import type { NavItem } from './SamriddhKhetiApp';
+import Footer from './Footer';
+
 
 const APP_VIEWS: NavItem[] = ["Dashboard", "Irrigation Planner", "Crop Advisor", "Soil Advisor", "Govt. Schemes"];
 const HOME_SECTIONS: NavItem[] = ["Home", "About Us", "Contact Us"];
@@ -19,30 +21,39 @@ export default function LandingPage() {
 
   useEffect(() => {
     const viewFromUrl = searchParams.get('view') as NavItem;
+    // This effect now primarily handles deep-linking or browser back/forward navigation.
+    // The initial state is always 'Home'.
     if (viewFromUrl && viewFromUrl !== activeView) {
-        if (APP_VIEWS.includes(viewFromUrl)) {
+        if ([...APP_VIEWS, ...HOME_SECTIONS].includes(viewFromUrl)) {
             setActiveView(viewFromUrl);
-        } else if (HOME_SECTIONS.includes(viewFromUrl)) {
-            const elementId = viewFromUrl === 'Home' ? 'hero-page' : viewFromUrl.toLowerCase().replace(' ', '-');
-            const element = document.getElementById(elementId);
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth' });
-            }
         }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   const handleNavigation = (item: NavItem) => {
-    window.scrollTo({ top: 0, behavior: 'smooth'});
-    
-    // Always update the URL to trigger the state change
-    const url = new URL(window.location.href);
-    url.searchParams.set('view', item);
-    window.history.pushState({}, '', url.toString());
+    // Scroll to top for all navigation events.
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     // Manually set state to make change feel instant
     setActiveView(item);
+
+    // Update URL to reflect the new state and allow for deep-linking.
+    const url = new URL(window.location.href);
+    url.searchParams.set('view', item);
+    window.history.pushState({}, '', url.toString());
+    
+    // If the item is a section on the home page, scroll to it.
+    if (HOME_SECTIONS.includes(item)) {
+        const elementId = item === 'Home' ? 'hero-page' : item.toLowerCase().replace(' ', '-');
+        const element = document.getElementById(elementId);
+        if (element) {
+            // A small delay to allow the view to switch back to home if it was on a tool page.
+            setTimeout(() => {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }, 50);
+        }
+    }
   };
   
   const handleLearnMoreClick = () => {
@@ -78,6 +89,7 @@ export default function LandingPage() {
         <main className="flex-1">
             {renderContent()}
         </main>
+        <Footer onNavigate={handleNavigation} />
     </div>
   )
 }

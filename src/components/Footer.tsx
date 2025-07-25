@@ -5,23 +5,34 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/contexts/LanguageContext";
+import type { NavItem } from "./SamriddhKhetiApp";
 
-export default function Footer() {
+interface FooterProps {
+    onNavigate: (item: NavItem) => void;
+}
+
+
+export default function Footer({ onNavigate }: FooterProps) {
     const { t } = useLanguage();
 
-    const footerNavLinks = [
-        { nameKey: "nav_home", href: "/" },
-        { nameKey: "nav_dashboard", href: "/?view=Dashboard" },
-        { nameKey: "nav_about_us", href: "/?view=About Us" },
-        { nameKey: "nav_contact_us", href: "/?view=Contact Us" },
+    const footerNavLinks: { nameKey: string, view: NavItem }[] = [
+        { nameKey: "nav_home", view: "Home" },
+        { nameKey: "nav_dashboard", view: "Dashboard" },
+        { nameKey: "nav_about_us", view: "About Us" },
+        { nameKey: "nav_contact_us", view: "Contact Us" },
     ];
 
-    const footerToolLinks = [
-        { nameKey: "nav_irrigation_planner", href: "/?view=Irrigation Planner" },
-        { nameKey: "nav_crop_advisor", href: "/?view=Crop Advisor" },
-        { nameKey: "nav_soil_advisor", href: "/?view=Soil Advisor" },
-        { nameKey: "nav_govt_schemes", href: "/?view=Govt. Schemes" },
+    const footerToolLinks: { nameKey: string, view: NavItem }[] = [
+        { nameKey: "nav_irrigation_planner", view: "Irrigation Planner" },
+        { nameKey: "nav_crop_advisor", view: "Crop Advisor" },
+        { nameKey: "nav_soil_advisor", view: "Soil Advisor" },
+        { nameKey: "nav_govt_schemes", view: "Govt. Schemes" },
     ];
+
+    const handleLinkClick = (e: React.MouseEvent, item: NavItem) => {
+        e.preventDefault();
+        onNavigate(item);
+    }
 
     return (
         <footer className="bg-muted/40 border-t">
@@ -43,7 +54,11 @@ export default function Footer() {
                         <ul className="space-y-2">
                             {footerNavLinks.map(link => (
                                 <li key={link.nameKey}>
-                                    <a href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                                    <a 
+                                        href="#"
+                                        onClick={(e) => handleLinkClick(e, link.view)}
+                                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                                    >
                                         {t(link.nameKey)}
                                     </a>
                                 </li>
@@ -57,7 +72,11 @@ export default function Footer() {
                         <ul className="space-y-2">
                             {footerToolLinks.map(link => (
                                 <li key={link.nameKey}>
-                                    <a href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                                    <a 
+                                        href="#"
+                                        onClick={(e) => handleLinkClick(e, link.view)} 
+                                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                                    >
                                         {t(link.nameKey)}
                                     </a>
                                 </li>
