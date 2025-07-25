@@ -81,7 +81,7 @@ export default function LandingPage() {
           window.history.replaceState({}, '', url.toString());
       }
 
-      // Ensure the page is scrolled to the top.
+      // Ensure the page is scrolled to the top smoothly.
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, []);
