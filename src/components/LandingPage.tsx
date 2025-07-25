@@ -32,9 +32,6 @@ export default function LandingPage() {
   }, [searchParams]);
 
   const handleNavigation = (item: NavItem) => {
-    // Scroll to top for all navigation events.
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
     // Manually set state to make change feel instant
     setActiveView(item);
 
@@ -45,14 +42,27 @@ export default function LandingPage() {
     
     // If the item is a section on the home page, scroll to it.
     if (HOME_SECTIONS.includes(item)) {
-        const elementId = item === 'Home' ? 'hero-page' : item.toLowerCase().replace(' ', '-');
-        const element = document.getElementById(elementId);
-        if (element) {
-            // A small delay to allow the view to switch back to home if it was on a tool page.
+        // If we're not on a tool page, just scroll.
+        if (!APP_VIEWS.includes(activeView)) {
+            const elementId = item === 'Home' ? 'hero-page' : item.toLowerCase().replace(' ', '-');
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        } else {
+            // If we are on a tool page, we need to switch view first, then scroll.
+            // We use a small timeout to allow React to re-render the home page components.
             setTimeout(() => {
-                element.scrollIntoView({ behavior: 'smooth' });
+                const elementId = item === 'Home' ? 'hero-page' : item.toLowerCase().replace(' ', '-');
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             }, 50);
         }
+    } else {
+        // For app views, just scroll to the top.
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
   
@@ -64,10 +74,12 @@ export default function LandingPage() {
   };
 
   const renderContent = () => {
+      // If the activeView is a tool, render the app wrapper.
       if (APP_VIEWS.includes(activeView)) {
         return <SamriddhKhetiApp initialView={activeView} onNavigate={handleNavigation} />;
       }
       
+      // Otherwise, render the home page sections.
       return (
         <>
           <div id="hero-page">
