@@ -18,70 +18,16 @@ export default function LandingPage() {
   const [activeView, setActiveView] = useState<NavItem>('Home');
   const isInitialLoad = useRef(true);
 
-  // Scroll spy for home page sections
   useEffect(() => {
-    // Do not run the observer if we are on an app view
-    if (APP_VIEWS.includes(activeView)) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const id = entry.target.id;
-            let newActiveView: NavItem;
-            if (id === 'hero-page') {
-              newActiveView = 'Home';
-            } else if (id === 'about-us') {
-              newActiveView = 'About Us';
-            } else if (id === 'contact-us') {
-              newActiveView = 'Contact Us';
-            } else {
-              return;
-            }
-            
-            // Only update if the view has changed
-            setActiveView(prev => {
-              if (prev !== newActiveView) {
-                const url = new URL(window.location.href);
-                if (newActiveView === 'Home') {
-                  url.searchParams.delete('view');
-                } else {
-                  url.searchParams.set('view', newActiveView);
-                }
-                // Use replaceState to not pollute browser history with scroll changes
-                window.history.replaceState({}, '', url.toString());
-              }
-              return newActiveView;
-            });
-          }
-        });
-      },
-      { rootMargin: '-50% 0px -50% 0px' } // Trigger when the section is in the middle of the screen
-    );
-
-    const sections = document.querySelectorAll('#hero-page, #about-us, #contact-us');
-    sections.forEach((section) => observer.observe(section));
-
-    return () => sections.forEach((section) => observer.unobserve(section));
-  }, [activeView]);
-
-
-  useEffect(() => {
-    // On initial load, always start from the Home view.
     if (isInitialLoad.current) {
       isInitialLoad.current = false;
       
-      // Clear any 'view' param from the URL on refresh without adding to history
       const url = new URL(window.location.href);
       if (url.searchParams.has('view')) {
           url.searchParams.delete('view');
           window.history.replaceState({}, '', url.toString());
       }
-
-      // Ensure the page is scrolled to the top smoothly.
-      // The scroll spy will automatically update the activeView to "Home" when it scrolls into view.
+      setActiveView('Home');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, []);
@@ -89,7 +35,6 @@ export default function LandingPage() {
   const handleNavigation = (item: NavItem) => {
     const isCurrentlyOnAppView = APP_VIEWS.includes(activeView);
 
-    // Update URL to reflect the new state and allow for deep-linking.
     const url = new URL(window.location.href);
     if (item === 'Home') {
       url.search = '';
@@ -97,15 +42,11 @@ export default function LandingPage() {
       url.searchParams.set('view', item);
     }
     
-    // Use pushState to add to browser history for meaningful navigation changes.
     window.history.pushState({}, '', url.toString());
     
-    // Set state to make change feel instant for app views or when coming from an app view
     setActiveView(item);
     
-    // If the item is a section on the home page, scroll to it.
     if (HOME_SECTIONS.includes(item)) {
-        // Use a small timeout to allow React to re-render the home page components if needed.
         setTimeout(() => {
             const elementId = item === 'Home' ? 'hero-page' : item.toLowerCase().replace(' ', '-');
             const element = document.getElementById(elementId);
@@ -114,7 +55,6 @@ export default function LandingPage() {
             }
         }, isCurrentlyOnAppView ? 50 : 0);
     } else {
-        // For app views, scroll to the top.
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -127,12 +67,10 @@ export default function LandingPage() {
   };
 
   const renderContent = () => {
-      // If the activeView is a tool, render the app wrapper.
       if (APP_VIEWS.includes(activeView)) {
         return <SamriddhKhetiApp initialView={activeView} onNavigate={handleNavigation} />;
       }
       
-      // Otherwise, render the home page sections.
       return (
         <>
           <div id="hero-page">
