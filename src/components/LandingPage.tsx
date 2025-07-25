@@ -72,7 +72,6 @@ export default function LandingPage() {
     // On initial load, always start from the Home view.
     if (isInitialLoad.current) {
       isInitialLoad.current = false;
-      setActiveView('Home');
       
       // Clear any 'view' param from the URL on refresh without adding to history
       const url = new URL(window.location.href);
@@ -82,6 +81,7 @@ export default function LandingPage() {
       }
 
       // Ensure the page is scrolled to the top smoothly.
+      // The scroll spy will automatically update the activeView to "Home" when it scrolls into view.
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, []);
