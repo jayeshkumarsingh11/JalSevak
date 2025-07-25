@@ -69,24 +69,20 @@ export default function LandingPage() {
 
 
   useEffect(() => {
-    // On initial load, determine view from URL or default to Home.
+    // On initial load, always start from the Home view.
     if (isInitialLoad.current) {
       isInitialLoad.current = false;
-      const urlParams = new URLSearchParams(window.location.search);
-      const viewFromUrl = urlParams.get('view') as NavItem | null;
-
-      if (viewFromUrl && (APP_VIEWS.includes(viewFromUrl) || HOME_SECTIONS.includes(viewFromUrl))) {
-        setActiveView(viewFromUrl);
-        // If the URL has a section, scroll to it.
-        if (HOME_SECTIONS.includes(viewFromUrl)) {
-             setTimeout(() => {
-              const elementId = viewFromUrl === 'Home' ? 'hero-page' : viewFromUrl.toLowerCase().replace(' ', '-');
-              document.getElementById(elementId)?.scrollIntoView({ behavior: 'smooth' });
-            }, 100);
-        }
-      } else {
-        setActiveView('Home');
+      setActiveView('Home');
+      
+      // Clear any 'view' param from the URL on refresh without adding to history
+      const url = new URL(window.location.href);
+      if (url.searchParams.has('view')) {
+          url.searchParams.delete('view');
+          window.history.replaceState({}, '', url.toString());
       }
+
+      // Ensure the page is scrolled to the top.
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, []);
 
