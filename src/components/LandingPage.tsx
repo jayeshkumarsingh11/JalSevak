@@ -21,9 +21,11 @@ export default function LandingPage() {
   const isInitialLoad = useRef(true);
 
   useEffect(() => {
-    // On initial load, we ignore the URL and force the Home view.
+    // On initial load, we ignore the URL, force the Home view, and scroll to top.
     if (isInitialLoad.current) {
       isInitialLoad.current = false;
+      setActiveView('Home');
+      window.scrollTo(0, 0); // Scroll to top on refresh
       // We can also clean the URL to prevent confusion on refresh.
       if (window.location.search) {
         window.history.replaceState({}, '', window.location.pathname);
@@ -42,8 +44,7 @@ export default function LandingPage() {
   }, [searchParams]);
 
   const handleNavigation = (item: NavItem) => {
-    // Manually set state to make change feel instant
-    setActiveView(item);
+    const isCurrentlyOnAppView = APP_VIEWS.includes(activeView);
 
     // Update URL to reflect the new state and allow for deep-linking.
     const url = new URL(window.location.href);
@@ -53,11 +54,12 @@ export default function LandingPage() {
       url.searchParams.set('view', item);
     }
     window.history.pushState({}, '', url.toString());
+
+    // Set state to make change feel instant
+    setActiveView(item);
     
     // If the item is a section on the home page, scroll to it.
     if (HOME_SECTIONS.includes(item)) {
-        const isCurrentlyOnAppView = APP_VIEWS.includes(activeView);
-
         // If we are on a tool page, we need to switch view first, then scroll.
         // We use a small timeout to allow React to re-render the home page components.
         if (isCurrentlyOnAppView) {
