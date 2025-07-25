@@ -75,19 +75,17 @@ export default function LandingPage() {
       const urlParams = new URLSearchParams(window.location.search);
       const viewFromUrl = urlParams.get('view') as NavItem | null;
 
-      if (viewFromUrl && APP_VIEWS.includes(viewFromUrl)) {
+      if (viewFromUrl && (APP_VIEWS.includes(viewFromUrl) || HOME_SECTIONS.includes(viewFromUrl))) {
         setActiveView(viewFromUrl);
+        // If the URL has a section, scroll to it.
+        if (HOME_SECTIONS.includes(viewFromUrl)) {
+             setTimeout(() => {
+              const elementId = viewFromUrl === 'Home' ? 'hero-page' : viewFromUrl.toLowerCase().replace(' ', '-');
+              document.getElementById(elementId)?.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
       } else {
         setActiveView('Home');
-        // If the URL has a section, scroll to it. Otherwise, scroll to top.
-        const sectionId = (viewFromUrl && HOME_SECTIONS.includes(viewFromUrl)) 
-          ? viewFromUrl.toLowerCase().replace(' ', '-') 
-          : 'hero-page';
-        
-        // Use a timeout to ensure the component has rendered before scrolling
-        setTimeout(() => {
-          document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
       }
     }
   }, []);
@@ -103,16 +101,11 @@ export default function LandingPage() {
       url.searchParams.set('view', item);
     }
     
-    if (HOME_SECTIONS.includes(item) && !isCurrentlyOnAppView) {
-        window.history.pushState({}, '', url.toString());
-    } else {
-        window.history.pushState({}, '', url.toString());
-    }
+    // Use pushState to add to browser history for meaningful navigation changes.
+    window.history.pushState({}, '', url.toString());
     
     // Set state to make change feel instant for app views or when coming from an app view
-    if (APP_VIEWS.includes(item) || isCurrentlyOnAppView) {
-      setActiveView(item);
-    }
+    setActiveView(item);
     
     // If the item is a section on the home page, scroll to it.
     if (HOME_SECTIONS.includes(item)) {
