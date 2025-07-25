@@ -16,21 +16,51 @@ const HOME_SECTIONS: NavItem[] = ["Home", "About Us", "Contact Us"];
 
 export default function LandingPage() {
   const [activeView, setActiveView] = useState<NavItem>('Home');
-  const isInitialLoad = useRef(true);
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
   useEffect(() => {
-    if (isInitialLoad.current) {
-      isInitialLoad.current = false;
-      
-      const url = new URL(window.location.href);
-      if (url.searchParams.has('view')) {
-          url.searchParams.delete('view');
-          window.history.replaceState({}, '', url.toString());
-      }
-      setActiveView('Home');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    // On initial load, always reset to home view and scroll to top smoothly
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('view')) {
+      url.searchParams.delete('view');
+      window.history.replaceState({}, '', url.toString());
     }
+    // Let the observer handle setting the active view after scroll
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Set up refs for IntersectionObserver
+    sectionRefs.current['Home'] = document.getElementById('hero-page');
+    sectionRefs.current['About Us'] = document.getElementById('about-us');
+    sectionRefs.current['Contact Us'] = document.getElementById('contact-us');
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const view = Object.keys(sectionRefs.current).find(
+              (key) => sectionRefs.current[key] === entry.target
+            ) as NavItem | undefined;
+            if (view && !APP_VIEWS.includes(activeView)) {
+              setActiveView(view);
+            }
+          }
+        });
+      },
+      { rootMargin: '-50% 0px -50% 0px' }
+    );
+
+    Object.values(sectionRefs.current).forEach((ref) => {
+      if (ref) observer.observe(ref);
+    });
+
+    return () => {
+      Object.values(sectionRefs.current).forEach((ref) => {
+        if (ref) observer.unobserve(ref);
+      });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   const handleNavigation = (item: NavItem) => {
     const isCurrentlyOnAppView = APP_VIEWS.includes(activeView);
@@ -44,17 +74,28 @@ export default function LandingPage() {
     
     window.history.pushState({}, '', url.toString());
     
-    setActiveView(item);
-    
     if (HOME_SECTIONS.includes(item)) {
-        setTimeout(() => {
+        // If we are on an app page, we need to switch the view first
+        if (isCurrentlyOnAppView) {
+            setActiveView(item); // This will cause a re-render to show the home sections
+            setTimeout(() => {
+                const elementId = item === 'Home' ? 'hero-page' : item.toLowerCase().replace(' ', '-');
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 50); // A small delay to ensure the section is on the DOM
+        } else {
+            // If already on a home section, just scroll
             const elementId = item === 'Home' ? 'hero-page' : item.toLowerCase().replace(' ', '-');
             const element = document.getElementById(elementId);
             if (element) {
                 element.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
-        }, isCurrentlyOnAppView ? 50 : 0);
+        }
     } else {
+        // This is for navigating to an app view
+        setActiveView(item);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
